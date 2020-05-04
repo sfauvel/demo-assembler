@@ -1,22 +1,14 @@
 #!/usr/bin/env bash
 
 function compileAndRunTest() {
-echo Before:
-ls target
-echo -----
+
     test_name=$1
     asm_path=$2
     test_path=$3
-echo $test_name
-echo $asm_path
-echo $test_path
-    # Compile asm
-    echo "nasm -felf64 ${asm_path}/${test_name}.asm -o target/${test_name}.asm.o"
-    nasm -felf64 ${asm_path}/${test_name}.asm -o target/${test_name}.asm.o
 
-    ls target
+    # Compile asm
+    nasm -felf64 ${asm_path}/${test_name}.asm -o target/${test_name}.asm.o
     # Compile test
-    echo "gcc ${test_path}/${test_name}.test.c target/${test_name}.asm.o -o target/${test_name}.test.o"
     gcc ${test_path}/${test_name}.test.c target/${test_name}.asm.o -o target/${test_name}.test.o
 
     echo "=================="
@@ -25,16 +17,32 @@ echo $test_path
     ./target/${test_name}.test.o
 }
 
+
+function generateAndRunTest() {
+
+    test_name=$1
+    asm_path=$2
+    test_path=$3
+    
+    rm -rf target
+    mkdir target
+
+    # Generate test file
+    build_test_file ${test_path}/${test_name}.test.c target/${test_name}.test.c
+
+    compileAndRunTest $test_name $asm_path target
+}
+
 function clean() {
     rm -rf target
     mkdir target
 }
 
+
 test=maxofthree
-asm_path=quickstart
-test_path=quickstart
+asm_path=quickstart_autorun
+test_path=quickstart_autorun
 
 clean
-compileAndRunTest $test $asm_path $test_path
-
-
+. test/test_generate.shœ
+generateAndRunTest $test $asm_path $test_path

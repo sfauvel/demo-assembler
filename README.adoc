@@ -64,6 +64,15 @@ Add function definition in `.c` file (or in an `.h` file included in `.c` file).
 
 Call this function like any other function.
 
+=== Run all tests in a file
+
+To not have to enumarate all tests, we can use a script (test_generate.sh) to add main method with all tests.
+
+Script read .c file and identify test by line starting by `TEST`.
+
+All tests found are used to generate en main method to run them.
+Main method is write before `RUN_TESTS()` text in .c file.
+
 == Explain
 
 === Compile and run assembler
@@ -105,6 +114,13 @@ A full command:
 nasm -felf64 hello.asm && gcc callhello.c hello.o && ./a.out
 ----
 
+=== Nasm
+
+* link:https://www.nasm.us/[]
+* link:https://cs.lmu.edu/~ray/notes/nasmtutorial/[]
+
+
+////
 == Tests
 
 Just call:
@@ -120,3 +136,5 @@ gcc progtest/maxofthree.test.c maxofthree.o -o test.out \ # Compile test file li
 ./test.out                                                # Run test
 
 nasm -felf64 maxofthree.asm -o target/obj/maxofthree.o && . generate_test.sh maxofthree && gcc target/src/maxofthree.test.c target/obj/maxofthree.o -o target/objtest/maxofthree.out && ./target/maxofthree.out
+----
+ ////

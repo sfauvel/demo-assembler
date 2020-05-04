@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-DOCKER_IMAGE=gcc_test
-
 function write() {
     TEXT=$1
     sed -i "s/RUN_TESTS()/${TEXT}RUN_TESTS()/g" $TEST_FILE
@@ -38,31 +36,15 @@ function build_test_file() {
     writeln ""
 }
 
+rm -rf target
+mkdir target
+mkdir target/src
+mkdir target/obj
+mkdir target/objtest
 
-function generateAndRunTest() {
-    rm -rf target
-    mkdir target
-    mkdir target/obj
-    mkdir target/objtest
-
-    test = $1
-    build_test_file test/$test.test.c target/$test.test.c
-
-    nasm -felf64 $test.asm -o target/obj/$test.o
-    gcc ./target/$test.test.c target/obj/$test.o -o target/objtest/$test.out
+for test in "$@"
+do
+    build_test_file test/$test.test.c target/src/$test.test.c
+done
 
 
-    for test in "$@"
-    do
-        echo "=================="
-        echo "Run $test.test.o"
-        echo "------------------"
-        ./target/objtest/$test.out
-    done
-}
-
-if [ -z $1 ]; then
-    echo "File to test must be given"
-else
-    generateAndRunTest $1
-fi
