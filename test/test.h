@@ -11,6 +11,7 @@ int isFailed=0;
 #define _assert(test) do { if (!(test)) { FAIL(); return; } } while(0)
 #define _assertIntEq(expected, actual) do { if (!(expected == actual)) { FAIL(); printf(", Expected: %d but %d", expected, actual);return; } } while(0)
 #define _assertInt64Eq(expected, actual) do { if (!(expected == actual)) { FAIL(); printf(", Expected: %ld but %ld", expected, actual);return; } } while(0)
+#define _assertStringEq(expected, actual) do { if (strcmp(expected, actual)!=0) { FAIL(); printf(", Expected: %s but %s", expected, actual);return; } } while(0)
 #define _verify(test) do { tests_run++; test(); } while(0)
 #define _verifyWithName(test, name) do { tests_run++; isFailed=0; printf("%s: ", name); test(); printf("%s\n", isFailed?"":"Ok");} while(0)
 #define TEST
