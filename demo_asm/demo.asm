@@ -5,9 +5,9 @@
         global  return_5
         global  increment
         global  add_three_values
-        global  add_with_call
+        global  add_2_3_and_6_with_call
         global  plus_1_and_add
-        gg
+        
         section .text
 return_5:
         mov     rax, 5                  ; result (rax) 
@@ -24,7 +24,7 @@ add_three_values:
         add     rax, rdx                ; add third parameter  (rdx)
         ret
 
-add_with_call:
+add_2_3_and_6_with_call:
         mov rdi, 2
         mov rsi, 3
         mov rdx, 6
@@ -32,8 +32,8 @@ add_with_call:
         ret 
 
 plus_1_and_add:
-        add rdi, 1
-        add rsi, 1
-        add rdx, 1        
+        add rdi, 1                      ; Add 1 to first parameter
+        add rsi, 1                      ; Add 1 to second parameter
+        add rdx, 1                      ; Add 1 to third parameter
         call add_three_values     
         ret

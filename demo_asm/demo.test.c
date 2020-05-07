@@ -10,7 +10,7 @@
 int64_t return_5();
 int64_t increment(int64_t);
 int64_t add_three_values(int64_t, int64_t, int64_t);
-int64_t add_with_call();
+int64_t add_2_3_and_6_with_call();
 int64_t plus_1_and_add(int64_t, int64_t, int64_t);
 
 
@@ -28,7 +28,7 @@ TEST void should_add_three() {
 
 
 TEST void should_call_add_with_2_3_6() {
-    _assertInt64Eq((int64_t)11, add_with_call());
+    _assertInt64Eq((int64_t)11, add_2_3_and_6_with_call());
 }
 
 TEST void should_add_1_and_add() {
