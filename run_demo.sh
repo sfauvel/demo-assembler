@@ -7,10 +7,21 @@ function compileAndRunTest() {
     test_path=$3
 
     # Compile asm
-    nasm -felf64 ${asm_path}/${test_name}.asm -o target/${test_name}.asm.o
-    # Compile test
-    gcc ${test_path}/${test_name}.test.c target/${test_name}.asm.o -o target/${test_name}.test.o
+    for f in ${asm_path}/*.asm
+    do
+        filename="$(basename -- $f)"
+        extension="${f##*.}"
+        name="${filename%.*}"
+        
+        echo Compile $f
+        nasm -felf64 ${asm_path}/${name}.asm -o target/${name}.asm.o
+    done
+    
+    asm_files=$(ls target/*.asm.o)
 
+    # Compile test
+    gcc ${test_path}/${test_name}.test.c ${asm_files} -o target/${test_name}.test.o
+    
     echo "=================="
     echo "Run ${test_name}.test"
     echo "------------------"

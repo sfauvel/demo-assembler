@@ -2,6 +2,7 @@
 #define TEST_H_
 
 #include <stdio.h>
+#include <string.h>
 
 int tests_run = 0;
 int tests_failed = 0;

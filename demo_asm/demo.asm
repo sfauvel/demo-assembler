@@ -7,8 +7,6 @@
         global  add_three_values
         global  add_2_3_and_6_with_call
         global  plus_1_and_add
-        global  say_hello
-        global  say_hello_world
         
         section .text
 return_5:
@@ -39,19 +37,3 @@ plus_1_and_add:
         add rdx, 1                      ; Add 1 to third parameter
         call add_three_values     
         ret
-
-say_hello:
-        mov rax, hello
-        ret
-
-say_hello_world:
-        mov rax, helloworld
-        ret
-
-        section .data
-hello:  db      "Hello", 0               ; End with 0 unless string continue with the next one
-bye:    db      "Bye", 0
-
-helloworld:  db      "Hello"            ; Without 0 at the end, string continue with next declearation
-             db      " "
-world:       db      "World", 0

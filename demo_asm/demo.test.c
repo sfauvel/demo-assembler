@@ -13,6 +13,7 @@ int64_t add_three_values(int64_t, int64_t, int64_t);
 int64_t add_2_3_and_6_with_call();
 int64_t plus_1_and_add(int64_t, int64_t, int64_t);
 char* say_hello();
+char* say_hello_world();
 
 
 TEST void should_return_5() {
@@ -38,12 +39,12 @@ TEST void should_add_1_and_add() {
 
 TEST void should_return_Hello() {
     char* result =  say_hello();
-    _assertStringEq( "Hello",result);    
+    _assertStringEq("Hello", result);    
 }
 
 TEST void should_return_HelloWorld() {
     char* result =  say_hello_world();
-    _assertStringEq( "Hello World",result);    
+    _assertStringEq("Hello World", result);    
 }
 
 RUN_TESTS()
