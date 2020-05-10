@@ -4,6 +4,7 @@
 
         global  return_5
         global  increment
+        global  decrement
         global  add_three_values
         global  add_2_3_and_6_with_call
         global  plus_1_and_add
@@ -15,7 +16,12 @@ return_5:
 
 increment:
         mov     rax, rdi                ; parameter (rdi) in rax 
-        add     rax, 1                  ; increment rax
+        inc     rax                     ; increment rax
+        ret
+
+decrement:
+        mov     rax, rdi                ; parameter (rdi) in rax 
+        dec     rax                     ; decrement rax
         ret
 
 add_three_values:
