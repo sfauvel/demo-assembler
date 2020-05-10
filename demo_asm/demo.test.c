@@ -13,6 +13,7 @@ int64_t decrement(int64_t);
 int64_t add_three_values(int64_t, int64_t, int64_t);
 int64_t add_2_3_and_6_with_call();
 int64_t plus_1_and_add(int64_t, int64_t, int64_t);
+int64_t find_min(int64_t , int64_t );
 
 /////////////////////////////////////////
 char* say_hello();
@@ -47,6 +48,12 @@ TEST void should_call_add_with_2_3_6() {
 
 TEST void should_add_1_and_add() {
     _assertInt64Eq((int64_t)10, plus_1_and_add(2, 5, 0));
+}
+
+
+TEST void should_find_min() {
+    _assertInt64Eq((int64_t)2, find_min(2, 5));
+    _assertInt64Eq((int64_t)5, find_min(5, 2));
 }
 
 ////////////////////////////////////////////////////////

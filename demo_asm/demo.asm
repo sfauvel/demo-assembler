@@ -8,6 +8,7 @@
         global  add_three_values
         global  add_2_3_and_6_with_call
         global  plus_1_and_add
+        global find_min
         
         section .text
 return_5:
@@ -43,3 +44,24 @@ plus_1_and_add:
         add rdx, 1                      ; Add 1 to third parameter
         call add_three_values     
         ret
+
+find_min:
+        mov [first], rdi
+        mov [second], rsi
+
+        mov rbx, [first]
+        mov rcx, [second]
+        cmp rbx, rcx
+        jc first_smaller                       ; If not smaller, continue executing greater
+       
+first_greater:
+        mov rax, [first]    
+        ret
+
+first_smaller:
+        mov rax, [first]
+        ret
+
+        section .data
+first:         resb    8        ; Value without value (4 bytes)
+second:         resb    8        ; Value without value (4 bytes)
