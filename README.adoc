@@ -119,6 +119,9 @@ nasm -felf64 hello.asm && gcc callhello.c hello.o && ./a.out
 * link:https://www.nasm.us/[]
 * link:https://cs.lmu.edu/~ray/notes/nasmtutorial/[]
 
+In french:
+
+* link:https://openclassrooms.com/fr/courses/2288321-apprenez-a-programmer-en-assembleur-x86/2288944-votre-premier-programme[]
 
 ////
 == Tests
