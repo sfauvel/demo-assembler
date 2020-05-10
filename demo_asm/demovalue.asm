@@ -18,4 +18,4 @@ set_value_init_to_0:
 
         section .data
 value_set_to_0:      db      0        ; Value set to 0
-value_unset:         resb    1        ; Value without value
+value_unset:         resb    4        ; Value without value (4 bytes)
