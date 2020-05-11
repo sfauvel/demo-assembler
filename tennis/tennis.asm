@@ -35,45 +35,74 @@ b_score:
         ret
 
 tennis_score:   
-        mov rbx, 0
-        mov rcx, [score_a]
+        mov rsi, score_tmp
+
+        mov rdi, [score_a]
+        call find_score_text
+        call add_score
+
+        mov rax, [score_separator]
+        mov [rsi], rax
+        add rsi, 1
+        
+        mov rdi, [score_b]
+        call find_score_text
+        call add_score
+      
+        mov rax, score_tmp
+        ret                             
+
+find_score_text:
+
+        mov rbx, rdi 
+
+        mov rcx, 1
         cmp rbx, rcx
+        je one_point
 
-        jc  return_score_15_0
-        jmp return_score
-
-return_score_15_0:
-        mov rax, [score_15]
-        mov [score_tmp], rax
-
-        mov rax, [score_separator]
-        mov [score_tmp+2], rax
+        mov rcx, 2
+        cmp rbx, rcx
+        je two_point
         
-        mov rax, [score_0] 
-        mov [score_tmp+3], rax
-        
-        mov rax, score_tmp
-        ret                    
+        mov rcx, 3
+        cmp rbx, rcx
+        je three_point
 
- return_score:     
-        mov rax, [score_0]
-        mov [score_tmp], rax
-
-        mov rax, [score_separator]
-        mov [score_tmp+1], rax
-        
-        mov rax, [score_0] 
-        mov [score_tmp+2], rax
-        
-        mov rax, score_tmp
-        ret                                  
+        mov rdi, [score_0]
+        ret 
+one_point:
+        mov rdi, [score_15]
+        ret
+two_point:
+        mov rdi, [score_30]
+        ret
+three_point:
+        mov rdi, [score_45]
+        ret
+                                    
+add_score:
+        mov rax, rdi                            ; Save parameter
+        mov [rsi], rax                          ; Add string to output
+        mov rbx, rdi                             
+  
+        mov rcx, [score_0]                      ; Check if 0
+        cmp rbx, rcx
+        je if_one_letter_score                  
+        add rsi, 1
+if_one_letter_score:
+        add rsi, 1
+        ret
 
         section   .data        
 score_tmp: resb         64
 
+score_45:               db      "45", 0                   ; initial score
+score_30:               db      "30", 0                   ; initial score
 score_15:               db      "15", 0                   ; initial score
 score_0:                db      "0",  0                   ; initial score
 score_separator:        db      "-",  0                   ; initial score
 
 score_a: dq 0
 score_b: dq 0
+
+score_init: dq 0
