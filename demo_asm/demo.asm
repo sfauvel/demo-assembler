@@ -63,5 +63,5 @@ first_smaller:
         ret
 
         section .data
-first:         resb    8        ; Value without value (4 bytes)
-second:         resb    8        ; Value without value (4 bytes)
+first:         resb    8        ; Value without value (8 bytes = 64 bits) or resq 1
+second:        resb    8        ; Value without value (4 bytes = 64 bits) or resq 1
