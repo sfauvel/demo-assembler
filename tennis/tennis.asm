@@ -54,20 +54,16 @@ tennis_score:
 
 find_score_text:
 
-        mov rbx, rdi 
-
-        mov rcx, 1
-        cmp rbx, rcx
+        cmp rdi, 1
         je one_point
 
-        mov rcx, 2
-        cmp rbx, rcx
+        cmp rdi, 2
         je two_point
         
-        mov rcx, 3
-        cmp rbx, rcx
+        cmp rdi, 3
         je three_point
 
+default_point:
         mov rdi, [score_0]
         ret 
 one_point:
@@ -83,10 +79,9 @@ three_point:
 add_score:
         mov rax, rdi                            ; Save parameter
         mov [rsi], rax                          ; Add string to output
-        mov rbx, rdi                             
-  
+      
         mov rcx, [score_0]                      ; Check if 0
-        cmp rbx, rcx
+        cmp rdi, rcx
         je if_one_letter_score                  
         add rsi, 1
 if_one_letter_score:
