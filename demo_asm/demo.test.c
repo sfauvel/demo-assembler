@@ -14,6 +14,10 @@ int64_t add_three_values(int64_t, int64_t, int64_t);
 int64_t add_2_3_and_6_with_call();
 int64_t plus_1_and_add(int64_t, int64_t, int64_t);
 int64_t find_min(int64_t , int64_t );
+int return_first_unsigned_int(int, int);
+int64_t return_first_64_bits_int(int64_t , int64_t);
+int add_to_stack(int);
+
 
 /////////////////////////////////////////
 char* say_hello();
@@ -78,6 +82,19 @@ TEST void should_return_HelloWorld_with_carriage_return() {
 TEST void should_set_value() {
     _assertInt64Eq((int64_t)32, set_unset_value(32));    
     _assertInt64Eq((int64_t)32, set_value_init_to_0(32));   
+}
+
+TEST void should_return_first_unsigned_integer() {
+    _assertIntEq(65000, return_first_unsigned_int(65000, 29000));    
+}
+
+TEST void should_return_first_integer_64_bits() {
+    _assertInt64Eq((int64_t)32, return_first_64_bits_int(32, 54));    
+}
+
+TEST void should_keep_value() {
+    _assertIntEq(32, add_to_stack(32));    
+    _assertIntEq(57, add_to_stack(25));    
 }
 
 RUN_TESTS()
