@@ -20,6 +20,7 @@ int add_to_stack(int);
 
 
 /////////////////////////////////////////
+
 char* say_hello();
 char* say_hello_world();
 char* say_hello_world_and_new_line();
@@ -54,13 +55,13 @@ TEST void should_add_1_and_add() {
     _assertInt64Eq((int64_t)10, plus_1_and_add(2, 5, 0));
 }
 
-
 TEST void should_find_min() {
     _assertInt64Eq((int64_t)2, find_min(2, 5));
     _assertInt64Eq((int64_t)5, find_min(5, 2));
 }
 
 ////////////////////////////////////////////////////////
+
 
 TEST void should_return_Hello() {
     char* result =  say_hello();

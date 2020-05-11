@@ -118,6 +118,9 @@ nasm -felf64 hello.asm && gcc callhello.c hello.o && ./a.out
 
 * link:https://www.nasm.us/[]
 * link:https://cs.lmu.edu/~ray/notes/nasmtutorial/[]
+* link:https://asmtutor.com/[]
+* link:http://www.lacl.fr/tan/asm[]
+* link:https://benoit-m.developpez.com/assembleur/tutoriel/[]
 
 In french:
 

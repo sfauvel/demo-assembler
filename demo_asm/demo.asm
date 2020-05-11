@@ -10,6 +10,7 @@
         global  plus_1_and_add
         global find_min
         
+
         section .text
 return_5:
         mov     rax, 5                  ; result (rax) 
