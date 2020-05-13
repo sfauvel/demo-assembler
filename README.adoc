@@ -36,6 +36,8 @@ Program is define in file `maxofthree.asm`. +
 Tests are written in file `maxofthree.test.c`
 
 
+You can find some projects in `examples` folder.
+
 == How to
 
 === Create a test in C
