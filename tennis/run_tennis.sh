@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+TEST_PATH=../test
+
 function compileAndRunTest() {
 
     test_name=$1
@@ -9,7 +11,7 @@ function compileAndRunTest() {
     # Compile asm
     nasm -felf64 ${asm_path}/${test_name}.asm -o target/${test_name}.asm.o
     # Compile test
-    gcc ${test_path}/${test_name}.test.c target/${test_name}.asm.o -o target/${test_name}.test.o
+    gcc -I${TEST_PATH} ${test_path}/${test_name}.test.c target/${test_name}.asm.o -o target/${test_name}.test.o
 
     echo "=================="
     echo "Run ${test_name}.test"
@@ -40,9 +42,9 @@ function clean() {
 
 
 test=tennis
-asm_path=tennis
-test_path=tennis
+asm_path=.
+test_path=.
 
 clean
-. test/test_generate.sh
+. ${TEST_PATH}/test_generate.sh
 generateAndRunTest $test $asm_path $test_path

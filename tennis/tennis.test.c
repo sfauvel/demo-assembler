@@ -5,10 +5,9 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <stdio.h>
-#include "../test/test.h"
 #include <string.h>
 
-
+#include <test.h>
 
 char* tennis_score();
 void a_score();

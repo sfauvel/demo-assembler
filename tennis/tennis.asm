@@ -1,19 +1,14 @@
 ; -----------------------------------------------------------------------------
-; A 64-bit function that returns the maximum value of its three 64-bit integer
-; arguments.  The function has signature:
+; Tennis game.
 ;
-;   int64_t maxofthree(int64_t x, int64_t y, int64_t z)
+; Return score of a tennis game according to points win by each players.
 ;
-; Note that the parameters have already been passed in rdi, rsi, and rdx.  We
-; just have to return the value in rax.
 ; -----------------------------------------------------------------------------
-        extern	printf	
-
-
-        global  start_game
-        global  a_score
-        global  b_score
-        global  tennis_score
+        
+        global  start_game      ; Start a new game. Must be call before starting to reinit variables.
+        global  tennis_score    ; Return score as a string like: 30-15.
+        global  a_score         ; Player A win a point.
+        global  b_score         ; Player B win a point.
 
         section .text
 start_game:
@@ -37,18 +32,26 @@ b_score:
 tennis_score:   
         mov rsi, score_tmp
 
+        ; Add player A score
         mov rdi, [score_a]
         call find_score_text
         call add_score
 
+        ; Add separator
         mov rax, [score_separator]
         mov [rsi], rax
         add rsi, 1
         
+        ; Add player B score
         mov rdi, [score_b]
         call find_score_text
         call add_score
       
+        ; Add end character to string
+        mov rax, 0
+        mov [rsi], rax
+
+        ; return score
         mov rax, score_tmp
         ret                             
 
@@ -88,16 +91,15 @@ if_one_letter_score:
         add rsi, 1
         ret
 
-        section   .data        
-score_tmp: resb         64
+        section   .data   
+score_0:                db      '0'             ; String to display when 0
+score_15:               db      '15'            ; String to display when 15
+score_30:               db      '30'            ; String to display when 30 
+score_45:               db      '45'            ; String to display when 45
+score_separator:        db      '-'             ; Separator between player score
 
-score_45:               db      "45", 0                   ; initial score
-score_30:               db      "30", 0                   ; initial score
-score_15:               db      "15", 0                   ; initial score
-score_0:                db      "0",  0                   ; initial score
-score_separator:        db      "-",  0                   ; initial score
+score_a:                dq      0               ; Player B points
+score_b:                dq      0               ; Player A points
 
-score_a: dq 0
-score_b: dq 0
-
-score_init: dq 0
+        section   .bss        
+score_tmp: resb         8*6                     ; Store score to build
