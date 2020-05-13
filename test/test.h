@@ -34,23 +34,17 @@ int isFailed=0;
         } \
     } while(0)
 
-#define _assertIntEq(expected, actual) \
+#define _assertNumberEq(expected, actual, message) \
     do { \
         if (!(expected == actual)) { \
             FAIL(); \
-            printf(", Expected: %d but was: %d", expected, actual); \
+            printf(message, expected, actual); \
             return; \
             } \
     } while(0)
 
-#define _assertInt64Eq(expected, actual) \
-    do { \
-        if (!(expected == actual)) { \
-            FAIL(); \
-            printf(", Expected: %ld but was: %ld", expected, actual); \
-            return; \
-        } \
-    } while(0)
+#define _assertIntEq(expected, actual) _assertNumberEq(expected, actual, ", Expected: %d but was: %d")
+#define _assertInt64Eq(expected, actual) _assertNumberEq(expected, actual, ", Expected: %ld but was: %ld")
 
 #define _assertStringEq(expected, actual) \
     do { \
