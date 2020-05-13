@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-TEST_PATH=../test
+TEST_PATH=../../test
 
 function compileAndRunTest() {
 
