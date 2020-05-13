@@ -63,6 +63,6 @@ first_smaller:
         mov rax, [first]
         ret
 
-        section .data
+        section .bss
 first:         resb    8        ; Value without value (8 bytes = 64 bits) or resq 1
 second:        resb    8        ; Value without value (4 bytes = 64 bits) or resq 1
