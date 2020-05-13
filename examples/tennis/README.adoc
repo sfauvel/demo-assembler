@@ -5,7 +5,7 @@ This project is an implemention of the link:https://codingdojo.org/kata/Tennis/[
 
 To run it, move to this folder and execute:
 ----
-. run_tennis.sh
+. run_tennis_tests.sh
 ----
 
 
