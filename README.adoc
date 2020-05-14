@@ -40,16 +40,31 @@ You can find some projects in `examples` folder.
 
 == How to
 
-=== Create a test in C
+=== A minimal test file in C
 
-Create a `.c` file like simple.test.c:
+File `minimal.test.c` is a trivial example of tests.
+There is no library used. 
+Everything is in the file.
+
+It's just to show how it could work but it's too simple for a real usage. 
+
+To launch it, execute: `. run_minimal.sh`
+
+It just compile test file using `gcc` and run it.
+
+
+=== Create a real test in C
+
+Create a `.c` file like `simple.test.c`:
 
 [source, c]
 ----
 include::howto/simple.test.c[]
 ----
 
-Script run_simple.h comile and run tests.
+Script `run_simple.sh` compile and run tests.
+Folder `test` is included as library.
+It contains file defining functions to make tests.
 
 [source, bash]
 ----
@@ -60,11 +75,21 @@ To write your own test, add all necessary includes in your test file.
 
 Modify `gcc` command to add `.o` containing implementations used in your test.
 
+`build_test_file` function in run_simple.sh, is used to replace key words (TEST and RUN_TESTS) by c code. 
+A new file is generated in target folder.
+You can open it to understand what is done.
+This is this file that is compiled and executed. 
+
+`RUN_TESTS` is replaced by a main function that call every function where `TEST` is first word in definition line.
+
 === Call assembler from a `c` file
 
-Add function definition in `.c` file (or in an `.h` file included in `.c` file).
+To execute assembler in `.c` file, we have to add function definition in `.c` file (or in an `.h` file included in `.c` file).
 
-Call this function like any other function.
+Here is an example of a function definition to add in file:
+`int maxofthree(int, int, int);`
+
+Call this function like any other function in your program.
 
 === Run all tests in a file
 

@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Replace keywords in c files to generate a real c file that could be compile and execute to play tessts.
+# Usage:
+# build_test_file [Source C File] [Target C file]
+
 function write() {
     TEXT=$1
     sed -i "s/RUN_TESTS()/${TEXT}RUN_TESTS()/g" $TEST_FILE

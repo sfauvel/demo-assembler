@@ -5,7 +5,7 @@
 * TEST is only a marker to identify test functions.
 * RUN_TESTS is another marker used to generate a main function that run all tests. 
 */
-#include "../test/test.h"
+#include <test.h>
 
 TEST void should_verify_a_simple_addition() {
     _assert(1 + 2 == 3);

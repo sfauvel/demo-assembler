@@ -15,7 +15,8 @@ mkdir target
 build_test_file ${test_path}/${test_name}.test.c target/${test_name}.test.c
 
 # Compile test
-gcc ./target/${test_name}.test.c -o target/${test_name}.test.o
+include_path=./test
+gcc ./target/${test_name}.test.c -I${include_path} -o target/${test_name}.test.o
 
 # Execute tests
 ./target/${test_name}.test.o
