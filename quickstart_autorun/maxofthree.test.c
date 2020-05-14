@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <stdio.h>
-#include "../test/test.h"
+#include <test.h>
 
 int64_t maxofthree(int64_t, int64_t, int64_t);
 

@@ -12,8 +12,8 @@ function compileAndRunTest() {
     eval $nasm_cmd
   
     # Compile test
-
-    gcc_cmd="gcc ${test_path}/${test_name}.test.c target/${test_name}.asm.o -o target/${test_name}.test.o"
+    include_path=./test
+    gcc_cmd="gcc ${test_path}/${test_name}.test.c -I${include_path} target/${test_name}.asm.o -o target/${test_name}.test.o"
     echo $gcc_cmd
     eval $gcc_cmd
     

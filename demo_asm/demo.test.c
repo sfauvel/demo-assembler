@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <stdio.h>
-#include "../test/test.h"
+#include <test.h>
 
 int64_t return_5();
 int64_t increment(int64_t);
