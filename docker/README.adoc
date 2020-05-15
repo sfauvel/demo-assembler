@@ -1,0 +1,28 @@
+= NASM with Docker
+
+`Dockerfile` in the folder `docker` provides a container (based on `alpine`) to build and run assembler with `asm` and c with `gcc`.
+
+You can build it going to `docker` folder and run command:
+`docker build --tag demo_nasm:1.0 .`
+
+To run this container, go to the root path of the project `demo_asm` and use: 
+`docker run -it -v $(pwd):/usr/app -w /usr/app -u "$(id -u):$(id -g)" demo_nasm:1.0`
+
+You will be in a bash shell where you can execute all demos of the project.
+
+For example, you can run: 
+`. run_quick_start_autorun.sh`
+
+== Explain
+
+Docker command line explanation:
+----
+docker run -it \             # Run docker in interaction mode 
+    -v $(pwd):/usr/app \     # Make current folder available as /usr/app in container
+    -w /usr/app \            # Start container in /usr/app folder
+    -u "$(id -u):$(id -g)" \ # Run container with current user
+    demo_nasm:1.0            # Run this image
+----
+
+We run container with current user to be able to remove temporary folder created inside container (`target`).
+link:https://vsupalov.com/docker-shared-permissions/[]

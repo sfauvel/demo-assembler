@@ -65,8 +65,9 @@ function compileAndRunOneTest() {
     local asm_files=$(ls target/*.asm.o)
     local include_path=./test
 
-    # Compile test
-    gcc ${test_path}/${test_name}.test.c ${asm_files} -I${include_path} -o target/${test_name}.test.o
+    # Compile
+    # -no-pie to avoid  relocation R_X86_64_32S against `.bss' can not be used when making a PIE object; recompile with -fPIC
+    gcc -no-pie ${test_path}/${test_name}.test.c ${asm_files} -I${include_path} -o target/${test_name}.test.o
     
     echo "=================="
     echo "Run ${test_name}.test"
