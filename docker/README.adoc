@@ -11,7 +11,7 @@ To run this container, go to the root path of the project `demo_asm` and use:
 You will be in a bash shell where you can execute all demos of the project.
 
 For example, you can run: 
-`. run_quick_start_autorun.sh`
+`. quick_start_autorun/run.sh`
 
 == Explain
 
