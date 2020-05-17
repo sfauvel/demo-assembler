@@ -98,9 +98,9 @@ else
     test_path=$3   
 fi
 
-echo Test filter: $test
-echo Asm path: $asm_path
-echo Test path: $test_path
+echo Test filter: "$test"
+echo Asm path: "$asm_path"
+echo Test path: "$test_path"
 
 clean
 . test/test_generate.sh
