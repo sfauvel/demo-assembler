@@ -3,6 +3,7 @@
 
 * link:https://www.nasm.us/[Nasm]
 * link:https://cs.lmu.edu/~ray/notes/nasmtutorial/[Nasm tutorial]
+* link:http://www.lacl.fr/tan/asm[]
 
 == Quick start
 
