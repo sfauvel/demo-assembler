@@ -10,18 +10,18 @@ To run it, move to this folder and execute:
 
 You should see something like that: 
 ----
-Build program for file ./tennis.test.c
+Build program for file examples/helloworld/helloworld.test.c
+=================
+Compile ASM files:
+-----------------
+Compile examples/helloworld/helloworld.asm
 ==================
-Run tennis.test
+Run helloworld.test
 ------------------
-should_found_0_0: Ok
-should_found_15_0_when_A: Ok
-should_found_0_15_when_B: Ok
-should_found_30_0_when_AA: Ok
-should_found_45_0_when_AAA: Ok
+say_hello: Success
 -------------
 PASSED
 -------------
-Tests run: 5
+Tests run: 1
 Tests failed:0
 ----
