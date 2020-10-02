@@ -1,0 +1,27 @@
+= Kata Hello World
+
+Minimal project to start.
+
+To run it, move to this folder and execute:
+----
+. run.sh
+----
+
+
+You should see something like that: 
+----
+Build program for file ./tennis.test.c
+==================
+Run tennis.test
+------------------
+should_found_0_0: Ok
+should_found_15_0_when_A: Ok
+should_found_0_15_when_B: Ok
+should_found_30_0_when_AA: Ok
+should_found_45_0_when_AAA: Ok
+-------------
+PASSED
+-------------
+Tests run: 5
+Tests failed:0
+----
