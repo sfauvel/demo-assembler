@@ -141,6 +141,22 @@ A full command:
 nasm -felf64 hello.asm && gcc callhello.c hello.o && ./a.out
 ----
 
+== How to
+
+=== Conitnuously testing
+
+Go to your project folder and run following command to execute tests every 5 seconds.
+---
+while true; do . run.sh; date; sleep 5;  done
+----
+
+We display date only to view something changing in console.
+
+To execute tests only when a file is modify, we can use `inotifywait`
+----
+while true; do inotifywait -q -r -e create,modify,delete .; . run.sh; date; done;
+----
+
 === Nasm
 
 * link:https://www.nasm.us/[]
@@ -152,6 +168,12 @@ nasm -felf64 hello.asm && gcc callhello.c hello.o && ./a.out
 In french:
 
 * link:https://openclassrooms.com/fr/courses/2288321-apprenez-a-programmer-en-assembleur-x86/2288944-votre-premier-programme[]
+
+=== inotifywait
+
+link:https://makina-corpus.com/blog/metier/2013/utiliser-inotify-pour-tester-en-continu-son-code[]
+
+
 
 ////
 == Tests
