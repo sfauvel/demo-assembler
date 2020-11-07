@@ -1,5 +1,5 @@
 ; -----------------------------------------------------------------------------
-; Hello world.
+; Code retreat 2020.
 ;
 ; -----------------------------------------------------------------------------
         
@@ -7,8 +7,7 @@
         global  next_state_for     ;
         
         section .text
-next_state_for:   
-        
+next_state_for:           
         cmp rdi, ALIVE
         jne is_dead
 
