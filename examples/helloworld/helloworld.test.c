@@ -26,8 +26,21 @@ TEST void dead_cell_with_3_neighbour_become_alive() {
     _assertIntEq(ALIVE, next_state_for(DEAD, 3));
 }
 
+TEST void alive_cell_with_0_neighbour_stay_alive() {   
+    _assertIntEq(DEAD, next_state_for(ALIVE, 0));
+}
+
 TEST void alive_cell_with_2_neighbour_stay_alive() {   
     _assertIntEq(ALIVE, next_state_for(ALIVE, 2));
 }
+
+TEST void alive_cell_with_3_neighbour_stay_alive() {   
+    _assertIntEq(ALIVE, next_state_for(ALIVE, 3));
+}
+
+TEST void alive_cell_with_4_neighbour_stay_alive() {   
+    _assertIntEq(DEAD, next_state_for(ALIVE, 4));
+}
+
 
 RUN_TESTS()

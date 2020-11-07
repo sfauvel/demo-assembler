@@ -12,12 +12,18 @@ next_state_for:
         jne is_dead
 
 is_alive:
-        mov rax, 'O'
-        ret
+        cmp rsi, 2
+        jl die
+
+        cmp rsi, 3
+        jg die
+        
+        jmp alive
 
 is_dead:
         cmp rsi, 3
         jne die
+
 alive:
         mov rax, 'O'
         ret
