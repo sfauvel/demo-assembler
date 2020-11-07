@@ -9,18 +9,18 @@
 
 #include <test.h>
 
-char next_state_for(char, int);
+char next_state_for_dead_cell(int);
 
 /*
 X = Dead
 O = Alive
 */
 TEST void dead_cell_with_0_neighbour_stay_dead() {   
-    _assertIntEq((int)'X', (int)next_state_for('X', 0));
+    _assertIntEq((int)'X', (int)next_state_for_dead_cell(0));
 }
 
 TEST void dead_cell_with_3_neighbour_become_alive() {   
-    _assertIntEq((int)'O', (int)next_state_for('X', 3));
+    _assertIntEq((int)'O', (int)next_state_for_dead_cell(3));
 }
 
 RUN_TESTS()
