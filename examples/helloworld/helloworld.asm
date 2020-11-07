@@ -17,7 +17,7 @@ is_alive:
 
         cmp rsi, 3
         jg die
-        
+
         jmp alive
 
 is_dead:
@@ -25,10 +25,13 @@ is_dead:
         jne die
 
 alive:
-        mov rax, 'O'
+        mov rax, [ALIVE]
         ret
 
 die:
-        mov rax, 'X'
+        mov rax, [DEAD]
         ret
                       
+        section   .data   
+ALIVE:                  db      'O'
+DEAD:                   db      'X'
