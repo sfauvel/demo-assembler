@@ -9,18 +9,25 @@
 
 #include <test.h>
 
-char next_state_for(int, char);
+char next_state_for(char, int);
 
 /*
 X = Dead
 O = Alive
 */
+#define DEAD 'X'
+#define ALIVE 'O'
+
 TEST void dead_cell_with_0_neighbour_stay_dead() {   
-    _assertIntEq((int)'X', (int)next_state_for(0, 'X'));
+    _assertCharEq(DEAD, next_state_for(DEAD, 0));
 }
 
 TEST void dead_cell_with_3_neighbour_become_alive() {   
-    _assertIntEq((int)'O', (int)next_state_for(3, 'X'));
+    _assertIntEq(ALIVE, next_state_for(DEAD, 3));
+}
+
+TEST void alive_cell_with_2_neighbour_stay_alive() {   
+    _assertIntEq(ALIVE, next_state_for(ALIVE, 2));
 }
 
 RUN_TESTS()

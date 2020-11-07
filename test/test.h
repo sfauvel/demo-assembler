@@ -43,6 +43,7 @@ int isFailed=0;
             } \
     } while(0)
 
+#define _assertCharEq(expected, actual) _assertNumberEq((int)expected, (int)actual, ", Expected: %d but was: %d")
 #define _assertIntEq(expected, actual) _assertNumberEq(expected, actual, ", Expected: %d but was: %d")
 #define _assertInt64Eq(expected, actual) _assertNumberEq(expected, actual, ", Expected: %ld but was: %ld")
 
