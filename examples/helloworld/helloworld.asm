@@ -7,8 +7,9 @@
         global  next_state_for     ;
         
         section .text
-next_state_for:                
-        cmp rdi, 'O'
+next_state_for:   
+        
+        cmp rdi, ALIVE
         jne is_dead
 
 is_alive:
@@ -25,13 +26,13 @@ is_dead:
         jne die
 
 alive:
-        mov rax, [ALIVE]
+        mov rax, ALIVE
         ret
 
 die:
-        mov rax, [DEAD]
+        mov rax, DEAD
         ret
                       
         section   .data   
-ALIVE:                  db      'O'
-DEAD:                   db      'X'
+ALIVE equ      'O'
+DEAD  equ      'X'
