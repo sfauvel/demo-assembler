@@ -4,11 +4,12 @@
 ; -----------------------------------------------------------------------------
         
         ; Define methods exported
-        global  next_state_for_dead_cell     ; Say hello
+        global  next_state_for     ; Say hello
         
         section .text
-next_state_for_dead_cell: 
+next_state_for: 
         cmp rdi, 3
+        mov rax, rsi
         jne die
 
 alive:
