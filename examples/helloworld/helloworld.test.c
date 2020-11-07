@@ -19,7 +19,7 @@ O = Alive
 #define ALIVE 'O'
 
 TEST void dead_cell_with_0_neighbour_stay_dead() {   
-    _assertCharEq(DEAD, next_state_for(DEAD, 0));
+    _assertIntEq(DEAD, next_state_for(DEAD, 0));
 }
 
 TEST void dead_cell_with_3_neighbour_become_alive() {   
@@ -28,7 +28,7 @@ TEST void dead_cell_with_3_neighbour_become_alive() {
 
 TEST void alive_cell_with_0_neighbour_stay_alive() {   
     _assertIntEq(DEAD, next_state_for(ALIVE, 0));
-}
+} 
 
 TEST void alive_cell_with_2_neighbour_stay_alive() {   
     _assertIntEq(ALIVE, next_state_for(ALIVE, 2));
