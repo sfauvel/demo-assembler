@@ -4,9 +4,17 @@
 ; -----------------------------------------------------------------------------
         
         ; Define methods exported
-        global  hello_world     ; Say hello
+        global  next_state_for     ; Say hello
         
         section .text
+next_state_for: 
+        
+        mov rax, 'X'
+        ret
+                
+
+
+
 hello_world:   
         mov rsi, output
 
