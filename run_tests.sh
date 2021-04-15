@@ -1,11 +1,27 @@
 #!/usr/bin/env bash
 
+function log() {
+    #LOG_VERBOSE $@
+    LOG_SILENT $@
+}
+function LOG_VERBOSE() {
+    echo === $@
+}
+function LOG_SILENT() {
+    :
+}
+
 function generateAndRunTests() {
 
     local test_filter=$1
     local asm_path=$2
     local test_path=$3
-    
+
+    log generateAndRunTests
+    log "    test_filter=$1"
+    log "    asm_path=$2"
+    log "    test_path=$3"
+   
     rm -rf target
     mkdir target
     
@@ -27,8 +43,13 @@ function compileAndRunAllTests() {
     local asm_path=$2
     local test_path=$3   
    
+    log compileAndRunAllTests
+    log "    test_filter=$1"
+    log "    asm_path=$2"
+    log "    test_path=$3" 
+
     # Compile asm
-    compileAsmFiles "$asm_path"
+    compileAsmFiles "$test_filter" "$asm_path"
 
     for f in ${test_path}/${test_filter}.test.c
     do
@@ -40,14 +61,20 @@ function compileAndRunAllTests() {
 }
 
 function compileAsmFiles() {
-    local asm_path=$1
+
+    local test_filter=$1
+    local asm_path=$2
+
+    log compileAsmFiles
+    log "    test_filter=$1"
+    log "    asm_path=$2"
 
     echo =================
     echo Compile ASM files:
     echo -----------------
 
     # Compile asm
-    for f in ${asm_path}/*.asm
+    for f in ${asm_path}/${test_filter}.asm
     do
         filename="$(basename -- $f)"
         name="${filename%.asm}"
@@ -61,6 +88,10 @@ function compileAndRunOneTest() {
 
     local test_name=$1
     local test_path=$2
+
+    log compileAndRunOneTest
+    log "    test_name=$1"
+    log "    test_path=$2"
 
     local asm_files=$(ls target/*.asm.o)
     local include_path=./test
@@ -76,6 +107,8 @@ function compileAndRunOneTest() {
 }
 
 function clean() {
+    log clean
+
     rm -rf target
     mkdir target
 }
