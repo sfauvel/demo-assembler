@@ -65,4 +65,9 @@ TEST void test_substring_from() {
     _assertStringEq("lo", string_substring_from("hello", 3));
 }
 
+TEST void test_variable() {
+    _assertIntEq(42, variable_return(42));
+}
+
+
 RUN_TESTS()
