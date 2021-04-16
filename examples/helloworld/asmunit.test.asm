@@ -5,17 +5,17 @@
 
         section .text
 main:
-    mov rbx, 0
+    call before_all
 
+    call before_each
     call test_assert_equals_fails_on_different_values
-    add rbx, rax
-    call display_result
+    call after_each
 
+    call before_each
     call test_assert_equals_success_on_same_values
-    add rbx, rax
-    call display_result
+    call after_each
 
-    mov rax, rbx
+    call after_all
     ret
 
 test_assert_equals_fails_on_different_values:

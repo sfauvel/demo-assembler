@@ -15,6 +15,22 @@ assert_equals:
     end_assert_equals:
         ret
 
+before_all:
+    mov rbx, 0
+    ret
+
+after_all:
+    mov rax, rbx
+    ret
+
+before_each:
+    ret
+
+after_each:
+    add rbx, rax
+    call display_result
+    ret
+
 display_result:
     cmp       rax, 1
     je set_fail_message
