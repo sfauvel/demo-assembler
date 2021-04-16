@@ -1,4 +1,5 @@
 
+    
     section .text
 
 assert_equals:
@@ -27,18 +28,19 @@ after_all:
 
 before_each:
     mov rax, 0
-    mov [all_tests_result], rax
+    mov [one_test_result], rax
     ret
 
 after_each:
     mov rax, [one_test_result]
     add [all_tests_result], rax
-    call display_result
+    mov rdi, [one_test_result]
+    call display_result      
     ret
 
 display_result:
-    cmp       rax, 1
-    je set_fail_message
+    cmp       rdi, 1
+    jge set_fail_message
 
     set_success_message:
         mov       rsi, message_success    ; address of string to output
@@ -58,5 +60,5 @@ display_result:
     section   .data
 message_success:  db        "."      ; note the newline at the end
 message_failure:  db        "X"      ; note the newline at the end
-all_tests_result: db         0       ; global result of execution
-one_test_result:  db         0       ; result of one test
+all_tests_result: dq         8       ; global result of execution
+one_test_result:  dq         8       ; result of one test

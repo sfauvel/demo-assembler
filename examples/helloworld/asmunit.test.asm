@@ -51,7 +51,7 @@ test_result_is_fail_when_one_assert_fails:
     mov rdi, 2
     mov rsi, 3
     call assert_equals
-
+    
     mov rdi, 2
     mov rsi, 2
     call assert_equals
@@ -68,4 +68,4 @@ fail:
     ret
 
     section   .data
-result:  db        0
+result:  dq        8
