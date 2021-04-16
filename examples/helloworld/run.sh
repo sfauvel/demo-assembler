@@ -1,10 +1,18 @@
 #!/bin/bash
 
-nasm -felf64 asmunit.test.asm -o target/asmunit.test.o
+TARGET_PATH=../../target
+function clean() {
+    rm -rf $TARGET_PATH
+    mkdir -p $TARGET_PATH
+}
+clean
 
-gcc target/asmunit.test.o -o  target/asmunit.test
+nasm -felf64 asmunit.test.asm -o $TARGET_PATH/asmunit.test.o
 
-./target/asmunit.test
+gcc $TARGET_PATH/asmunit.test.o -o $TARGET_PATH/asmunit.test
+
+sleep 0.1
+$TARGET_PATH/asmunit.test
 
 nb_fails=$?
 

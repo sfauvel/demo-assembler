@@ -3,31 +3,36 @@
 
 assert_equals:
     cmp rdi, rsi
-    jne ae_fail
+    jne assert_equals_fail
 
-    ae_success:
+    assert_equals_success:
         mov rax, 0
-        jmp end_assert_equals
+        jmp assert_equals_end
 
-    ae_fail:
+    assert_equals_fail:
         mov rax, 1
+        mov [one_test_result], rax
 
-    end_assert_equals:
+    assert_equals_end:
         ret
 
 before_all:
-    mov rbx, 0
+    mov rax, 0
+    mov [all_tests_result], rax
     ret
 
 after_all:
-    mov rax, rbx
+    mov rax, [all_tests_result]
     ret
 
 before_each:
+    mov rax, 0
+    mov [all_tests_result], rax
     ret
 
 after_each:
-    add rbx, rax
+    mov rax, [one_test_result]
+    add [all_tests_result], rax
     call display_result
     ret
 
@@ -46,10 +51,12 @@ display_result:
     output_message:
         mov       rax, 1                  ; system call for write
         mov       rdi, 1                  ; file handle 1 is stdout
-        mov       rdx, 1                 ; number of bytes
+        mov       rdx, 1                  ; number of bytes
         syscall                           ; invoke operating system to do the write
         ret
 
     section   .data
 message_success:  db        "."      ; note the newline at the end
 message_failure:  db        "X"      ; note the newline at the end
+all_tests_result: db         0       ; global result of execution
+one_test_result:  db         0       ; result of one test
