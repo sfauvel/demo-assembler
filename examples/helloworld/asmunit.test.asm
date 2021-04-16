@@ -5,39 +5,33 @@
 
         section .text
 main:
+
+    mov rbx, 0
+    call test_assert_equals_fails_on_different_values
+    add rbx, rax
+
+    call test_assert_equals_success_on_same_values
+    add rbx, rax
+       
+    mov rax, rbx
+    ret
+
+test_assert_equals_fails_on_different_values:
     mov rdi, 1
     mov rsi, 2
     call assert_equals
     mov rdi, rax                ; assert_equals return  value
 
     mov rsi, 1                  ; expected value: 1 = false   
-    cmp rdi, rsi
-    jne fail
+    call assert_equals    
+    ret
 
-    success:
-        mov rax, 0
-        jmp next
-
-    fail:
-        mov rax, 1
-        
-    next:
-        
+test_assert_equals_success_on_same_values:
     mov rdi, 2
     mov rsi, 2
     call assert_equals
     mov rdi, rax                ; assert_equals return  value
 
     mov rsi, 0                  ; expected value: 0 = true
-    cmp rdi, rsi
-    jne next_fail
-
-    next_success:
-        mov rax, 0
-        jmp end_main
-
-    next_fail:
-        mov rax, 1
-        
-    end_main:
-        ret
+    call assert_equals  
+    ret
