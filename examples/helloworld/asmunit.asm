@@ -38,6 +38,8 @@ after_each:
     call display_result      
     ret
 
+
+
 display_result:
     cmp       rdi, 1
     jge set_fail_message

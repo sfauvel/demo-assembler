@@ -7,20 +7,34 @@
 main:
     call before_all
 
-    call before_each
-    call test_assert_equals_fails_on_different_values
-    call after_each
+    
+    push test_assert_equals_fails_on_different_values
+    push test_assert_equals_success_on_same_values
+    push test_result_is_fail_when_one_assert_fails
+    push 3
+
+    ;call run_all_tests
+    ;ret
+
+run_all_tests:
+    pop rax    
+    mov [nb_tests_to_run], rax
+    cmp rax, 0
+    jle after_all_tests
 
     call before_each
-    call test_assert_equals_success_on_same_values
+    pop rax
+    call rax
     call after_each
 
-    call before_each
-    call test_result_is_fail_when_one_assert_fails
-    call after_each
+    mov rax, [nb_tests_to_run]
+    dec rax
+    push rax
+    jmp run_all_tests
 
-    call after_all    
-    ret
+    after_all_tests:
+        call after_all    
+        ret
 
 test_assert_equals_fails_on_different_values:
     mov rdi, 2
@@ -69,3 +83,4 @@ fail:
 
     section   .data
 result:  dq        8
+nb_tests_to_run:  dq         0       ; nb tests to run
