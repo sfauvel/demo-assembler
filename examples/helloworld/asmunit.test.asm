@@ -5,9 +5,6 @@
 
         section .text
 main:
-    call before_all
-
-
     push test_assert_equals_fails_on_different_values
     push test_assert_equals_success_on_same_values
     push test_result_is_fail_when_one_assert_fails
@@ -15,11 +12,7 @@ main:
 
     call run_all_tests
 
-   .remove_test_list_from_stack:
-       pop rax
-       mov rdi, 8
-       mul rdi
-       add rsp, rax
+    call remove_test_list_from_stack
 
     mov rax, [all_tests_result]
     ret

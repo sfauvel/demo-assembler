@@ -21,6 +21,8 @@ run_all_tests:
     push rbp
     mov rbp, rsp
 
+    call before_all
+
     mov rax, [rbp+16+8*0]
     push rax
 
@@ -57,6 +59,17 @@ run_all_tests:
         call after_all
         leave
         ret
+
+remove_test_list_from_stack:
+    pop rdi 
+    
+    pop rax
+    mov dx, 8
+    mul dx
+    add rsp, rax  ; move stack head
+
+    push rdi
+    ret
 
 before_all:
     mov rax, 0
