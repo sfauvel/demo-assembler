@@ -19,6 +19,8 @@ int if_lower_than_10(int);
 int if_equals_10(int);
 
 int inner_function_return_543();
+int inner_function_using_stack_return_658();
+int inner_function_using_stack_return_764();
 
 char* string_get_param(char*);
 char* string_substring_from(char*, int);
@@ -55,6 +57,14 @@ TEST void test_if_equals() {
 
 TEST void test_using_inner_function() {
     _assertIntEq(543, inner_function_return_543());
+}
+
+TEST void test_function_using_stack_with_local_stack() {
+    _assertIntEq(658, inner_function_using_stack_return_658());
+}
+
+TEST void test_function_using_stack() {
+    _assertIntEq(764, inner_function_using_stack_return_764());
 }
 
 TEST void test_pass_string_param() {
