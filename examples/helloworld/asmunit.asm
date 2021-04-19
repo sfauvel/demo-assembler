@@ -4,17 +4,17 @@
 
 assert_equals:
     cmp rdi, rsi
-    jne assert_equals_fail
+    jne .fail
 
-    assert_equals_success:
+    .success:
         mov rax, 0
-        jmp assert_equals_end
+        jmp .end
 
-    assert_equals_fail:
+    .fail:
         mov rax, 1
         mov [one_test_result], rax
 
-    assert_equals_end:
+    .end:
         ret
 
 run_all_tests:

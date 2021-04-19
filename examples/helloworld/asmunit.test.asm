@@ -15,7 +15,7 @@ main:
 
     call run_all_tests
 
-   .remove_test_list_from_stack
+   .remove_test_list_from_stack:
        pop rax
        mov rdi, 8
        mul rdi
