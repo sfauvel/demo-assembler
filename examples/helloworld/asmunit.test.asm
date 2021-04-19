@@ -13,27 +13,58 @@ main:
     push test_result_is_fail_when_one_assert_fails
     push 3
 
-    ;call run_all_tests
-    ;ret
+    call run_all_tests
+
+    .remove_test_list_from_stack
+        pop rax
+        mov rdi, 8
+        mul rdi
+        add rsp, rax 
+ 
+    mov rax, [all_tests_result]
+    ret
 
 run_all_tests:
-    pop rax    
-    mov [nb_tests_to_run], rax
-    cmp rax, 0
-    jle after_all_tests
+    push rbp           
+    mov rbp, rsp  
 
-    call before_each
-    pop rax
-    call rax
-    call after_each
-
-    mov rax, [nb_tests_to_run]
-    dec rax
+    
+    ;pop rax    
+    mov rax, [rbp+16+8*0]
     push rax
-    jmp run_all_tests
+    
+    .run_next_test
+        pop rax
+        mov [nb_tests_to_run], rax
+        cmp rax, 0
+        jle .after_all_tests
 
-    after_all_tests:
+        call before_each
+
+    .next_test_address
+        mov rax, [nb_tests_to_run] 
+        mov dx, 8
+        mul dx
+
+        add rax, rbp
+        add rax, 16
+        
+        mov rax, [rax]
+
+    .execute_next_test    
+
+        call rax
+        call after_each
+
+        mov rax, [nb_tests_to_run]
+        dec rax
+        push rax
+
+        jmp .run_next_test
+
+    .after_all_tests:
         call after_all    
+        leave
         ret
 
 test_assert_equals_fails_on_different_values:
