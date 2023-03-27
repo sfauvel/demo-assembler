@@ -168,6 +168,8 @@ while true; do inotifywait -q -r -e create,modify,delete .; . run.sh; date; done
 In french:
 
 * link:https://openclassrooms.com/fr/courses/2288321-apprenez-a-programmer-en-assembleur-x86/2288944-votre-premier-programme[]
+* link:https://leria-info.univ-angers.fr/~jeanmichel.richer/assembly/Programmation_Assembleur_x86_32_et_64_bits_sous_Linux_Ubuntu.pdf[]
+
 
 === inotifywait
 
