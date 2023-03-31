@@ -63,26 +63,6 @@ function cmd_run() {
     ${BIN_PATH}/$MAIN_FILENAME.o
 }
 
-function debug_asm() {
-    local lib_path=$1
-    local asm_path=$2
-    echo -e "Lib $lib_path \n"
-    echo -e "Asm $asm_path ___ "
-    mkdir -p ${lib_path}
-    files=""
-    for filepath in $asm_path/*.asm
-    do
-        echo $filepath
-        filename=${filepath##*/}
-        filename=${filename%%.*}
-        output_file=${lib_path}/${filename}.o
-        files="${files} ${output_file}"
-        echo " nasm $filepath -o ${output_file} -felf64"
-        nasm $filepath -o ${output_file} -felf64
-    done
-    echo $files
-}
-
 
 function cmd_debug() {
 
