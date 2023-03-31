@@ -3,15 +3,15 @@
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
 
 
-relative_path=..
-BIN_PATH=${relative_path}/target
-LIB_PATH=${relative_path}/lib
-DEBUG_PATH=${relative_path}/debug
+ROOT_PATH=..
+BIN_PATH=${ROOT_PATH}/target
+LIB_PATH=${ROOT_PATH}/lib
+DEBUG_PATH=${ROOT_PATH}/debug
 
 
 MAIN_FILENAME=${FILE}.main
 
-PROJECT_PATH=${relative_path}/${ASM_PATH}
+PROJECT_PATH=${ROOT_PATH}/${ASM_PATH}
 
 PYTHON=python3
 
@@ -32,35 +32,34 @@ function compile_asm() {
 
 }
 function cmd_test() {
-    current_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
-    pushd ${relative_path}
+    pushd ${ROOT_PATH}
     . run_tests.sh "${FILE}" ${TEST_PATH} ${TEST_PATH}
     popd
 }
 
 function cmd_test_bis() {
-    local include_test_path=${relative_path}/test
-    local include_print_path=${relative_path}/examples/print
+    local include_test_path=${ROOT_PATH}/test
+    local include_print_path=${ROOT_PATH}/examples/print
 
     local test_filter="*"
-    for f in ${relative_path}/${TEST_PATH}/${test_filter}.test.c
+    for f in ${ROOT_PATH}/${TEST_PATH}/${test_filter}.test.c
     do
         filename="$(basename -- $f)"
         test_name="${filename%.test.c}"
         # Generate test files
-        build_test_file ${relative_path}/${TEST_PATH}/${test_name}.test.c ${relative_path}/target/${test_name}.test.c
+        build_test_file ${ROOT_PATH}/${TEST_PATH}/${test_name}.test.c ${ROOT_PATH}/target/${test_name}.test.c
       
-        local asm_files=$(compile_asm $LIB_PATH ${relative_path}/${TEST_PATH}) 
-        gcc -no-pie ${relative_path}/target/${test_name}.test.c ${asm_files} -I${include_test_path} -I${include_print_path} -o ${relative_path}/target/${test_name}.test.o
+        local asm_files=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
+        gcc -no-pie ${ROOT_PATH}/target/${test_name}.test.c ${asm_files} -I${include_test_path} -I${include_print_path} -o ${ROOT_PATH}/target/${test_name}.test.o
  
-        ${relative_path}/target/${test_name}.test.o
+        ${ROOT_PATH}/target/${test_name}.test.o
     done
 }
 
 function cmd_run() {
-    object_files=$(compile_asm $LIB_PATH ${relative_path}/${TEST_PATH}) 
+    object_files=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
 
-    gcc -I. -no-pie ${relative_path}/${TEST_PATH}/$MAIN_FILENAME.c $object_files -o ${BIN_PATH}/$MAIN_FILENAME.o
+    gcc -I. -no-pie ${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c $object_files -o ${BIN_PATH}/$MAIN_FILENAME.o
     ${BIN_PATH}/$MAIN_FILENAME.o
 }
 
@@ -95,23 +94,22 @@ function cmd_debug() {
         $PYTHON debug.py $PROJECT_PATH $filename $DEBUG_PATH
     done
 
+    # print.o and debug.o need to be compiled
     object_files="$LIB_PATH/print.o $LIB_PATH/debug.o "
     if [[ ! -f $LIB_PATH/print.o ]]; then
         echo "Recompiled print.o"
-        compile_asm ${LIB_PATH} ${relative_path}/examples/print
-        #pushd ${relative_path}/print; ./make_print.sh; popd
+        compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/print
+        #pushd ${ROOT_PATH}/print; ./make_print.sh; popd
     fi
     if [[ ! -f $LIB_PATH/debug.o ]]; then
         echo "Recompiled debug.o"
-        compile_asm ${LIB_PATH} ${relative_path}/examples/debug
-        #pushd ${relative_path}/debug; ./make_debug.sh; popd
+        compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/debug
+        #pushd ${ROOT_PATH}/debug; ./make_debug.sh; popd
     fi
 
-    # print.o and debug.o need to be compiled
     object_files+=$(compile_asm $LIB_PATH $DEBUG_PATH) 
-     
     echo $object_files 
-    gcc -I. -no-pie ${relative_path}/${TEST_PATH}/$MAIN_FILENAME.c $object_files -o ${BIN_PATH}/$MAIN_FILENAME.o    
+    gcc -I. -no-pie ${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c $object_files -o ${BIN_PATH}/$MAIN_FILENAME.o    
     echo "${BIN_PATH}/$MAIN_FILENAME.o"
     ${BIN_PATH}/$MAIN_FILENAME.o
 }
@@ -127,7 +125,7 @@ help() {
 
 
 pushd $CURRENT_DIR
-. ${relative_path}/test/test_generate.sh
+. ${ROOT_PATH}/test/test_generate.sh
 
 USE_CASE=cmd_$1
 COMMIT_COUNTER=0
