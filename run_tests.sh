@@ -56,7 +56,7 @@ function compileAndRunAllTests() {
         filename="$(basename -- $f)"
         name="${filename%.test.c}"
         
-        compileAndRunOneTest "$name" "$test_path"
+        compileAndRunOneTest "$name" "$asm_path" "$test_path"
     done
 }
 
@@ -87,18 +87,22 @@ function compileAsmFiles() {
 function compileAndRunOneTest() {
 
     local test_name=$1
-    local test_path=$2
+    local include_path=$2
+    local test_path=$3
 
     log compileAndRunOneTest
-    log "    test_name=$1"
-    log "    test_path=$2"
+    log "    test_name   =$1"
+    log "    include_path=$2"
+    log "    test_path   =$3"
 
     local asm_files=$(ls target/*.asm.o)
-    local include_path=./test
+    local include_test_path=./test
 
     # Compile
     # -no-pie to avoid  relocation R_X86_64_32S against `.bss' can not be used when making a PIE object; recompile with -fPIC
-    gcc -no-pie ${test_path}/${test_name}.test.c ${asm_files} -I${include_path} -o target/${test_name}.test.o
+
+    echo "gcc -no-pie ${test_path}/${test_name}.test.c ${asm_files} -I${test_path} -I${include_path} -o target/${test_name}.test.o"
+    gcc -no-pie ${test_path}/${test_name}.test.c ${asm_files} -I${include_test_path} -I${include_path} -o target/${test_name}.test.o
     
     echo "=================="
     echo "Run ${test_name}.test"

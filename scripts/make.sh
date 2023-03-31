@@ -23,7 +23,7 @@ function compile_asm() {
     for filepath in $asm_path/*.asm
     do
         filename=${filepath##*/}
-        filename=${filename%.*}
+        filename=${filename%%.*}
         output_file=${lib_path}/${filename}.o
         nasm $filepath -o ${output_file} -felf64
 
@@ -40,6 +40,7 @@ function cmd_test() {
 
 function cmd_test_bis() {
     local include_test_path=${relative_path}/test
+    local include_print_path=${relative_path}/examples/print
 
     local test_filter="*"
     for f in ${relative_path}/${TEST_PATH}/${test_filter}.test.c
@@ -48,9 +49,9 @@ function cmd_test_bis() {
         test_name="${filename%.test.c}"
         # Generate test files
         build_test_file ${relative_path}/${TEST_PATH}/${test_name}.test.c ${relative_path}/target/${test_name}.test.c
+      
         local asm_files=$(compile_asm $LIB_PATH ${relative_path}/${TEST_PATH}) 
-
-        gcc -no-pie ${relative_path}/target/${test_name}.test.c ${asm_files} -I${include_test_path} -o ${relative_path}/target/${test_name}.test.o
+        gcc -no-pie ${relative_path}/target/${test_name}.test.c ${asm_files} -I${include_test_path} -I${include_print_path} -o ${relative_path}/target/${test_name}.test.o
  
         ${relative_path}/target/${test_name}.test.o
     done
@@ -97,11 +98,6 @@ function cmd_debug() {
     object_files="$LIB_PATH/print.o $LIB_PATH/debug.o "
     if [[ ! -f $LIB_PATH/print.o ]]; then
         echo "Recompiled print.o"
-    for filename in ${relative_path}/examples/print/*.asm
-    do
-        echo XXXXXXXXXXXXXXXXXx
-        echo $filename
-    done
         compile_asm ${LIB_PATH} ${relative_path}/examples/print
         #pushd ${relative_path}/print; ./make_print.sh; popd
     fi
