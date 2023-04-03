@@ -31,13 +31,8 @@ function compile_asm() {
     done
 
 }
-function cmd_test() {
-    pushd ${ROOT_PATH}
-    . run_tests.sh "${FILE}" ${TEST_PATH} ${TEST_PATH}
-    popd
-}
 
-function cmd_test_bis() {
+function cmd_test() {
     local include_test_path=${ROOT_PATH}/test
     local include_print_path=${ROOT_PATH}/examples/print
 
@@ -71,7 +66,7 @@ function cmd_debug() {
     do
         filename=${filepath##*/}
         filename=${filename%%.*}
-        $PYTHON debug.py $PROJECT_PATH $filename $DEBUG_PATH
+        $PYTHON generate_debug.py $PROJECT_PATH $filename $DEBUG_PATH
     done
 
     # print.o and debug.o need to be compiled
@@ -88,10 +83,10 @@ function cmd_debug() {
     fi
 
     object_files+=$(compile_asm $LIB_PATH $DEBUG_PATH) 
-    echo $object_files 
     gcc -I. -no-pie ${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c $object_files -o ${BIN_PATH}/$MAIN_FILENAME.o    
-    echo "${BIN_PATH}/$MAIN_FILENAME.o"
     ${BIN_PATH}/$MAIN_FILENAME.o
+
+    $PYTHON format_debug.py
 }
 
 

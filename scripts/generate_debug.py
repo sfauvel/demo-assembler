@@ -48,9 +48,9 @@ def copy_asm():
         output.write(f"        section   .data\n")
         output.write(f"space      db       ' ', 0;\n")
         output.write(f"table      db       '|====', 0;\n")
-        output.write(f"cell       db       ' a| ', 0;\n")
+        output.write(f"cell       db       '|', 0;\n")
         output.write(f"new_line   db       10, 0;\n")
-        output.write(f"next_line  db       ' +',10, 0;\n")
+        output.write(f"next_line  db       ',',0;\n")
             
         for line in instructions:
             formatted_line = line.split(";")[0].strip()#.replace(':','\\:')
