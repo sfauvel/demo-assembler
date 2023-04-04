@@ -4,6 +4,7 @@
 
 # Add instructions between each lines to trace register values
 import os
+import re
 
 
 
@@ -21,13 +22,13 @@ def copy_asm():
         counter = 0
         instructions = []
         for line in lines:
-            if ("section .text" in line):
+            if (re.search('section +\.text', line)):
                 output.write(macro_code())
                 procedure_part = True
             
-            if ("section   .data" in line):
+            if (re.search('section +\.data', line)):
                 procedure_part = False
-            if ("section   .bss" in line):
+            if (re.search('section +\.bss', line)):
                 procedure_part = False
 
             output.write(line)
@@ -38,7 +39,7 @@ def copy_asm():
                    
                
                     instructions.append(line.strip())
-                    output.write(f"        DISPLAY_CMD instruction_{counter}\n")
+                    output.write(f"        DISPLAY_CMD instruction_{DEMO}_{counter}\n")
                     counter += 1
             
         output.write(debug_code())
@@ -54,7 +55,7 @@ def copy_asm():
             
         for line in instructions:
             formatted_line = line.split(";")[0].strip()#.replace(':','\\:')
-            output.write(f"instruction_{counter}  db       '{formatted_line}',0;\n")
+            output.write(f"instruction_{DEMO}_{counter}  db       '{formatted_line}',0;\n")
             counter += 1
             
             
@@ -66,6 +67,7 @@ def macro_code():
         extern print_text
         extern print_number
         extern display_stack
+        extern display_flags
 
         %macro DISPLAY_CMD 1
                 
@@ -78,6 +80,8 @@ def macro_code():
                 push r9
                 push r10
                 push r11
+                pushfq
+                
                 
                 mov rdi, cell
                 call print_text
@@ -103,9 +107,16 @@ def macro_code():
                 mov rdi, rax
                 call display_stack
                 
+                
+                mov rdi, cell
+                call print_text
+                mov rsi, [rsp]
+                call display_flags
+                
                 mov rdi, new_line
                 call print_text
                 
+                popfq
                 pop r11
                 pop r10
                 pop r9
