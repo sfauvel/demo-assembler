@@ -4,9 +4,9 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
 
 
 ROOT_PATH=..
-BIN_PATH=${ROOT_PATH}/target
-LIB_PATH=${ROOT_PATH}/lib
-DEBUG_PATH=${ROOT_PATH}/debug
+BIN_PATH=${ROOT_PATH}/work/target
+LIB_PATH=${ROOT_PATH}/work/lib
+DEBUG_PATH=${ROOT_PATH}/work/debug
 
 
 MAIN_FILENAME=${FILE}.main
@@ -14,6 +14,14 @@ MAIN_FILENAME=${FILE}.main
 PROJECT_PATH=${ROOT_PATH}/${ASM_PATH}
 
 PYTHON=python3
+
+function clean() {
+    rm -rf ${BIN_PATH}
+    rm -rf ${LIB_PATH}
+    rm -rf ${DEBUG_PATH}
+
+    mkdir -p ${BIN_PATH}
+}
 
 function compile_asm() {
     local lib_path=$1
@@ -42,12 +50,12 @@ function cmd_test() {
         filename="$(basename -- $f)"
         test_name="${filename%.test.c}"
         # Generate test files
-        build_test_file ${ROOT_PATH}/${TEST_PATH}/${test_name}.test.c ${ROOT_PATH}/target/${test_name}.test.c
+        build_test_file ${ROOT_PATH}/${TEST_PATH}/${test_name}.test.c ${BIN_PATH}/${test_name}.test.c
       
         local asm_files=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
-        gcc -no-pie ${ROOT_PATH}/target/${test_name}.test.c ${asm_files} -I${include_test_path} -I${include_print_path} -o ${ROOT_PATH}/target/${test_name}.test.o
+        gcc -no-pie ${BIN_PATH}/${test_name}.test.c ${asm_files} -I${include_test_path} -I${include_print_path} -o ${BIN_PATH}/${test_name}.test.o
  
-        ${ROOT_PATH}/target/${test_name}.test.o
+        ${BIN_PATH}/${test_name}.test.o
     done
 }
 
@@ -107,7 +115,7 @@ COMMIT_COUNTER=0
 if [[ -z $1 || -z $(command -v $USE_CASE) ]]; then
     help
 else
-    mkdir -p ${BIN_PATH}
+    clean
     $USE_CASE
 fi
 popd

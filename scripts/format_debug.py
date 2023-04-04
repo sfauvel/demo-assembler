@@ -44,10 +44,11 @@ xxx = [
 ]    
 
 
+DEBUG_PATH="../work/debug"
 if __name__ == "__main__":
     table = read_data()
 
-    output_doc = "../debug/format.adoc"
+    output_doc = f"{DEBUG_PATH}/format.adoc"
     with open(output_doc, "w") as file:
         doc = format_table(table)
         file.write(doc)
