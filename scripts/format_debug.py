@@ -7,7 +7,6 @@ def read_data():
     lines = content.split("\n")
     separator="|"
     table = [line.split(separator) for line in lines if len(line.split(separator)) == 13]
-    print(table)
     
     return table
 

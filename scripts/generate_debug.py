@@ -89,6 +89,7 @@ def macro_code():
                 mov rdi, %1
                 call print_text
                 
+                PRINT_REGISTER 8*9
                 PRINT_REGISTER 8*8
                 PRINT_REGISTER 8*7
                 PRINT_REGISTER 8*6
@@ -97,7 +98,6 @@ def macro_code():
                 PRINT_REGISTER 8*3
                 PRINT_REGISTER 8*2
                 PRINT_REGISTER 8*1
-                PRINT_REGISTER 8*0
                 
                 
                 mov rdi, cell
