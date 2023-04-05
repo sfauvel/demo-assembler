@@ -67,8 +67,15 @@ function cmd_run() {
 }
 
 
-function cmd_debug() {
+function compile_lib() {
+    local lib=$1
+    if [[ ! -f $LIB_PATH/$lib.o ]]; then
+        echo "Recompiled $lib"
+        compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/$lib
+    fi
+}
 
+function cmd_debug() {
 
     for filepath in $PROJECT_PATH/*.asm
     do
@@ -79,16 +86,8 @@ function cmd_debug() {
 
     # print.o and debug.o need to be compiled
     object_files="$LIB_PATH/print.o $LIB_PATH/debug.o "
-    if [[ ! -f $LIB_PATH/print.o ]]; then
-        echo "Recompiled print.o"
-        compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/print
-        #pushd ${ROOT_PATH}/print; ./make_print.sh; popd
-    fi
-    if [[ ! -f $LIB_PATH/debug.o ]]; then
-        echo "Recompiled debug.o"
-        compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/debug
-        #pushd ${ROOT_PATH}/debug; ./make_debug.sh; popd
-    fi
+    compile_lib print
+    compile_lib debug
 
     DEBUG_FILE="$DEBUG_PATH/debug.data"
     object_files+=$(compile_asm $LIB_PATH $DEBUG_PATH) 
