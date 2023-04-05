@@ -10,6 +10,7 @@ DEBUG_PATH=${ROOT_PATH}/work/debug
 
 
 MAIN_FILENAME=${FILE}.main
+DEBUG_FILENAME=${FILE}.debug
 
 PROJECT_PATH=${ROOT_PATH}/${ASM_PATH}
 
@@ -77,6 +78,8 @@ function compile_lib() {
 
 function cmd_debug() {
 
+    debug_file_to_run=${1:-"$DEBUG_FILENAME"}
+
     for filepath in $PROJECT_PATH/*.asm
     do
         filename=${filepath##*/}
@@ -89,12 +92,12 @@ function cmd_debug() {
     compile_lib print
     compile_lib debug
 
-    DEBUG_FILE="$DEBUG_PATH/debug.data"
+    DEBUG_DATA_FILE="$DEBUG_PATH/debug.data"
     object_files+=$(compile_asm $LIB_PATH $DEBUG_PATH) 
-    gcc -I. -no-pie ${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c $object_files -o ${BIN_PATH}/$MAIN_FILENAME.o    
-    ${BIN_PATH}/$MAIN_FILENAME.o $DEBUG_FILE
+    gcc -I. -no-pie ${ROOT_PATH}/${TEST_PATH}/$debug_file_to_run.c $object_files -o ${BIN_PATH}/$debug_file_to_run.o    
+    ${BIN_PATH}/$debug_file_to_run.o $DEBUG_DATA_FILE
 
-    $PYTHON format_debug.py $DEBUG_FILE
+    $PYTHON format_debug.py $DEBUG_DATA_FILE
 }
 
 
@@ -116,6 +119,6 @@ if [[ -z $1 || -z $(command -v $USE_CASE) ]]; then
     help
 else
     clean
-    $USE_CASE
+    $USE_CASE "${@:2}"
 fi
 popd
