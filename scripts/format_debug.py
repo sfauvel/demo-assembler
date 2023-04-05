@@ -1,7 +1,7 @@
+import sys
 
-
-def read_data():
-    with open("tmp.adoc", "r") as file:
+def read_data(data_filepath):
+    with open(data_filepath, "r") as file:
         content = file.read()
     
     lines = content.split("\n")
@@ -73,7 +73,8 @@ FLAGS= [
 
 DEBUG_PATH="../work/debug"
 if __name__ == "__main__":
-    table = read_data()
+    debug_file = sys.argv[1]
+    table = read_data(debug_file)
 
     output_doc = f"{DEBUG_PATH}/format.adoc"
     with open(output_doc, "w") as file:

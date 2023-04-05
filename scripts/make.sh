@@ -90,11 +90,12 @@ function cmd_debug() {
         #pushd ${ROOT_PATH}/debug; ./make_debug.sh; popd
     fi
 
+    DEBUG_FILE="$DEBUG_PATH/debug.data"
     object_files+=$(compile_asm $LIB_PATH $DEBUG_PATH) 
     gcc -I. -no-pie ${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c $object_files -o ${BIN_PATH}/$MAIN_FILENAME.o    
-    ${BIN_PATH}/$MAIN_FILENAME.o
+    ${BIN_PATH}/$MAIN_FILENAME.o $DEBUG_FILE
 
-    $PYTHON format_debug.py
+    $PYTHON format_debug.py $DEBUG_FILE
 }
 
 

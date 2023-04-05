@@ -75,8 +75,10 @@ int main(int argc, char **argv) {
         printf("%s", buffer);
         printf("======================");
         */
-        char* filename = "tmp.adoc";
-        StdOutSwitch stdout_switch =  change_stdout(filename);
+
+        char* debug_file = argv[1];
+        printf("File %s\n", debug_file);
+        StdOutSwitch stdout_switch =  change_stdout(debug_file);
 
         int result = add_5(7);
         printf("Result:%d\n", result);
