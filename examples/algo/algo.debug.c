@@ -10,23 +10,6 @@ int add_5(int);
 
 
 
-void read_from_file(char* filename, char* buffer, int max_size) {
-    FILE *file = fopen(filename, "r");
- 
-    if(file==NULL){
-        printf("Erreur lors de l'ouverture d'un fichier");
-        exit(1);
-    }
- 
-    int char_in_buffer = 0;
-    while( fgets(buffer+char_in_buffer, max_size-char_in_buffer, file) != NULL) {
-        char_in_buffer = strlen(buffer);
-        if (char_in_buffer + 1 >= max_size) break;
-    }
-
-    fclose(file);
-}
-
 struct StdOutSwitch {
     int saved_stdout;
     int new_stdout;
@@ -64,7 +47,7 @@ int main(int argc, char **argv) {
     }*/
     {
       /*
-       char buffer[1024] = {0};
+        char buffer[1024] = {0};
         printf("======================");
         StdOutSwitch stdout_switch = change_stdout(buffer);
 
