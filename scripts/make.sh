@@ -78,7 +78,8 @@ function compile_lib() {
 
 function cmd_debug() {
 
-    debug_file_to_run=${1:-"$DEBUG_FILENAME"}
+    #debug_file_to_run=${1:-"$DEBUG_FILENAME"}
+    debug_file_to_run=$MAIN_FILENAME.debug
 
     for filepath in $PROJECT_PATH/*.asm
     do
@@ -92,14 +93,20 @@ function cmd_debug() {
     compile_lib print
     compile_lib debug
 
+    generate_debug_file
+
     DEBUG_DATA_FILE="$DEBUG_PATH/debug.data"
     object_files+=$(compile_asm $LIB_PATH $DEBUG_PATH) 
-    gcc -I. -no-pie ${ROOT_PATH}/${TEST_PATH}/$debug_file_to_run.c $object_files -o ${BIN_PATH}/$debug_file_to_run.o    
+    #gcc -I. -no-pie ${ROOT_PATH}/${TEST_PATH}/$debug_file_to_run.c $object_files -o ${BIN_PATH}/$debug_file_to_run.o    
+    gcc -I. -no-pie ${DEBUG_PATH}/$debug_file_to_run.c $object_files -o ${BIN_PATH}/$debug_file_to_run.o    
     ${BIN_PATH}/$debug_file_to_run.o $DEBUG_DATA_FILE
 
     $PYTHON format_debug.py $DEBUG_DATA_FILE
 }
 
+function generate_debug_file() {
+    $PYTHON generate_debug_c_file.py $PROJECT_PATH $MAIN_FILENAME $DEBUG_PATH
+}
 
 
 help() {
