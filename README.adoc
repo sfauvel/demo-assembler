@@ -75,9 +75,9 @@ To write your own test, add all necessary includes in your test file.
 
 Modify `gcc` command to add `.o` containing implementations used in your test.
 
-`build_test_file` function in run_simple.sh, is used to replace key words (TEST and RUN_TESTS) by c code. 
+`build_test_file` function in run_simple.sh, is used to replace key words (TEST and RUN_TESTS) by `c` code. 
 A new file is generated in target folder.
-You can open it to understand what is done.
+You can open it to understand what it does.
 This is this file that is compiled and executed. 
 
 `RUN_TESTS` is replaced by a main function that call every function where `TEST` is first word in definition line.
@@ -93,12 +93,12 @@ Call this function like any other function in your program.
 
 === Run all tests in a file
 
-To not have to enumarate all tests, we can use a script (test_generate.sh) to add main method with all tests.
+To not have to enumerate all tests, we can use a script (`test_generate.sh`) to add main method with all tests.
 
-Script read .c file and identify test by line starting by `TEST`.
+Script read `.c` file and identify test by line starting by `TEST`.
 
-All tests found are used to generate en main method to run them.
-Main method is write before `RUN_TESTS()` text in .c file.
+All tests found are used to generate a main method that run them.
+Main method is write before `RUN_TESTS()` text in `.c` file.
 
 == Explain
 

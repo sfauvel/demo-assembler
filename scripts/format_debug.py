@@ -1,3 +1,4 @@
+import os
 import sys
 
 def read_data(data_filepath):
@@ -12,29 +13,35 @@ def read_data(data_filepath):
 
 def format_table(table):
     output = "|====\n"
-    output += "| " + "| ".join(xxx) + "\n\n"
+    output += "| " + "| ".join(memory_registers) + "\n\n"
+    
     for nb_line in range(len(table)):
-        output += f"| {table[nb_line][1]}"
-        for index,register in enumerate(xxx[1:]):
-            register_index = index + 2
-            output += "| "
-            if (nb_line == 0 or  table[nb_line][register_index] !=  table[nb_line-1][register_index] ):
-                value = table[nb_line][register_index]
-                if register == "RSP":
-                    output += " +\n".join(value.split(","))
-                elif register == "FLAGS":
-                    last_value = table[nb_line-1][register_index]
-                    for flag_index,flag in enumerate(FLAGS):
-                        if value[flag_index] != last_value[flag_index]:
-                            output += f"{flag}={value[flag_index]}&nbsp;"
-                else:
-                    output += f"{value.strip()} "
-                
+        output += f"| {table[nb_line][1]} |"
+        
+        output += "| ".join([format_register(register, table[nb_line][index+2], table[nb_line-1][index+2]) \
+            if value_has_changed(table, nb_line, index+2) else "" \
+            for (index,register) in enumerate(memory_registers[1:])])
+        
         output += "\n"
     output += "|===="
     return output
+
+def format_register(register, value, last_value):
     
-xxx = [
+    if register == "RSP":
+        return " +\n".join(value.split(","))
+    
+    if register == "FLAGS":
+        return "".join([f"{flag}={value[flag_index]}&nbsp;" \
+            for (flag_index,flag) in enumerate(FLAGS) \
+                if value[flag_index] != last_value[flag_index]])
+
+    return f"{value.strip()} "
+
+def value_has_changed(table, nb_line, register_index):
+    return nb_line == 0 or table[nb_line][register_index] != table[nb_line-1][register_index]
+    
+memory_registers = [
     "INSTRUCTION",
     "RAX",
     "RCX",
@@ -81,4 +88,5 @@ if __name__ == "__main__":
         doc = format_table(table)
         file.write(doc)
     
-    print(f"File generated: {output_doc}")
+    print(f"File generated: {os.path.abspath(output_doc)}")
+    

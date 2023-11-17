@@ -117,6 +117,7 @@ function clean() {
     mkdir target
 }
 
+# Get parameters or set default values
 if [[ -z $1 ]]; then
     test="*"
 else
