@@ -9,7 +9,7 @@ clean
 
 nasm -felf64 asmunit.test.asm -o $TARGET_PATH/asmunit.test.o
 
-gcc $TARGET_PATH/asmunit.test.o -o $TARGET_PATH/asmunit.test
+gcc -no-pie $TARGET_PATH/asmunit.test.o -o $TARGET_PATH/asmunit.test
 
 sleep 0.1
 $TARGET_PATH/asmunit.test
