@@ -15,7 +15,8 @@ def copy_asm():
     with open(f"{PROJECT_PATH}/{DEMO}.asm", "r") as input:
         for line in input:
             # print(line.rstrip())
-            lines.append(line)
+            if not line.strip().startswith(";"):
+                lines.append(line)
 
     os.makedirs(DEBUG_PATH, exist_ok=True )
     with open(f"{DEBUG_PATH}/{DEMO}.debug.asm", "w") as output:
@@ -37,7 +38,6 @@ def copy_asm():
                     if line.startswith("algo_to_debug:"):
                         output.write(f"        call begin_table\n")
                    
-               
                     instructions.append(line.strip())
                     output.write(f"        DISPLAY_CMD instruction_{DEMO}_{counter}\n")
                     counter += 1
@@ -54,7 +54,7 @@ def copy_asm():
         output.write(f"next_line  db       ',',0;\n")
             
         for line in instructions:
-            formatted_line = line.split(";")[0].strip()#.replace(':','\\:')
+            formatted_line = line.split(";")[0].strip().replace("'","\"")#.replace(':','\\:')
             output.write(f"instruction_{DEMO}_{counter}  db       '{formatted_line}',0;\n")
             counter += 1
             
@@ -72,6 +72,7 @@ def macro_code():
         %macro DISPLAY_CMD 1
                 
                 push rax
+                push rbx
                 push rcx
                 push rdi   
                 push rsi
@@ -89,6 +90,7 @@ def macro_code():
                 mov rdi, %1
                 call print_text
                 
+                PRINT_REGISTER 8*10
                 PRINT_REGISTER 8*9
                 PRINT_REGISTER 8*8
                 PRINT_REGISTER 8*7
@@ -103,7 +105,7 @@ def macro_code():
                 mov rdi, cell
                 call print_text
                 mov rax, rsp
-                add rax, 8*9
+                add rax, 8*11 ; 8*Number of value pushed and printed in this macro
                 mov rdi, rax
                 call display_stack
                 
@@ -125,6 +127,7 @@ def macro_code():
                 pop rsi
                 pop rdi
                 pop rcx
+                pop rbx
                 pop rax
 
         %endmacro

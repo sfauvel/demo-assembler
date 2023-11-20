@@ -1,24 +1,27 @@
 import os
 import sys
+import textwrap
 
 def read_data(data_filepath):
     with open(data_filepath, "r") as file:
         content = file.read()
     
     lines = content.split("\n")
+
     separator="|"
-    table = [line.split(separator) for line in lines if len(line.split(separator)) == 13]
+    table = [line.split(separator) for line in lines if len(line.split(separator)) == len(memory_registers) + 1]
     
     return table
 
 def format_table(table):
+     
     output = "|====\n"
-    output += "| " + "| ".join(memory_registers) + "\n\n"
+    output += "| " + "| ".join([register.strip() + (12-len(register))*"{nbsp}" for register in memory_registers]) + "\n\n"
     
     for nb_line in range(len(table)):
-        output += f"| {table[nb_line][1]} |"
+        output += f"| {table[nb_line][1]} a|"
         
-        output += "| ".join([format_register(register, table[nb_line][index+2], table[nb_line-1][index+2]) \
+        output += " a| ".join([format_register(register, table[nb_line][index+2], table[nb_line-1][index+2]) \
             if value_has_changed(table, nb_line, index+2) else "" \
             for (index,register) in enumerate(memory_registers[1:])])
         
@@ -29,14 +32,46 @@ def format_table(table):
 def format_register(register, value, last_value):
     
     if register == "RSP":
-        return " +\n".join(value.split(","))
+        return format_stack_value(value.split(","))
+        #return "\n".join([format_stack_value(simple_value) for simple_value in value.split(",")])
     
     if register == "FLAGS":
         return "".join([f"{flag}={value[flag_index]}&nbsp;" \
             for (flag_index,flag) in enumerate(FLAGS) \
                 if value[flag_index] != last_value[flag_index]])
 
-    return f"{value.strip()} "
+    formatted_value = format_register_value(value)
+    return f"{formatted_value} "
+
+def format_stack_value(values):
+    result = ""
+    for i in range(0, len(values)):
+        formatted_value = format_register_value(values[i])
+        if i < len(values)-1:
+            if formatted_value == values[i].strip():
+                formatted_value += " +"
+            formatted_value += "\n"
+            
+        result += formatted_value
+        
+
+        
+    return result
+    
+def format_register_value(value):
+    formatted_value = value.strip()
+    if len(formatted_value) > 6:
+        formatted_value = textwrap.dedent(f"""\
+            [%collapsible] 
+            .{formatted_value[-4:]}
+            ====
+            {formatted_value}
+            ====
+        """)
+        
+    return formatted_value
+
+
 
 def value_has_changed(table, nb_line, register_index):
     return nb_line == 0 or table[nb_line][register_index] != table[nb_line-1][register_index]
@@ -44,6 +79,7 @@ def value_has_changed(table, nb_line, register_index):
 memory_registers = [
     "INSTRUCTION",
     "RAX",
+    "RBX",
     "RCX",
     "RDI",
     "RSI",
