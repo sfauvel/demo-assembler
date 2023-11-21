@@ -4,13 +4,13 @@
 
 #include <stdio.h>
 #include <inttypes.h>
-#include <stdio.h>
 #include <string.h>
 
-char* tennis_score();
-void a_score();
-void b_score();
-void start_game();
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+#include <tennis.h>
 
 int main(int argc, char **argv) {
     

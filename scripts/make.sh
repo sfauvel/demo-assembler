@@ -44,6 +44,7 @@ function compile_asm() {
 function cmd_test() {
     local include_test_path=${ROOT_PATH}/test
     local include_print_path=${ROOT_PATH}/examples/print
+    local include_project_path=${PROJECT_PATH}
 
     local test_filter="*"
     for f in ${ROOT_PATH}/${TEST_PATH}/${test_filter}.test.c
@@ -54,16 +55,17 @@ function cmd_test() {
         build_test_file ${ROOT_PATH}/${TEST_PATH}/${test_name}.test.c ${BIN_PATH}/${test_name}.test.c
       
         local asm_files=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
-        gcc -no-pie ${BIN_PATH}/${test_name}.test.c ${asm_files} -I${include_test_path} -I${include_print_path} -o ${BIN_PATH}/${test_name}.test.o
+        gcc -no-pie ${BIN_PATH}/${test_name}.test.c ${asm_files} -I${include_project_path} -I${include_test_path} -I${include_print_path} -o ${BIN_PATH}/${test_name}.test.o
  
         ${BIN_PATH}/${test_name}.test.o
     done
 }
 
 function cmd_run() {
+    local include_project_path=${PROJECT_PATH}
     object_files=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
 
-    gcc -I. -no-pie ${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c $object_files -o ${BIN_PATH}/$MAIN_FILENAME.o
+    gcc -I. -no-pie ${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c $object_files -I${include_project_path} -o ${BIN_PATH}/$MAIN_FILENAME.o
     ${BIN_PATH}/$MAIN_FILENAME.o
 }
 
@@ -80,6 +82,7 @@ function cmd_debug() {
 
     #debug_file_to_run=${1:-"$DEBUG_FILENAME"}
     debug_file_to_run=$MAIN_FILENAME.debug
+    local include_project_path=${PROJECT_PATH}
 
     for filepath in $PROJECT_PATH/*.asm
     do
@@ -98,7 +101,7 @@ function cmd_debug() {
     DEBUG_DATA_FILE="$DEBUG_PATH/debug.data"
     object_files+=$(compile_asm $LIB_PATH $DEBUG_PATH) 
     #gcc -I. -no-pie ${ROOT_PATH}/${TEST_PATH}/$debug_file_to_run.c $object_files -o ${BIN_PATH}/$debug_file_to_run.o    
-    gcc -I. -no-pie ${DEBUG_PATH}/$debug_file_to_run.c $object_files -o ${BIN_PATH}/$debug_file_to_run.o    
+    gcc -I. -no-pie ${DEBUG_PATH}/$debug_file_to_run.c $object_files -I${include_project_path} -o ${BIN_PATH}/$debug_file_to_run.o    
     ${BIN_PATH}/$debug_file_to_run.o $DEBUG_DATA_FILE
 
     $PYTHON format_debug.py $DEBUG_DATA_FILE

@@ -9,10 +9,7 @@
 
 #include <test.h>
 
-char* tennis_score();
-void a_score();
-void b_score();
-void start_game();
+#include <tennis.h>
 
 
 TEST void should_found_0_0() {
