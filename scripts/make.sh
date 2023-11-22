@@ -42,6 +42,7 @@ function compile_asm() {
 }
 
 function cmd_test() {
+    clean
     local include_test_path=${ROOT_PATH}/test
     local include_print_path=${ROOT_PATH}/examples/print
     local include_project_path=${PROJECT_PATH}
@@ -62,6 +63,7 @@ function cmd_test() {
 }
 
 function cmd_run() {
+    clean
     local include_project_path=${PROJECT_PATH}
     object_files=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
 
@@ -69,6 +71,39 @@ function cmd_run() {
     ${BIN_PATH}/$MAIN_FILENAME.o
 }
 
+function cmd_debug() {
+    clean
+    generate_debug_asm_files
+    generate_debug_c_file
+
+    cmd_compile_run_debug
+}
+
+function cmd_compile_run_debug() {
+    # print.o and debug.o need to be compiled
+    object_files="$LIB_PATH/print.o $LIB_PATH/debug.o "
+    compile_lib print
+    compile_lib debug
+
+    local debug_file_to_run=$MAIN_FILENAME.debug
+    local include_project_path=${PROJECT_PATH}
+
+    output_program=${BIN_PATH}/$debug_file_to_run.o
+    compile_and_run_debug
+}
+
+function compile_and_run_debug() {
+
+    echo "output_program  => $output_program"
+ 
+    DEBUG_DATA_FILE="$DEBUG_PATH/debug.data"
+    object_files+=$(compile_asm $LIB_PATH $DEBUG_PATH) 
+    #gcc -I. -no-pie ${ROOT_PATH}/${TEST_PATH}/$debug_file_to_run.c $object_files -o ${BIN_PATH}/$debug_file_to_run.o    
+    gcc -I. -no-pie ${DEBUG_PATH}/$debug_file_to_run.c $object_files -I${include_project_path} -o ${output_program}    
+    ${output_program} $DEBUG_DATA_FILE
+
+    $PYTHON format_debug.py $DEBUG_DATA_FILE
+}
 
 function compile_lib() {
     local lib=$1
@@ -78,36 +113,17 @@ function compile_lib() {
     fi
 }
 
-function cmd_debug() {
-
-    #debug_file_to_run=${1:-"$DEBUG_FILENAME"}
-    debug_file_to_run=$MAIN_FILENAME.debug
-    local include_project_path=${PROJECT_PATH}
-
+function generate_debug_asm_files() {
     for filepath in $PROJECT_PATH/*.asm
     do
         filename=${filepath##*/}
         filename=${filename%%.*}
         $PYTHON generate_debug.py $PROJECT_PATH $filename $DEBUG_PATH
     done
-
-    # print.o and debug.o need to be compiled
-    object_files="$LIB_PATH/print.o $LIB_PATH/debug.o "
-    compile_lib print
-    compile_lib debug
-
-    generate_debug_file
-
-    DEBUG_DATA_FILE="$DEBUG_PATH/debug.data"
-    object_files+=$(compile_asm $LIB_PATH $DEBUG_PATH) 
-    #gcc -I. -no-pie ${ROOT_PATH}/${TEST_PATH}/$debug_file_to_run.c $object_files -o ${BIN_PATH}/$debug_file_to_run.o    
-    gcc -I. -no-pie ${DEBUG_PATH}/$debug_file_to_run.c $object_files -I${include_project_path} -o ${BIN_PATH}/$debug_file_to_run.o    
-    ${BIN_PATH}/$debug_file_to_run.o $DEBUG_DATA_FILE
-
-    $PYTHON format_debug.py $DEBUG_DATA_FILE
 }
 
-function generate_debug_file() {
+
+function generate_debug_c_file() {
     $PYTHON generate_debug_c_file.py $PROJECT_PATH $MAIN_FILENAME $DEBUG_PATH
 }
 
@@ -128,7 +144,6 @@ COMMIT_COUNTER=0
 if [[ -z $1 || -z $(command -v $USE_CASE) ]]; then
     help
 else
-    clean
     $USE_CASE "${@:2}"
 fi
 popd
