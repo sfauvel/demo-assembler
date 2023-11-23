@@ -92,6 +92,11 @@ function cmd_compile_run_debug() {
     compile_and_run_debug
 }
 
+# Use this command to just load all functions
+function cmd_no_run() {
+    return
+}
+
 function compile_and_run_debug() {
 
     echo "output_program  => $output_program"
@@ -136,7 +141,7 @@ help() {
 }
 
 
-pushd $CURRENT_DIR
+pushd $CURRENT_DIR > /dev/null
 . ${ROOT_PATH}/test/test_generate.sh
 
 USE_CASE=cmd_$1
@@ -146,4 +151,4 @@ if [[ -z $1 || -z $(command -v $USE_CASE) ]]; then
 else
     $USE_CASE "${@:2}"
 fi
-popd
+popd  > /dev/null
