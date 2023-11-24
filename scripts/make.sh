@@ -64,13 +64,7 @@ function run_test() {
         object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
         local c_file=${BIN_PATH}/${test_name}.test.c
         
-        includes=
-        for f in $include_paths
-        do 
-            includes+="-I$f "
-        done
-        gcc -no-pie $c_file $object_files ${includes} -o ${output_program}
- 
+        compile
         ${BIN_PATH}/${test_name}.test.o
     done
 }
@@ -87,12 +81,8 @@ function run_run() {
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
     local c_file=${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c
 
-    includes=
-    for f in $include_paths
-    do 
-        includes+="-I$f "
-    done
-    gcc -no-pie $c_file $object_files ${includes} -o ${output_program}
+    compile
+
     ${BIN_PATH}/$MAIN_FILENAME.o
 }
 
@@ -132,15 +122,23 @@ function compile_and_run_debug() {
     
     local c_file=${DEBUG_PATH}/$debug_file_to_run.c
     
+    compile
+    ${output_program} $DEBUG_DATA_FILE
+
+    $PYTHON format_debug.py $DEBUG_DATA_FILE
+}
+
+// c_file: the c file
+// object_files: .o files
+// includes: paths to include
+// output_program: output file    
+function compile() {
     includes=""
     for f in $include_paths
     do 
         includes+="-I$f "
     done
-    gcc -no-pie $c_file $object_files ${includes} -o ${output_program}    
-    ${output_program} $DEBUG_DATA_FILE
-
-    $PYTHON format_debug.py $DEBUG_DATA_FILE
+    gcc -no-pie ${c_file} ${object_files} ${includes} -o ${output_program}    
 }
 
 function compile_lib() {
