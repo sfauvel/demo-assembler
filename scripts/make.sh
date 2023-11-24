@@ -10,7 +10,6 @@ DEBUG_PATH=${ROOT_PATH}/work/debug
 
 
 MAIN_FILENAME=${FILE}.main
-DEBUG_FILENAME=${FILE}.debug
 
 PROJECT_PATH=${ROOT_PATH}/${ASM_PATH}
 
@@ -61,6 +60,7 @@ function run_test() {
         local c_file=${BIN_PATH}/${MAIN_FILENAME}.c
         object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
         local include_paths="${PROJECT_PATH} ${ROOT_PATH}/test ${ROOT_PATH}/examples/print"
+
         local output_program=${BIN_PATH}/${MAIN_FILENAME}.o
         compile
 
@@ -79,6 +79,7 @@ function run_run() {
     object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
     local include_paths="${PROJECT_PATH}"
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
+
     compile
 
     ${BIN_PATH}/$MAIN_FILENAME.o
@@ -119,6 +120,7 @@ function compile_and_run_debug() {
     object_files+=$(compile_asm $LIB_PATH $DEBUG_PATH)
     local include_paths=${include_project_path}
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
+
     compile
 
     ${output_program} $DEBUG_DATA_FILE
@@ -132,9 +134,9 @@ function compile_and_run_debug() {
 // output_program: output file    
 function compile() {
     includes=""
-    for f in $include_paths
+    for include_file in ${include_paths}
     do 
-        includes+="-I$f "
+        includes+="-I${include_file} "
     done
     gcc -no-pie ${c_file} ${object_files} ${includes} -o ${output_program}    
 }
