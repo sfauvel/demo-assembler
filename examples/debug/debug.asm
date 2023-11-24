@@ -1,41 +1,72 @@
 
         global display_stack
         global display_flags
+        global show_value
         
         extern print_text
         extern print_number
 
             section .text
-display_stack:
 
-        
-        mov rax, rdi
-        mov rdx, rbp
-        sub rdx, 5*8
-        
-    next_rsp:
-        cmp rdx,rax
-        je no_display
-        
+show_value:
+        ;mov rax, rsp
+        ;mov rdx, rbp
+    next_show:
         push rax
         push rdx
-        mov rdi, [rax]
         call print_number
-        
         mov rdi, next_line
         call print_text  
         pop rdx
-        pop rax
+        pop rax 
+        cmp rdx,rax
+        je no_display
         
-        add rax, 8
-        jmp next_rsp
+        ;add rax, 8
+        ;push rax
+        ;push rdx
+        ;call print_number
+        ;mov rdi, next_line
+        ;call print_text  
+        ;pop rdx
+        ;pop rax 
+        ;cmp rdx,rax
+        ;je no_display
+;
+;
+        ;add rax, 8
+        ;push rax
+        ;push rdx
+        ;call print_number
+        ;mov rdi, next_line
+        ;call print_text  
+        ;pop rdx
+        ;pop rax 
+        ;cmp rdx,rax
+        ;je no_display
 
 
-    no_display:
-        ;mov rdi, new_line
-        ;call print_text
         ret
 
+display_stack:
+    push rax
+    push rdi
+    mov rax, rsp
+
+    add rax, 8*2 ; For the push at the beginning of the method
+    display_next_stack_value:
+        add rax, 8
+        cmp rax, rbp
+        je no_display
+        
+        mov rdi, [rax] ; Call to this method put 8 bytes on the stack
+        call show_value
+        jmp display_next_stack_value
+    
+    no_display:
+        pop rdi
+        pop rax
+        ret
 
 ; parameters
 ;   rsi: value
