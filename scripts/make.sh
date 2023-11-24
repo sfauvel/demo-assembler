@@ -68,6 +68,10 @@ function run_test() {
 
 function cmd_run() {
     clean
+    run_run
+}
+
+function run_run() {
     local include_project_path=${PROJECT_PATH}
     object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
 
