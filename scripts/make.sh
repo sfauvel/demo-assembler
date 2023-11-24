@@ -47,10 +47,6 @@ function cmd_test() {
 }
 
 function run_test() {
-    local include_test_path=${ROOT_PATH}/test
-    local include_print_path=${ROOT_PATH}/examples/print
-    local include_paths="${PROJECT_PATH} ${include_test_path} ${include_print_path}"
-    
 
     local test_filter="*"
     for f in ${ROOT_PATH}/${TEST_PATH}/${test_filter}.test.c
@@ -60,11 +56,14 @@ function run_test() {
         # Generate test files
         build_test_file ${ROOT_PATH}/${TEST_PATH}/${test_name}.test.c ${BIN_PATH}/${test_name}.test.c
         
-        local output_program=${BIN_PATH}/${test_name}.test.o
+        MAIN_FILENAME=${test_name}.test
+
+        local c_file=${BIN_PATH}/${MAIN_FILENAME}.c
         object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
-        local c_file=${BIN_PATH}/${test_name}.test.c
-        
+        local include_paths="${PROJECT_PATH} ${ROOT_PATH}/test ${ROOT_PATH}/examples/print"
+        local output_program=${BIN_PATH}/${MAIN_FILENAME}.o
         compile
+
         ${BIN_PATH}/${test_name}.test.o
     done
 }
@@ -75,12 +74,11 @@ function cmd_run() {
 }
 
 function run_run() {
-    local include_paths="${PROJECT_PATH}"
     
-    object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
-    local output_program=${BIN_PATH}/$MAIN_FILENAME.o
     local c_file=${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c
-
+    object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
+    local include_paths="${PROJECT_PATH}"
+    local output_program=${BIN_PATH}/$MAIN_FILENAME.o
     compile
 
     ${BIN_PATH}/$MAIN_FILENAME.o
@@ -100,10 +98,8 @@ function cmd_compile_run_debug() {
     compile_lib print
     compile_lib debug
 
-    local debug_file_to_run=$MAIN_FILENAME.debug
     local include_project_path=${PROJECT_PATH}
 
-    output_program=${BIN_PATH}/$debug_file_to_run.o
     compile_and_run_debug
 }
 
@@ -115,14 +111,16 @@ function cmd_no_run() {
 function compile_and_run_debug() {
 
     echo "output_program  => $output_program"
-    local include_paths=${include_project_path}
     
     DEBUG_DATA_FILE="$DEBUG_PATH/debug.data"
+    MAIN_FILENAME=$MAIN_FILENAME.debug
+
+    local c_file=${DEBUG_PATH}/$MAIN_FILENAME.c
     object_files+=$(compile_asm $LIB_PATH $DEBUG_PATH)
-    
-    local c_file=${DEBUG_PATH}/$debug_file_to_run.c
-    
+    local include_paths=${include_project_path}
+    local output_program=${BIN_PATH}/$MAIN_FILENAME.o
     compile
+
     ${output_program} $DEBUG_DATA_FILE
 
     $PYTHON format_debug.py $DEBUG_DATA_FILE
