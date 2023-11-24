@@ -51,10 +51,7 @@ function run_test() {
     local include_print_path=${ROOT_PATH}/examples/print
     local include_project_path=${PROJECT_PATH}
     local include_paths=${include_test_path} ${include_print_path} 
-    for f in $include_paths
-    do 
-        includes+=-I$f
-    done
+
 
     local test_filter="*"
     for f in ${ROOT_PATH}/${TEST_PATH}/${test_filter}.test.c
@@ -63,7 +60,11 @@ function run_test() {
         test_name="${filename%.test.c}"
         # Generate test files
         build_test_file ${ROOT_PATH}/${TEST_PATH}/${test_name}.test.c ${BIN_PATH}/${test_name}.test.c
-
+        includes=
+        for f in $include_paths
+        do 
+            includes+=-I$f
+        done
         local output_program=${BIN_PATH}/${test_name}.test.o
         object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
         local c_file=${BIN_PATH}/${test_name}.test.c
@@ -80,6 +81,7 @@ function cmd_run() {
 
 function run_run() {
     local include_paths=${PROJECT_PATH}
+    includes=
     for f in $include_paths
     do 
         includes+=-I$f
@@ -87,7 +89,7 @@ function run_run() {
     object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
     local c_file=${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c
-    gcc -I. -no-pie $c_file $object_files ${includes} -o ${output_program}
+    gcc -no-pie $c_file $object_files ${includes} -o ${output_program}
     ${BIN_PATH}/$MAIN_FILENAME.o
 }
 
@@ -121,6 +123,7 @@ function compile_and_run_debug() {
 
     echo "output_program  => $output_program"
     local include_paths=${include_project_path}
+    includes=
     for f in $include_paths
     do 
         includes+=-I$f
@@ -129,7 +132,7 @@ function compile_and_run_debug() {
     object_files+=$(compile_asm $LIB_PATH $DEBUG_PATH)
     
     local c_file=${DEBUG_PATH}/$debug_file_to_run.c
-    gcc -I. -no-pie $c_file $object_files ${includes} -o ${output_program}    
+    gcc -no-pie $c_file $object_files ${includes} -o ${output_program}    
     ${output_program} $DEBUG_DATA_FILE
 
     $PYTHON format_debug.py $DEBUG_DATA_FILE
