@@ -49,9 +49,8 @@ function cmd_test() {
 function run_test() {
     local include_test_path=${ROOT_PATH}/test
     local include_print_path=${ROOT_PATH}/examples/print
-    local include_project_path=${PROJECT_PATH}
-    local include_paths=${include_test_path} ${include_print_path} 
-
+    local include_paths="${PROJECT_PATH} ${include_test_path} ${include_print_path}"
+    
 
     local test_filter="*"
     for f in ${ROOT_PATH}/${TEST_PATH}/${test_filter}.test.c
@@ -60,15 +59,17 @@ function run_test() {
         test_name="${filename%.test.c}"
         # Generate test files
         build_test_file ${ROOT_PATH}/${TEST_PATH}/${test_name}.test.c ${BIN_PATH}/${test_name}.test.c
-        includes=
-        for f in $include_paths
-        do 
-            includes+=-I$f
-        done
+        
         local output_program=${BIN_PATH}/${test_name}.test.o
         object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
         local c_file=${BIN_PATH}/${test_name}.test.c
-        gcc -no-pie $c_file $object_files -I${include_project_path} ${includes} -o ${output_program}
+        
+        includes=
+        for f in $include_paths
+        do 
+            includes+="-I$f "
+        done
+        gcc -no-pie $c_file $object_files ${includes} -o ${output_program}
  
         ${BIN_PATH}/${test_name}.test.o
     done
@@ -80,15 +81,17 @@ function cmd_run() {
 }
 
 function run_run() {
-    local include_paths=${PROJECT_PATH}
-    includes=
-    for f in $include_paths
-    do 
-        includes+=-I$f
-    done
+    local include_paths="${PROJECT_PATH}"
+    
     object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
     local c_file=${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c
+
+    includes=
+    for f in $include_paths
+    do 
+        includes+="-I$f "
+    done
     gcc -no-pie $c_file $object_files ${includes} -o ${output_program}
     ${BIN_PATH}/$MAIN_FILENAME.o
 }
@@ -123,15 +126,17 @@ function compile_and_run_debug() {
 
     echo "output_program  => $output_program"
     local include_paths=${include_project_path}
-    includes=
-    for f in $include_paths
-    do 
-        includes+=-I$f
-    done
+    
     DEBUG_DATA_FILE="$DEBUG_PATH/debug.data"
     object_files+=$(compile_asm $LIB_PATH $DEBUG_PATH)
     
     local c_file=${DEBUG_PATH}/$debug_file_to_run.c
+    
+    includes=""
+    for f in $include_paths
+    do 
+        includes+="-I$f "
+    done
     gcc -no-pie $c_file $object_files ${includes} -o ${output_program}    
     ${output_program} $DEBUG_DATA_FILE
 
