@@ -43,6 +43,10 @@ function compile_asm() {
 
 function cmd_test() {
     clean
+    run_test
+}
+
+function run_test() {
     local include_test_path=${ROOT_PATH}/test
     local include_print_path=${ROOT_PATH}/examples/print
     local include_project_path=${PROJECT_PATH}
@@ -56,7 +60,7 @@ function cmd_test() {
         build_test_file ${ROOT_PATH}/${TEST_PATH}/${test_name}.test.c ${BIN_PATH}/${test_name}.test.c
       
         local asm_files=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
-        gcc -no-pie ${BIN_PATH}/${test_name}.test.c ${asm_files} -I${include_project_path} -I${include_test_path} -I${include_print_path} -o ${BIN_PATH}/${test_name}.test.o
+        gcc -no-pie ${BIN_PATH}/${test_name}.test.c $object_files ${asm_files} -I${include_project_path} -I${include_test_path} -I${include_print_path} -o ${BIN_PATH}/${test_name}.test.o
  
         ${BIN_PATH}/${test_name}.test.o
     done
@@ -65,7 +69,7 @@ function cmd_test() {
 function cmd_run() {
     clean
     local include_project_path=${PROJECT_PATH}
-    object_files=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
+    object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
 
     gcc -I. -no-pie ${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c $object_files -I${include_project_path} -o ${BIN_PATH}/$MAIN_FILENAME.o
     ${BIN_PATH}/$MAIN_FILENAME.o
