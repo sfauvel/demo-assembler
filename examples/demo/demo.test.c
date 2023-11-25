@@ -23,10 +23,6 @@
 #include <demo_variable.h>
 
 
-int my_method(int, int, int);
-int algo_to_debug_X(int, int, int);
-int algo_to_debug_Y(int, int, int);
-
 TEST void test_pass_param() {
     _assertIntEq(321, param_sum_param(1, 20, 300));
 }

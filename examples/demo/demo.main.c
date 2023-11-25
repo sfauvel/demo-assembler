@@ -16,10 +16,6 @@
 #include <demo_string.h>
 #include <demo_variable.h>
 
-int my_method(int, int, int);
-int algo_to_debug_X(int, int, int);
-int algo_to_debug_Y(int, int, int);
-
 
 int main(int argc, char **argv) {
    printf("if_equals_10(9): %d\n", if_equals_10(9));
