@@ -143,7 +143,7 @@ nasm -felf64 hello.asm && gcc callhello.c hello.o && ./a.out
 
 == How to
 
-=== Conitnuously testing
+=== Continuously testing
 
 Go to your project folder and run following command to execute tests every 5 seconds.
 ---
