@@ -56,11 +56,12 @@ function run_test() {
         build_test_file ${ROOT_PATH}/${TEST_PATH}/${test_name}.test.c ${BIN_PATH}/${test_name}.test.c
         
         MAIN_FILENAME=${test_name}.test
-
+        include_paths+="${ROOT_PATH}/test ${ROOT_PATH}/examples/print"
+        
         local c_file=${BIN_PATH}/${MAIN_FILENAME}.c
         object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
-        local include_paths="${PROJECT_PATH} ${ROOT_PATH}/test ${ROOT_PATH}/examples/print"
 
+        include_paths+="${PROJECT_PATH} "
         local output_program=${BIN_PATH}/${MAIN_FILENAME}.o
         compile
 
@@ -77,9 +78,9 @@ function run_run() {
     
     local c_file=${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c
     object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
-    local include_paths="${PROJECT_PATH}"
-    local output_program=${BIN_PATH}/$MAIN_FILENAME.o
 
+    include_paths+="${PROJECT_PATH} "
+    local output_program=${BIN_PATH}/$MAIN_FILENAME.o
     compile
 
     ${BIN_PATH}/$MAIN_FILENAME.o
@@ -99,8 +100,6 @@ function cmd_compile_run_debug() {
     compile_lib print
     compile_lib debug
 
-    local include_project_path=${PROJECT_PATH}
-
     compile_and_run_debug
 }
 
@@ -118,9 +117,9 @@ function compile_and_run_debug() {
 
     local c_file=${DEBUG_PATH}/$MAIN_FILENAME.c
     object_files+=$(compile_asm $LIB_PATH $DEBUG_PATH)
-    local include_paths=${include_project_path}
-    local output_program=${BIN_PATH}/$MAIN_FILENAME.o
 
+    include_paths+="${PROJECT_PATH} "
+    local output_program=${BIN_PATH}/$MAIN_FILENAME.o
     compile
 
     ${output_program} $DEBUG_DATA_FILE
@@ -128,10 +127,10 @@ function compile_and_run_debug() {
     $PYTHON format_debug.py $DEBUG_DATA_FILE
 }
 
-// c_file: the c file
-// object_files: .o files
-// includes: paths to include
-// output_program: output file    
+# c_file: the c file
+# object_files: .o files
+# includes: paths to include
+# output_program: output file    
 function compile() {
     includes=""
     for include_file in ${include_paths}
