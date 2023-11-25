@@ -15,6 +15,12 @@ PROJECT_PATH=${ROOT_PATH}/${ASM_PATH}
 
 PYTHON=python3
 
+
+function log_debug() {
+    # Return 0 to log info and 1 otherwise
+    return 1
+}
+
 function clean() {
     rm -rf ${BIN_PATH}
     rm -rf ${LIB_PATH}
@@ -56,7 +62,7 @@ function run_test() {
         build_test_file ${ROOT_PATH}/${TEST_PATH}/${test_name}.test.c ${BIN_PATH}/${test_name}.test.c
         
         MAIN_FILENAME=${test_name}.test
-        include_paths+="${ROOT_PATH}/test ${ROOT_PATH}/examples/print"
+        include_paths+="${ROOT_PATH}/test ${ROOT_PATH}/examples/print "
         
         local c_file=${BIN_PATH}/${MAIN_FILENAME}.c
         object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
@@ -127,11 +133,18 @@ function compile_and_run_debug() {
     $PYTHON format_debug.py $DEBUG_DATA_FILE
 }
 
+
 # c_file: the c file
 # object_files: .o files
 # includes: paths to include
-# output_program: output file    
+# output_program: output file
 function compile() {
+    
+    log_debug && echo c_file: $c_file
+    log_debug && echo object_files: $object_files
+    log_debug && echo include_paths: $include_paths
+    log_debug && echo output_program: $output_program
+
     includes=""
     for include_file in ${include_paths}
     do 
