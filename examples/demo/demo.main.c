@@ -14,8 +14,7 @@
 #include <demo_method.h>
 #include <demo_param.h>
 #include <demo_string.h>
-
-int variable_return(int);
+#include <demo_variable.h>
 
 int my_method(int, int, int);
 int algo_to_debug_X(int, int, int);
