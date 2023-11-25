@@ -19,10 +19,8 @@
 #include <demo_macro.h>
 #include <demo_method.h>
 #include <demo_param.h>
+#include <demo_string.h>
 
-
-char* string_get_param(char*);
-char* string_substring_from(char*, int);
 
 int variable_return(int);
 

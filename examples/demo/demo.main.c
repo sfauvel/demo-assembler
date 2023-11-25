@@ -10,12 +10,10 @@
 
 #include <demo_if.h>
 #include <demo_inner_function.h>
+#include <demo_macro.h>
 #include <demo_method.h>
 #include <demo_param.h>
-
-
-char* string_get_param(char*);
-char* string_substring_from(char*, int);
+#include <demo_string.h>
 
 int variable_return(int);
 
