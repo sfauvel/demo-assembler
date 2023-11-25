@@ -17,10 +17,9 @@
 #include <demo_if.h>
 #include <demo_inner_function.h>
 #include <demo_macro.h>
+#include <demo_method.h>
 #include <demo_param.h>
 
-int method_return_2();
-int method_return_3();
 
 char* string_get_param(char*);
 char* string_substring_from(char*, int);
