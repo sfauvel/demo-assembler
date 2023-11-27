@@ -52,10 +52,14 @@ function cmd_test() {
 }
 
 function run_test() {
-
+  
+    local param_include_paths="$include_paths"
+    local param_object_files="$object_files"
     local test_filter="*"
     for f in ${ROOT_PATH}/${TEST_PATH}/${test_filter}.test.c
     do
+        include_paths="$param_include_paths"
+        object_files="$param_object_files"
         filename="$(basename -- $f)"
         test_name="${filename%.test.c}"
         # Generate test files
