@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+
+SCRIPT_PATH="${BASH_SOURCE%/*}"
+
+# By default the file name used is the name of th directory
+FILE=${FILE:=$(basename $(pwd))}
+ASM_PATH=${ASM_PATH:=examples/$FILE}
+TEST_PATH=${TEST_PATH:=examples/$FILE}
+
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
 
 
