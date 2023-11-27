@@ -84,6 +84,14 @@ function cmd_run() {
     run_run
 }
 
+function cmd_run_asm() {
+    clean
+    
+    compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}
+    ld $LIB_PATH/$FILE.o -o $BIN_PATH/$FILE 
+    $BIN_PATH/$FILE
+}
+
 function run_run() {
     
     local c_file=${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c
