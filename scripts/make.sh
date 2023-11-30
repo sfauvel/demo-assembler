@@ -41,24 +41,6 @@ function clean() {
     mkdir -p ${BIN_PATH}
 }
 
-function compile_asm() {
-    local lib_path=$1
-    local asm_path=$2
-    mkdir -p ${lib_path}
-    
-    for filepath in $asm_path/*.asm
-    do
-        filename=${filepath##*/}
-        filename=${filename%%.*}
-        output_file=${lib_path}/${filename}.o
-        log_debug && echo "nasm $filepath -o ${output_file} -felf64"
-        nasm $filepath -o ${output_file} -felf64
-
-        echo Output: "${output_file}"
-    done
-
-}
-
 function cmd_test() {
     clean
     run_test
@@ -127,9 +109,8 @@ function cmd_debug() {
 
 function compile_debug_libs() {
     # print.o and debug.o need to be compiled
-    object_files+="$LIB_PATH/print.o $LIB_PATH/debug.o "
-    compile_lib print
-    compile_lib debug
+    object_files+=$(compile_asm_lib examples/print)
+    object_files+=$(compile_asm_lib examples/debug)
 }
 
 function cmd_compile_run_debug() {
@@ -162,6 +143,34 @@ function compile_and_run_debug() {
 }
 
 
+# Compile all files in [asm_path] to the output [lib_path] folder.
+# $1: lib path
+# $2: asm_path
+function compile_asm() {
+    local lib_path=$1
+    local asm_path=$2
+    mkdir -p ${lib_path}
+    
+    for filepath in $asm_path/*.asm
+    do
+        filename=${filepath##*/}
+        filename=${filename%%.*}
+        output_file=${lib_path}/${filename}.o
+        nasm $filepath -o ${output_file} -felf64
+
+        echo " ${output_file} "
+    done
+}
+
+function compile_asm_lib() {
+    local lib_path=$1
+    local lib=$(basename $lib_path)
+    if [[ ! -f $LIB_PATH/$lib.o ]]; then
+        compile_asm ${LIB_PATH} ${ROOT_PATH}/$lib_path
+    fi
+}
+
+# Compile a .c file
 # c_file: the c file
 # object_files: .o files
 # includes: paths to include
@@ -179,14 +188,6 @@ function compile() {
         includes+="-I${include_file} "
     done
     gcc -no-pie ${c_file} ${object_files} ${includes} -o ${output_program}    
-}
-
-function compile_lib() {
-    local lib=$1
-    if [[ ! -f $LIB_PATH/$lib.o ]]; then
-        echo "Recompiled $lib"
-        compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/$lib
-    fi
 }
 
 function generate_debug_asm_files() {

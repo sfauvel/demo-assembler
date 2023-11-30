@@ -2,15 +2,13 @@
 
 function custom_cmd_test() {
     clean
-    compile_lib print
-    object_files="$LIB_PATH/print.o "
+    object_files=$(compile_asm_lib examples/print)
     run_test
 }
 
 function custom_cmd_run() {
     clean
-    compile_lib print
-    object_files="$LIB_PATH/print.o "
+    object_files=$(compile_asm_lib examples/print)
     run_run
 }
 
