@@ -11,4 +11,4 @@ function custom_cmd_test() {
     run_test
 }
 
-. ../../scripts/make.sh 
+. ../../scripts/make.sh $*

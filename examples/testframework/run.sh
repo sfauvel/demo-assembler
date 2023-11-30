@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TARGET_PATH=../../target
+TARGET_PATH=../../work/target
 function clean() {
     rm -rf $TARGET_PATH
     mkdir -p $TARGET_PATH
