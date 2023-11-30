@@ -51,9 +51,10 @@ function compile_asm() {
         filename=${filepath##*/}
         filename=${filename%%.*}
         output_file=${lib_path}/${filename}.o
+        log_debug && echo "nasm $filepath -o ${output_file} -felf64"
         nasm $filepath -o ${output_file} -felf64
 
-        echo "${output_file}"
+        echo Output: "${output_file}"
     done
 
 }
