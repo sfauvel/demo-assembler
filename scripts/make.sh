@@ -199,20 +199,14 @@ function generate_debug_c_file() {
 
 help() {
     echo Select one of this method as parameter
-    
-    grep "[f]unction cmd_.*() {" "$CURRENT_SCRIPT_NAME" | sed 's/function cmd_\(.*\)(.*/  - \1/g' 
+
+    for script_file in $CURRENT_SCRIPT_NAME $ORIGIN_PATH/$ORIGIN_SCRIPT_NAME 
+    do
+        grep "[f]unction cmd_.*() {" "$script_file" | sed 's/function cmd_\(.*\)(.*/  - \1/g' 
+    done
 }
 
-
-function custom_help() {
-    help
-    
-    pushd $ORIGIN_PATH > /dev/null
-
-    grep "[f]unction cmd_.*() {" "$ORIGIN_SCRIPT_NAME" | sed 's/function cmd_\(.*\)(.*/  - \1/g' 
-
-    popd > /dev/null
-}
+####################################################################
 
 pushd $CURRENT_DIR > /dev/null
 . ${ROOT_PATH}/test/test_generate.sh
@@ -224,7 +218,7 @@ USE_CASE=cmd_$1
 CUSTOM_USE_CASE=custom_$USE_CASE
 COMMIT_COUNTER=0
 if [[ -z $1 || -z $(command -v $USE_CASE) ]]; then
-    custom_help
+    help
 else
     if [[ -z $(command -v $CUSTOM_USE_CASE) ]]; then
         $USE_CASE "${@:2}"
