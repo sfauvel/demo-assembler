@@ -2,8 +2,12 @@
 
 
 SCRIPT_PATH="${BASH_SOURCE%/*}"
+CURRENT_SCRIPT_NAME=$(basename "$BASH_SOURCE")
+ORIGIN_SCRIPT_NAME=$(basename "$0")
+
 
 # By default the file name used is the name of th directory
+ORIGIN_PATH=$(pwd)
 FILE=${FILE:=$(basename $(pwd))}
 ASM_PATH=${ASM_PATH:=examples/$FILE}
 TEST_PATH=${TEST_PATH:=examples/$FILE}
@@ -26,7 +30,7 @@ PYTHON=python3
 
 function log_debug() {
     # Return 0 to log info and 1 otherwise
-    return 1
+    return 0
 }
 
 function clean() {
@@ -77,7 +81,7 @@ function run_test() {
         include_paths+="${ROOT_PATH}/test ${ROOT_PATH}/examples/print "
         
         local c_file=${BIN_PATH}/${MAIN_FILENAME}.c
-        object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
+        object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${ASM_PATH}) 
 
         include_paths+="${PROJECT_PATH} "
         local output_program=${BIN_PATH}/${MAIN_FILENAME}.o
@@ -120,12 +124,15 @@ function cmd_debug() {
     cmd_compile_run_debug
 }
 
-function cmd_compile_run_debug() {
+function compile_debug_libs() {
     # print.o and debug.o need to be compiled
-    object_files="$LIB_PATH/print.o $LIB_PATH/debug.o "
+    object_files+="$LIB_PATH/print.o $LIB_PATH/debug.o "
     compile_lib print
     compile_lib debug
+}
 
+function cmd_compile_run_debug() {
+    compile_debug_libs
     compile_and_run_debug
 }
 
@@ -199,19 +206,37 @@ function generate_debug_c_file() {
 help() {
     echo Select one of this method as parameter
     
-    CURRENT_SCRIPT=`basename "$0"`
-    grep "[f]unction cmd_.*() {" "$CURRENT_SCRIPT" | sed 's/function cmd_\(.*\)(.*/  - \1/g' 
+    grep "[f]unction cmd_.*() {" "$CURRENT_SCRIPT_NAME" | sed 's/function cmd_\(.*\)(.*/  - \1/g' 
 }
 
+
+function custom_help() {
+    help
+    
+    pushd $ORIGIN_PATH > /dev/null
+
+    grep "[f]unction cmd_.*() {" "$ORIGIN_SCRIPT_NAME" | sed 's/function cmd_\(.*\)(.*/  - \1/g' 
+
+    popd > /dev/null
+}
 
 pushd $CURRENT_DIR > /dev/null
 . ${ROOT_PATH}/test/test_generate.sh
 
+# You can redefine one of the command in your own file:
+# function custom_cmd_test() { ... }
+
 USE_CASE=cmd_$1
+CUSTOM_USE_CASE=custom_$USE_CASE
 COMMIT_COUNTER=0
 if [[ -z $1 || -z $(command -v $USE_CASE) ]]; then
-    help
+    custom_help
 else
-    $USE_CASE "${@:2}"
+    if [[ -z $(command -v $CUSTOM_USE_CASE) ]]; then
+        $USE_CASE "${@:2}"
+    else
+        $CUSTOM_USE_CASE "${@:2}"
+    fi
 fi
+
 popd  > /dev/null
