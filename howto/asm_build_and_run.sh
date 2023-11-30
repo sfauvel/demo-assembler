@@ -1,20 +1,38 @@
 #!/usr/bin/env bash
 
-# Define test file
-test_path=.
-test_name=hello
-target=../target
+# Build an .asm fiel and run it
 
-# Clean build directory
-rm -rf ${target}
-mkdir ${target}
+asm_path=.
+target=../work/target
 
-# Compile asm
-nasm -felf64 ${test_path}/${test_name}.asm -o ${target}/${test_name}.o
+function build_and_run() {
+    asm_file_name=$1
 
-# Link it
-ld ${target}/${test_name}.o -o ${target}/${test_name}
+    # Clean build directory
+    rm -rf ${target}
+    mkdir ${target}
 
-# Execute tests
-./${target}/${test_name}
+    # Compile asm
+    nasm -felf64 ${asm_path}/${asm_file_name}.asm -o ${target}/${asm_file_name}.o
 
+    # Link it
+    ld ${target}/${asm_file_name}.o -o ${target}/${asm_file_name}
+
+    # Execute tests
+    ./${target}/${asm_file_name}
+}
+
+if [[ -z $1 ]]; then
+    echo "Please provide the name of one of the asm files:"    
+    for file in $(ls *.asm)
+    do
+        echo "  - $file"
+    done
+else
+    NAME=${1%.asm}
+    if [ -f "$NAME.asm" ]; then
+        build_and_run $NAME
+    else
+        echo "File $1 does not exist or not ends with .asm"
+    fi
+fi
