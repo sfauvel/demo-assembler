@@ -109,8 +109,8 @@ function cmd_debug() {
 
 function compile_debug_libs() {
     # print.o and debug.o need to be compiled
-    object_files+=$(compile_asm_lib examples/print)
-    object_files+=$(compile_asm_lib examples/debug)
+    object_files+=$(compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/print)
+    object_files+=$(compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/debug)
 }
 
 function cmd_compile_run_debug() {
@@ -160,14 +160,6 @@ function compile_asm() {
 
         echo " ${output_file} "
     done
-}
-
-function compile_asm_lib() {
-    local lib_path=$1
-    local lib=$(basename $lib_path)
-    if [[ ! -f $LIB_PATH/$lib.o ]]; then
-        compile_asm ${LIB_PATH} ${ROOT_PATH}/$lib_path
-    fi
 }
 
 # Compile a .c file
