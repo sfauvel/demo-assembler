@@ -69,12 +69,11 @@ function run_test() {
         MAIN_FILENAME=${test_name}.test
         include_paths+="${ROOT_PATH}/test ${ROOT_PATH}/examples/print "
         
-        local c_file=${BIN_PATH}/${MAIN_FILENAME}.c
         object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${ASM_PATH}) 
 
         include_paths+="${PROJECT_PATH} "
         local output_program=${BIN_PATH}/${MAIN_FILENAME}.o
-        compile
+        compile ${BIN_PATH}/${MAIN_FILENAME}.c
 
         ${BIN_PATH}/${test_name}.test.o
     done
@@ -108,12 +107,11 @@ function compile_and_run_asm() {
 
 function run_run() {
     
-    local c_file=${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c
     object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
 
     include_paths+="${PROJECT_PATH} "
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
-    compile
+    compile ${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c
 
     ${BIN_PATH}/$MAIN_FILENAME.o
 }
@@ -149,12 +147,11 @@ function compile_and_run_debug() {
     DEBUG_DATA_FILE="$DEBUG_PATH/debug.data"
     MAIN_FILENAME=$MAIN_FILENAME.debug
 
-    local c_file=${DEBUG_PATH}/$MAIN_FILENAME.c
     object_files+=$(compile_asm $LIB_PATH $DEBUG_PATH)
 
     include_paths+="${PROJECT_PATH} "
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
-    compile
+    compile ${DEBUG_PATH}/$MAIN_FILENAME.c
 
     ${output_program} $DEBUG_DATA_FILE
 
@@ -189,6 +186,7 @@ function compile_asm() {
 # output_program: output file
 function compile() {
     
+    local c_file="$1"
     log_debug && echo c_file: $c_file
     log_debug && echo object_files: $object_files
     log_debug && echo include_paths: $include_paths
