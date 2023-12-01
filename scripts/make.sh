@@ -149,19 +149,18 @@ function compile_and_run_debug() {
 }
 
 
-# Compile all files in [asm_path] to the output [lib_path] folder.
-# $1: lib path
-# $2: asm_path
+# Compile all files in [asm_path] to the output [output_path] folder.
+# $1: Output path where .o will be generated.
+# $2: Source path where .asm are.
 function compile_asm() {
-    local lib_path=$1
+    local output_path=$1
     local asm_path=$2
-    mkdir -p ${lib_path}
+    mkdir -p ${output_path}
     
     for asm_file in $asm_path/*.asm
     do
         filename=$(extract_filename $asm_file asm)
-        output_file=${lib_path}/${filename}.o
-        nasm $asm_file -o ${output_file} -felf64
+        nasm $asm_file -o ${output_path}/${filename}.o -felf64
 
         echo " ${output_file} "
     done
