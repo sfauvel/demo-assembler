@@ -88,9 +88,14 @@ function cmd_run() {
 function cmd_run_asm() {
     clean
     
-    compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}
-    ld $LIB_PATH/$FILE.o -o $BIN_PATH/$FILE 
-    $BIN_PATH/$FILE
+    local asm_path="${ROOT_PATH}/${TEST_PATH}"
+    local output_path="${LIB_PATH}"
+
+    local object_files=$(compile_asm ${output_path} ${asm_path})
+    
+    local output_program=${BIN_PATH}/${FILE} 
+    ld $object_files -o ${output_program}
+    ${output_program}
 }
 
 function run_run() {
