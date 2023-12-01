@@ -42,11 +42,54 @@ test_compile_several_asm() {
 test_compile_several_asm_return_files() {
   rm -r work
   mkdir -p work/src_asm
-  echo -e "section .text\ndo_nothing:\n    ret" >  work/src_asm/file_a.asm
-  echo -e "section .text\ndo_nothing:\n    ret" >  work/src_asm/file_b.asm
-
+  echo -e "
+section .text
+do_nothing:
+    ret" >  work/src_asm/file_a.asm
+  cp work/src_asm/file_a.asm work/src_asm/file_b.asm
+  
   return_value=$(compile_asm work/build work/src_asm)
   assertEquals " work/build/file_a.o  work/build/file_b.o " "$return_value"
+}
+
+test_compile_and_run_asm_prog() {
+  rm -r work
+  mkdir -p work/src_asm
+  echo -e "
+global _start
+section .text
+_start:
+    mov rdi, 34      ; set return code
+    mov rax, 60     ; exit syscall
+    syscall" >  work/src_asm/prog.asm
+
+  compile_and_run_asm work/build work/src_asm work/prog
+  assertEquals 34 $?
+}
+
+test_compile_and_run_asm_files_and_run_a_prog() {
+  rm -r work
+  mkdir -p work/src_asm
+  echo -e "
+global my_code
+section .text
+my_code:
+    mov rax, 34     ; set return code
+    ret
+    syscall" >  work/src_asm/lib.asm
+
+  echo -e "
+global _start
+extern my_code
+section .text
+_start:
+    call my_code
+    mov rdi, rax      ; set return code
+    mov rax, 60     ; exit syscall
+    syscall" >  work/src_asm/prog.asm
+
+  compile_and_run_asm work/build work/src_asm work/prog
+  assertEquals 34 $?
 }
 
 

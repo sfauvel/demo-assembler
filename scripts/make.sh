@@ -90,10 +90,18 @@ function cmd_run_asm() {
     
     local asm_path="${ROOT_PATH}/${TEST_PATH}"
     local output_path="${LIB_PATH}"
+    local output_program=${BIN_PATH}/${FILE} 
+
+    compile_and_run_asm $output_path $asm_path $output_program
+}
+
+function compile_and_run_asm() {
+    local output_path="$1"
+    local asm_path="$2"
+    local output_program="$3"
 
     local object_files=$(compile_asm ${output_path} ${asm_path})
     
-    local output_program=${BIN_PATH}/${FILE} 
     ld $object_files -o ${output_program}
     ${output_program}
 }
