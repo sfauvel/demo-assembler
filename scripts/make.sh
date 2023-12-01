@@ -33,6 +33,12 @@ function log_debug() {
     return 0
 }
 
+function extract_filename() {
+    local file=$(basename $1)
+    local extension=$2
+    echo ${file%.${extension:=*}}
+}
+
 function clean() {
     rm -rf ${BIN_PATH}
     rm -rf ${LIB_PATH}
@@ -151,12 +157,11 @@ function compile_asm() {
     local asm_path=$2
     mkdir -p ${lib_path}
     
-    for filepath in $asm_path/*.asm
+    for asm_file in $asm_path/*.asm
     do
-        filename=${filepath##*/}
-        filename=${filename%%.*}
+        filename=$(extract_filename $asm_file asm)
         output_file=${lib_path}/${filename}.o
-        nasm $filepath -o ${output_file} -felf64
+        nasm $asm_file -o ${output_file} -felf64
 
         echo " ${output_file} "
     done
@@ -183,10 +188,9 @@ function compile() {
 }
 
 function generate_debug_asm_files() {
-    for filepath in $PROJECT_PATH/*.asm
+    for asm_file in $PROJECT_PATH/*.asm
     do
-        filename=${filepath##*/}
-        filename=${filename%%.*}
+        filename=$(extract_filename $asm_file asm)
         $PYTHON generate_debug.py $PROJECT_PATH $filename $DEBUG_PATH
     done
 }
