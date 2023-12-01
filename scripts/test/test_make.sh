@@ -18,7 +18,10 @@ test_extract_filename_with_multiple_extensions() {
 test_compile_asm() {
   rm -r work
   mkdir -p work/src_asm
-  echo -e "section .text\ndo_nothing:\n    ret" >  work/src_asm/file.asm
+  echo -e "
+section .text
+do_nothing:
+    ret" >  work/src_asm/file.asm
 
   local expected_file=work/build/file.o
   assertFalse "File $expected_file should not exist before execution" "[ -f $expected_file ]"
@@ -29,8 +32,11 @@ test_compile_asm() {
 test_compile_several_asm() {
   rm -r work
   mkdir -p work/src_asm
-  echo -e "section .text\ndo_nothing:\n    ret" >  work/src_asm/file_a.asm
-  echo -e "section .text\ndo_nothing:\n    ret" >  work/src_asm/file_b.asm
+  echo -e "
+section .text
+do_nothing:
+    ret" >  work/src_asm/file_a.asm
+  cp work/src_asm/file_a.asm work/src_asm/file_b.asm
 
   local build_path="work/build"
   assertFalse "[ -f $build_path ]"
