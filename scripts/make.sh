@@ -157,13 +157,16 @@ function compile_asm() {
     local asm_path=$2
     mkdir -p ${output_path}
     
+    local output_files=""
     for asm_file in $asm_path/*.asm
     do
-        filename=$(extract_filename $asm_file asm)
-        nasm $asm_file -o ${output_path}/${filename}.o -felf64
+        local filename=$(extract_filename $asm_file asm)
+        local output_file=${output_path}/${filename}.o
+        nasm $asm_file -o ${output_file} -felf64
 
-        echo " ${output_file} "
+        output_files+=" ${output_file} "
     done
+    echo "$output_files"
 }
 
 # Compile a .c file

@@ -39,6 +39,16 @@ test_compile_several_asm() {
   assertTrue "[ -f $build_path/file_b.o ]"
 }
 
+test_compile_several_asm_return_files() {
+  rm -r work
+  mkdir -p work/src_asm
+  echo -e "section .text\ndo_nothing:\n    ret" >  work/src_asm/file_a.asm
+  echo -e "section .text\ndo_nothing:\n    ret" >  work/src_asm/file_b.asm
+
+  return_value=$(compile_asm work/build work/src_asm)
+  assertEquals " work/build/file_a.o  work/build/file_b.o " "$return_value"
+}
+
 
 # Load script to test
 . ../make.sh no_run
