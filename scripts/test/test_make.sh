@@ -99,6 +99,23 @@ _start:
 }
 
 
+test_compile_and_run_asm_prog_could_have_only_one_prog() {
+  rm -r work
+  mkdir -p work/src_asm
+  echo -e "
+global _start
+section .text
+_start:
+    mov rdi, 0      ; set return code
+    mov rax, 60     ; exit syscall
+    syscall" >  work/src_asm/prog1.asm
+  cp work/src_asm/prog1.asm work/src_asm/prog2.asm
+
+  compile_and_run_asm work/build work/src_asm work/prog
+  assertFalse "[ -f work/prog ]"
+}
+
+
 # Load script to test
 . ../make.sh no_run
 
