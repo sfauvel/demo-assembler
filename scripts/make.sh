@@ -106,7 +106,6 @@ function compile_and_run_asm() {
 }
 
 function run_run() {
-    
     object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
 
     include_paths+="${PROJECT_PATH} "
@@ -170,6 +169,7 @@ function compile_asm() {
     local output_files=""
     for asm_file in $asm_path/*.asm
     do
+        [ -f "$asm_file" ] || continue
         local filename=$(extract_filename $asm_file asm)
         local output_file=${output_path}/${filename}.o
         nasm $asm_file -o ${output_file} -felf64

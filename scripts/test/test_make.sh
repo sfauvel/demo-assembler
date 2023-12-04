@@ -98,7 +98,6 @@ _start:
   assertEquals 34 $?
 }
 
-
 test_compile_and_run_asm_prog_could_have_only_one_prog() {
   rm -r work
   mkdir -p work/src_asm
@@ -113,6 +112,26 @@ _start:
 
   compile_and_run_asm work/build work/src_asm work/prog
   assertFalse "[ -f work/prog ]"
+}
+
+test_compile_and_run_c_prog() {
+  rm -r work
+  mkdir -p work/src
+  mkdir -p work/target
+
+  echo -e "
+#include <stdlib.h>
+int main(int argc, char **argv) {
+    exit(12);
+}
+  " >  work/src/prog.c
+  local MAIN_FILENAME=prog
+  local TEST_PATH=test/work/src
+  local BIN_PATH=work/target
+  local LIB_PATH=work/target
+  local object_files=""
+  run_run
+  assertEquals 12 $?
 }
 
 
