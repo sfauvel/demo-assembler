@@ -73,9 +73,9 @@ function run_test() {
 
         include_paths+="${PROJECT_PATH} "
         local output_program=${BIN_PATH}/${MAIN_FILENAME}.o
-        compile ${BIN_PATH}/${MAIN_FILENAME}.c
+        compile ${BIN_PATH}/${MAIN_FILENAME}.c ${output_program}
 
-        ${BIN_PATH}/${test_name}.test.o
+        ${output_program}
     done
 }
 
@@ -110,9 +110,9 @@ function run_run() {
 
     include_paths+="${PROJECT_PATH} "
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
-    compile ${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c
+    compile ${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c ${output_program}
 
-    ${BIN_PATH}/$MAIN_FILENAME.o
+    ${output_program}
 }
 
 function cmd_debug() {
@@ -150,7 +150,7 @@ function compile_and_run_debug() {
 
     include_paths+="${PROJECT_PATH} "
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
-    compile ${DEBUG_PATH}/$MAIN_FILENAME.c
+    compile ${DEBUG_PATH}/$MAIN_FILENAME.c ${output_program}
 
     ${output_program} $DEBUG_DATA_FILE
 
@@ -180,13 +180,14 @@ function compile_asm() {
 }
 
 # Compile a .c file
-# c_file: the c file
+# $1: the c file
+# $2: output file
 # object_files: .o files
 # includes: paths to include
-# output_program: output file
 function compile() {
     
     local c_file="$1"
+    local output_program="$2"
     log_debug && echo c_file: $c_file
     log_debug && echo object_files: $object_files
     log_debug && echo include_paths: $include_paths
