@@ -96,6 +96,18 @@ TEST void test_read_file() {
     _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", read_file_to_buffer());
 }
 
+#define TAILLE_MAX 1024
+TEST void test_write_file() {
+    
+    write_file_from_buffer();
+
+    char buffer[TAILLE_MAX] = "";
+    FILE* file = fopen("../work/target/demo_data.txt", "r");
+    fgets(buffer, TAILLE_MAX, file);
+    fclose(file);
+
+    _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", buffer);
+}
 
 
 //void read_from_file(char* filename, char* buffer, int max_size) {
