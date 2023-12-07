@@ -16,6 +16,7 @@
 
 #include <demo_if.h>
 #include <demo_inner_function.h>
+#include <demo_file.h>
 #include <demo_macro.h>
 #include <demo_method.h>
 #include <demo_param.h>
@@ -85,6 +86,16 @@ TEST void test_macro_constant() {
 TEST void test_macro() {
     _assertIntEq(42, macro_set_variable_to_42());
 }
+
+
+TEST void test_read_file() {
+    FILE* file = fopen("../work/target/demo_data.txt", "w");
+    fprintf(file, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    fclose(file);
+
+    _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", read_file_to_buffer());
+}
+
 
 
 //void read_from_file(char* filename, char* buffer, int max_size) {
