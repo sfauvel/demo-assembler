@@ -198,6 +198,12 @@ or
 link:https://makina-corpus.com/blog/metier/2013/utiliser-inotify-pour-tester-en-continu-son-code[]
 
 
+=== CPU Architecture 
+
+Use command
+----
+lscpu | grep "Architecture:"
+----
 
 ////
 == Tests

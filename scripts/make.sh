@@ -143,7 +143,7 @@ function compile_and_run_debug() {
 
     echo "output_program  => $output_program"
     
-    DEBUG_DATA_FILE="$DEBUG_PATH/debug.data"
+    local debug_data_file="$DEBUG_PATH/debug.data"
     MAIN_FILENAME=$MAIN_FILENAME.debug
 
     object_files+=$(compile_asm $LIB_PATH $DEBUG_PATH)
@@ -152,9 +152,9 @@ function compile_and_run_debug() {
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
     compile ${DEBUG_PATH}/$MAIN_FILENAME.c ${output_program}
 
-    ${output_program} $DEBUG_DATA_FILE
+    ${output_program} $debug_data_file
 
-    $PYTHON format_debug.py $DEBUG_DATA_FILE
+    $PYTHON format_debug.py $debug_data_file
 }
 
 
