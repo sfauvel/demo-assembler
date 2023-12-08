@@ -78,7 +78,8 @@ TEST void test_variable() {
     _assertIntEq(42, variable_return(42));
 }
 
-// demo_macro
+/////////////
+// Demo_macro
 TEST void test_macro_constant() {
     _assertIntEq(42, macro_return_42());
 }
@@ -87,9 +88,10 @@ TEST void test_macro() {
     _assertIntEq(42, macro_set_variable_to_42());
 }
 
-
+////////////
+// Demo file
 TEST void test_read_file() {
-    FILE* file = fopen("../work/target/demo_data.txt", "w");
+    FILE* file = fopen("../work/target/demo_read_data.txt", "w");
     fprintf(file, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
     fclose(file);
 
@@ -99,15 +101,28 @@ TEST void test_read_file() {
 #define TAILLE_MAX 1024
 TEST void test_write_file() {
     
-    write_file_from_buffer();
+    write_hard_coded_file_with_alphabet();
 
     char buffer[TAILLE_MAX] = "";
-    FILE* file = fopen("../work/target/demo_data.txt", "r");
+    FILE* file = fopen("../work/target/demo_write_data.txt", "r");
     fgets(buffer, TAILLE_MAX, file);
     fclose(file);
 
     _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", buffer);
 }
+
+TEST void test_write_file_with_param() {
+    
+    write_given_file_with_alphabet("../work/target/demo_write_data_param.txt");
+
+    char buffer[TAILLE_MAX] = "";
+    FILE* file = fopen("../work/target/demo_write_data_param.txt", "r");
+    fgets(buffer, TAILLE_MAX, file);
+    fclose(file);
+
+    _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", buffer);
+}
+
 
 
 //void read_from_file(char* filename, char* buffer, int max_size) {

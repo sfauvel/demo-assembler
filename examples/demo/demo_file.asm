@@ -13,7 +13,8 @@ SYS_OPEN  equ 5
 SYS_CLOSE equ 6
 
         global read_file_to_buffer;
-        global write_file_from_buffer;
+        global write_hard_coded_file_with_alphabet;
+        global write_given_file_with_alphabet;
 
         section .text
 read_file_to_buffer:
@@ -48,27 +49,31 @@ close_file:
         int 80h
         ret
 
+write_hard_coded_file_with_alphabet:
+        mov rdi, file_to_write
+        call write_given_file_with_alphabet
+        ret
 
-write_file_from_buffer:
-    mov rdi, file_to_write
-    mov rsi, 0102o     ;O_CREAT, man open
-    mov rdx, 0666o     ;umode_t
-    mov rax, 2
-    syscall
+write_given_file_with_alphabet:
+        mov rsi, 0102o     ;O_CREAT, man open
+        mov rdx, 0666o     ;umode_t
+        mov rax, 2
+        syscall
 
-    mov rdx, buflen      ;message length
-    mov rsi, buffer   ;message to write
-    mov rdi, rax      ;file descriptor
-    mov rax, 1         ;system call number (sys_write)
-    syscall            ;call kernel
+        mov rdx, 26         ;message length do not include the last 0
+        mov rsi, alphabet   ;message to write
+        mov rdi, rax        ;file descriptor
+        mov rax, 1          ;system call number (sys_write)
+        syscall             ;call kernel
 
-    call close_file
-    ret
+        call close_file
+        ret
 
         section   .data
-file_to_read db "../work/target/demo_data.txt", 0
-file_to_write db "../work/target/demo_write.txt", 0
-buflen: dw 2048 ; Size of our buffer to be used for read
+file_to_read    db "../work/target/demo_read_data.txt", 0
+file_to_write   db "../work/target/demo_write_data.txt", 0
+alphabet        db "ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0
+buflen:         dw 2048 ; Size of our buffer to be used for read
 
         section .bss
 buffer: resb 2048 ; A 2 KB byte buffer used for read
