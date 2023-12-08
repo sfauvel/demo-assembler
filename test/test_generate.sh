@@ -19,9 +19,8 @@ function write_tests() {
         tmp=${tmp/TEST int /}
         tmp=${tmp/TEST void /}
         tmp=${tmp/\(\) {/}
-        writeln "    _verifyWithName(${tmp}, \"${tmp}\");"
+        writeln "    if (!testName || strcmp(testName, \"$tmp\")==0) {_verifyWithName(${tmp}, \"${tmp}\");}"
     done
-
 }
 
 function build_test_file() {
@@ -34,6 +33,7 @@ function build_test_file() {
     tests=$(grep "^TEST " $TEST_FILE)s
 
     writeln "int main(int argc, char **argv) { "
+    writeln "    const char* testName = argv[1];"
     write_tests
     writeln "    return reportTests();"
     writeln "}"

@@ -49,9 +49,10 @@ function clean() {
 
 function cmd_test() {
     clean
-    run_test
+    run_test $@
 }
 
+# It's possible to pass the test name to launch only this one.
 function run_test() {
   
     local param_include_paths="$include_paths"
@@ -75,7 +76,7 @@ function run_test() {
         local output_program=${BIN_PATH}/${MAIN_FILENAME}.o
         compile ${BIN_PATH}/${MAIN_FILENAME}.c ${output_program}
 
-        ${output_program}
+        ${output_program} $@
     done
 }
 
