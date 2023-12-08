@@ -67,6 +67,8 @@ int isFailed=0;
         tests_run++; \
         isFailed=0; \
         printf("%s: ", name); \
+        SHELL_RED \
+        fflush(stdout); \
         test(); \
         SHELL_GREEN \
         printf("%s\n", isFailed?"":"Success"); \
