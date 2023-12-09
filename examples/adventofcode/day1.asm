@@ -18,40 +18,33 @@ calibration:
 store_first:
         xor rax,rax
         mov al, [rdx]
-        sub al, 48
+        sub al, '0'
         mov [value], rax
 
-continue:
         inc rdx
-        mov bl, [rdx]
-        cmp bl, 0
-        je finish 
+        call go_to_next_number
 
-        cmp bl, '0'
-        jl continue
-        cmp bl, '9'
-        jg continue
-        mov al, [rdx]
-        
-        jmp continue
-
-finish:
-        sub al, 48
+        sub al, '0'
         add rax, [value]
 
         ret
 
 go_to_next_number:
         mov al, [rdx]
+        ;cmp al, 0
+        ;je search_finished
+
         cmp al, '0'
         jl next_char
         cmp al, '9'
         jg next_char
-        ret
-        
-next_char:
-        inc rdx
-        jmp go_to_next_number
+
+        search_finished:
+                ret
+                
+        next_char:
+                inc rdx
+                jmp go_to_next_number
 
 
 
