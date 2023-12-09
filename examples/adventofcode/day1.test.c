@@ -27,5 +27,8 @@ TEST void test_should_extract_first_and_last_number_when_not_at_the_end() {
     _assertIntEq(4, calibration("1abc3def"));
 }
 
+TEST void test_should_extract_first_and_last_number_when_not_at_the_beginning() {
+    _assertIntEq(4, calibration("ab1c3def"));
+}
 
 RUN_TESTS()

@@ -11,6 +11,20 @@
 calibration:
         mov rdx, rdi
 
+
+continue_first:
+        mov bl, [rdx]
+        cmp bl, '0'
+        jl next_first
+        cmp bl, '9'
+        jg next_first
+        jmp store_first
+        
+next_first:
+        inc rdx
+        jmp continue_first
+        
+store_first:
         xor rax,rax
         mov al, [rdx]
         sub al, 48
