@@ -11,19 +11,10 @@
 calibration:
         mov rdx, rdi
 
+        call go_to_next_number
+        mov bl, al
 
-continue_first:
-        mov bl, [rdx]
-        cmp bl, '0'
-        jl next_first
-        cmp bl, '9'
-        jg next_first
-        jmp store_first
-        
-next_first:
-        inc rdx
-        jmp continue_first
-        
+
 store_first:
         xor rax,rax
         mov al, [rdx]
@@ -49,6 +40,20 @@ finish:
         add rax, [value]
 
         ret
+
+go_to_next_number:
+        mov al, [rdx]
+        cmp al, '0'
+        jl next_char
+        cmp al, '9'
+        jg next_char
+        ret
+        
+next_char:
+        inc rdx
+        jmp go_to_next_number
+
+
 
         section   .data
 value:                db      0
