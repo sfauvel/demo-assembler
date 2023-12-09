@@ -17,12 +17,17 @@ calibration:
         mov [value], rax
 
 continue:
+        inc rdx
         mov bl, [rdx]
         cmp bl, 0
         je finish 
 
+        cmp bl, '0'
+        jl continue
+        cmp bl, '9'
+        jg continue
         mov al, [rdx]
-        inc rdx
+        
         jmp continue
 
 finish:
