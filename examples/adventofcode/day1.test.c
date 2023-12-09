@@ -31,4 +31,10 @@ TEST void test_should_extract_first_and_last_number_when_not_at_the_beginning() 
     _assertIntEq(4, calibration("ab1c3def"));
 }
 
+
+TEST void test_should_extract_first_and_last_number_when_some_numbers_between() {
+    _assertIntEq(3, calibration("ab1cd4efg2hijk"));
+}
+
+
 RUN_TESTS()

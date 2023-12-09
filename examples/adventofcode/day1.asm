@@ -21,9 +21,14 @@ store_first:
         sub al, '0'
         mov [value], rax
 
+next_number;
+        mov bl, al
         inc rdx
         call go_to_next_number
+        cmp al, 0
+        jne next_number
 
+        mov al, bl
         sub al, '0'
         add rax, [value]
 
@@ -31,8 +36,8 @@ store_first:
 
 go_to_next_number:
         mov al, [rdx]
-        ;cmp al, 0
-        ;je search_finished
+        cmp al, 0
+        je search_finished
 
         cmp al, '0'
         jl next_char
