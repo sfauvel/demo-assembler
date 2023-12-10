@@ -26,17 +26,23 @@ next_number;
         inc rdx
         call go_to_next_number
         cmp al, 0
-        jne next_number
+        je finish_calibration
+        cmp al, 10
+        je finish_calibration
+        jmp next_number
 
+finish_calibration:
         mov al, bl
         sub al, '0'
         add rax, [value]
-
+        
         ret
 
 go_to_next_number:
         mov al, [rdx]
         cmp al, 0
+        je search_finished
+        cmp al, 10
         je search_finished
 
         cmp al, '0'
