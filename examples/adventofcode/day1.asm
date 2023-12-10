@@ -27,7 +27,7 @@ next_number;
         call go_to_next_number
         cmp al, 0
         je finish_calibration
-        cmp al, 10
+        cmp al, CARRIAGE_RETURN
         je finish_calibration
         jmp next_number
 
@@ -42,7 +42,7 @@ go_to_next_number:
         mov al, [rdx]
         cmp al, 0
         je search_finished
-        cmp al, 10
+        cmp al, CARRIAGE_RETURN
         je search_finished
 
         cmp al, '0'
@@ -61,3 +61,4 @@ go_to_next_number:
 
         section   .data
 value:                db      0
+CARRIAGE_RETURN       equ    10
