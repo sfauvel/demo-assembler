@@ -10,16 +10,21 @@
 
     section .text
 
-sum_of_lines: 
-    call calibration
-    add rax, [total]
-    mov [total], rax 
-    inc rdx
-    mov rdi, rdx
-    call calibration
-    add rax, [total]
-    mov [total], rax
-    ret
+sum_of_lines:
+    mov dword[total], 0        ; Reinit total value
+
+    next_line_sum_of_lines:
+        call calibration
+        add rax, [total]
+        mov [total], rax 
+        cmp byte [rdx], 0
+        je return_from_sum_of_lines
+        inc rdx
+        mov rdi, rdx
+        jmp next_line_sum_of_lines
+    return_from_sum_of_lines:
+        mov rax, [total]
+        ret
 
 calibration:
     mov rdx, rdi

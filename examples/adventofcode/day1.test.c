@@ -47,4 +47,9 @@ TEST void test_should_extract_sum_of_lines() {
     _assertIntEq(71, sum_of_lines("1abc3\n5def8"));
 }
 
+TEST void test_advent_of_code_example() {
+    _assertIntEq(142, sum_of_lines("1abc2\npqr3stu8vwx\na1b2c3d4e5f\ntreb7uchet"));
+}
+
+
 RUN_TESTS()
