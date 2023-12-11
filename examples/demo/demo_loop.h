@@ -1,0 +1,1 @@
+int loop_count_iteration(int nb_iteration);

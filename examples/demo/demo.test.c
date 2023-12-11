@@ -23,7 +23,7 @@
 #include <demo_string.h>
 #include <demo_variable.h>
 #include <demo_perf.h>
-
+#include <demo_loop.h>
 
 TEST void test_pass_param() {
     _assertIntEq(321, param_sum_param(1, 20, 300));
@@ -77,6 +77,13 @@ TEST void test_substring_from() {
 
 TEST void test_variable() {
     _assertIntEq(42, variable_return(42));
+}
+
+/////////////
+// Demo_loop
+
+TEST void test_loop() {
+    _assertIntEq(7, loop_count_iteration(7));
 }
 
 /////////////
