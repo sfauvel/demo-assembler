@@ -22,6 +22,7 @@
 #include <demo_param.h>
 #include <demo_string.h>
 #include <demo_variable.h>
+#include <demo_perf.h>
 
 
 TEST void test_pass_param() {
@@ -123,7 +124,29 @@ TEST void test_write_file_with_param() {
     _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", buffer);
 }
 
+////////////
+// Demo perf
 
+TEST void test_perf() {
+    {
+        int result = short_method();
+        long duration = 0;
+        int result_with_measure = measure_perf_short_method(&duration);
+
+        _assertIntEq(result, result_with_measure);
+        _assert(duration > 0);
+        _assert(duration < 100);
+    }
+    {
+        int result = long_method();
+        long duration = 0;
+        int result_with_measure = measure_perf_long_method(&duration);
+
+        _assertIntEq(result, result_with_measure);
+        _assert(duration > 500);
+        _assert(duration < 5000);
+    }
+}
 
 //void read_from_file(char* filename, char* buffer, int max_size) {
 //    FILE *file = fopen(filename, "r");

@@ -170,7 +170,7 @@ In french:
 
 * link:https://openclassrooms.com/fr/courses/2288321-apprenez-a-programmer-en-assembleur-x86/2288944-votre-premier-programme[]
 * link:https://leria-info.univ-angers.fr/~jeanmichel.richer/assembly/Programmation_Assembleur_x86_32_et_64_bits_sous_Linux_Ubuntu.pdf[]
-
+* link:https://www.unilim.fr/pages_perso/tristan.vaccon/cours_nasm.pdf[Programmation Assembleur NASM - Résumé]
 
 === Disasemble
 
@@ -204,6 +204,15 @@ Use command
 ----
 lscpu | grep "Architecture:"
 ----
+
+=== Cycle time
+
+https://stackoverflow.com/questions/54621381/rdtscp-in-nasm-always-returns-the-same-value-timing-a-single-instruction
+
+rdtsc
+
+https://medium.com/geekculture/rdtsc-the-only-way-to-benchmark-fc84562ef734
+http://meseec.ce.rit.edu/eecc250-winter99/250-1-24-2000.pdf
 
 ////
 == Tests
