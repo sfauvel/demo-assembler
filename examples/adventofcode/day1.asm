@@ -7,8 +7,24 @@
     ; Define methods exported
     global  calibration     ;
     global  sum_of_lines   ;
+    global  sum_of_lines_timer   ;
 
     section .text
+
+sum_of_lines_timer:
+    push rsi
+    rdtsc
+    mov [duration], rax
+    call sum_of_lines
+    mov rbx, rax
+
+    rdtsc
+    sub rax, [duration]
+    pop rsi
+    mov [rsi], rax
+
+    mov rax, rbx
+    ret
 
 sum_of_lines:
     mov dword[total], 0        ; Reinit total value
@@ -30,6 +46,12 @@ calibration:
     mov rdx, rdi
 
     call go_to_next_number
+    cmp al, '0'
+    jl  .no_digit
+    cmp al, '9'
+    jg .no_digit
+
+
     mov bl, al
 
     .store_first:
@@ -58,8 +80,13 @@ calibration:
         
         ret
 
+    .no_digit:
+        mov rax, 0
+        ret
+
 go_to_next_number:
     mov al, [rdx]
+
     cmp al, 0
     je .finish
     cmp al, CARRIAGE_RETURN
@@ -82,4 +109,5 @@ go_to_next_number:
     section   .data
 value:        dq      0
 total:        dq      0
+duration:     dq      0
 CARRIAGE_RETURN       equ    10

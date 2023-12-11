@@ -39,6 +39,10 @@ TEST void test_concat_the_digit_with_itself_when_the_first_and_the_last() {
     _assertIntEq(77, calibration("treb7uchet"));
 }
 
+TEST void test_no_digit_should_return_0() {
+    _assertIntEq(0, calibration("trebuchet"));
+}
+
 TEST void test_should_extract_calibration_until_carriage_return() {
     _assertIntEq(13, calibration("1abc3\n5def8"));
 }
