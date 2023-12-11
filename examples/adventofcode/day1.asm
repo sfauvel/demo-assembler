@@ -32,7 +32,10 @@ store_first:
     xor rax,rax
     mov al, [rdx]
     sub al, '0'
+    mov cl, 10
+    mul cl
     mov [value], rax
+    mov al, [rdx]
 
 next_number:
     mov bl, al

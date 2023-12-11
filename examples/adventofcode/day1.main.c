@@ -9,6 +9,6 @@
 #include <day1.h>
 
 int main(int argc, char **argv) {
-    int result = sum_of_lines("1abc3\n5def8");
+    int result = calibration("1abc3\n");
     printf("Result:%d\n", result);
 }
