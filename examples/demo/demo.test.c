@@ -106,6 +106,14 @@ TEST void test_read_file() {
     _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", read_file_to_buffer());
 }
 
+TEST void test_read_file_char_by_char() {
+    FILE* file = fopen("../work/target/demo_read_data.txt", "w");
+    fprintf(file, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    fclose(file);
+
+    _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", read_file_char_by_char());
+}
+
 #define TAILLE_MAX 1024
 TEST void test_write_file() {
     
