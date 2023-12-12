@@ -105,7 +105,7 @@ calibration_from_buffer:
 
 reinit:
     mov dword [value], 0
-    mov dword [second_value], 0
+    mov byte [second_value], 0
     mov byte  [is_second_value], 0
     ret
 
@@ -145,7 +145,7 @@ compute_character:
     jg .finish
 
     sub al, '0'
-    mov [second_value], rax
+    mov [second_value], al
 
     cmp byte [is_second_value], 1
     je .finish
@@ -159,9 +159,9 @@ compute_character:
 
     .end_of_line:
         mov rax, [value]
-        add rax, [second_value]
+        add al, [second_value]
         mov [value], rax
-        mov dword [second_value], 0
+        mov byte [second_value], 0
 
         add rax, [total]
         mov [total], rax
@@ -175,7 +175,7 @@ compute_character:
     section   .data
 is_second_value:    db     0
 value:              dq      0
-second_value:       dq      0
+second_value:       db      0
 total:              dq      0
 duration:           dq      0
 
