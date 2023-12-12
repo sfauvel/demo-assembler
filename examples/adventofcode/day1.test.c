@@ -18,8 +18,11 @@
 #include <day1.h>
 
 
-TEST void test_should_extract_first_and_last_number() {
+TEST void test_should_extract_first_and_last_number_finish_by_new_line() {
     _assertIntEq(13, calibration("1abc3\n"));
+}
+
+TEST void test_should_extract_first_and_last_number() {
     _assertIntEq(9, calibration("0abc9"));
 }
 
@@ -54,6 +57,11 @@ TEST void test_should_extract_sum_of_lines() {
 TEST void test_advent_of_code_example() {
     _assertIntEq(142, sum_of_lines("1abc2\npqr3stu8vwx\na1b2c3d4e5f\ntreb7uchet"));
 }
+
+TEST void test_advent_from_input_file() {
+    _assertIntEq(55172, calibration_from_file("../examples/adventofcode/input.txt"));
+}
+
 
 
 RUN_TESTS()
