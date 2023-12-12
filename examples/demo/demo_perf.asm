@@ -50,7 +50,7 @@ short_method:
 long_method:
     mov rax, 1000
     
-    .next_loop
+    .next_loop:
         cmp rax, 0
         dec rax
         jne .next_loop
