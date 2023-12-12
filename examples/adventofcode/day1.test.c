@@ -51,11 +51,11 @@ TEST void test_should_extract_calibration_until_carriage_return() {
 }
 
 TEST void test_should_extract_sum_of_lines() {
-    _assertIntEq(71, sum_of_lines("1abc3\n5def8"));
+    _assertIntEq(71, calibration_from_buffer("1abc3\n5def8"));
 }
 
 TEST void test_advent_of_code_example() {
-    _assertIntEq(142, sum_of_lines("1abc2\npqr3stu8vwx\na1b2c3d4e5f\ntreb7uchet"));
+    _assertIntEq(142, calibration_from_buffer("1abc2\npqr3stu8vwx\na1b2c3d4e5f\ntreb7uchet"));
 }
 
 TEST void test_advent_from_input_file() {

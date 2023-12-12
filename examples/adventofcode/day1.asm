@@ -6,9 +6,9 @@
 
     ; Define methods exported
     global  calibration
-    global  sum_of_lines
     global  sum_of_lines_timer
     global  calibration_from_file
+    global  calibration_from_buffer
 
     SYS_EXIT  equ 1
     STDIN     equ 0
@@ -17,12 +17,14 @@
     SYS_WRITE equ 4
     SYS_OPEN  equ 5
     SYS_CLOSE equ 6
+    END_OF_FILE           equ    0
     CARRIAGE_RETURN       equ    10
     
     section .text
 calibration_from_file:
+    mov rdx, rdi               ; Get filename
+    mov dword[total], 0        ; Reinit total value
 
-    mov dword [total],0
     call open_file
     mov [file_descriptor], rax
 
@@ -37,7 +39,7 @@ calibration_from_file:
         cmp rax, 0
         je .eof
 
-        ; do some stuff with current_char
+        ; Compute next character
         mov rdx, current_char
         call compute_character
         
@@ -51,9 +53,13 @@ calibration_from_file:
         mov rax, [total]
         ret
 
+; Parameters:
+;   RDX:    filename
+; Return: 
+;   RAX:    file descriptor
 open_file:
     mov rax, SYS_OPEN        ;sys_open file with fd in ebx
-    mov rbx, file_to_read    ;file to be read
+    mov rbx, rdx             ;file to be read
     mov rcx, 0               ;O_RDONLY
     int 80h
     ret
@@ -67,7 +73,7 @@ sum_of_lines_timer:
     push rsi
     rdtsc
     mov [duration], rax
-    call sum_of_lines
+    call calibration_from_buffer
     mov rbx, rax
 
     rdtsc
@@ -78,24 +84,29 @@ sum_of_lines_timer:
     mov rax, rbx
     ret
 
-sum_of_lines:
+
+calibration_from_buffer:
+    mov rdx, rdi               ; Get buffer
     mov dword[total], 0        ; Reinit total value
 
-    .next_line:
-        call calibration
-        cmp byte [rdx], 0
+    .read_next_char:
+    
+        call compute_character
+        
+        cmp byte [rdx], END_OF_FILE
         je .finish
-        ; It's a carriage return
         inc rdx
-        mov rdi, rdx
-        jmp .next_line
+        
+        jmp .read_next_char
+
     .finish:
         mov rax, [total]
         ret
+
 reinit:
     mov dword [value], 0
     mov dword [second_value], 0
-    mov byte [is_second], 0
+    mov byte  [is_second_value], 0
     ret
 
 calibration:
@@ -122,7 +133,7 @@ compute_character:
     mov al, [rdx]
 
     ; check end of line
-    cmp al, 0
+    cmp al, END_OF_FILE
     je .end_of_line
     cmp al, CARRIAGE_RETURN
     je .end_of_line
@@ -136,14 +147,14 @@ compute_character:
     sub al, '0'
     mov [second_value], rax
 
-    cmp byte [is_second], 1
+    cmp byte [is_second_value], 1
     je .finish
 
     .first:
         mov cl, 10
         mul cl
         mov [value], rax
-        mov byte [is_second], 1
+        mov byte [is_second_value], 1
         jmp .finish
 
     .end_of_line:
@@ -154,7 +165,7 @@ compute_character:
 
         add rax, [total]
         mov [total], rax
-        mov byte [is_second], 0
+        mov byte [is_second_value], 0
         jmp .finish
 
     .finish:
@@ -162,12 +173,11 @@ compute_character:
 
 
     section   .data
-file_to_read:    db "../examples/adventofcode/input.txt", 0
-is_second:    db     0
-value:        dq      0
-second_value: dq      0
-total:        dq      0
-duration:     dq      0
+is_second_value:    db     0
+value:              dq      0
+second_value:       dq      0
+total:              dq      0
+duration:           dq      0
 
 current_length:  dq 0
 buffer_head:     dq 0

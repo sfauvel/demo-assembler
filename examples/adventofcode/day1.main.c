@@ -35,12 +35,12 @@ void compute_from_file() {
     fclose(f);
     buffer[index] = 0;
     printf("[%s]\n", buffer);
-    int result = sum_of_lines(buffer);
+    int result = calibration_from_buffer(buffer);
     printf("Result=%d (should be 55172)\n", result);
 }
 
 void compute_example(const char* text) {    
-    int result = sum_of_lines(text);
+    int result = calibration_from_buffer(text);
     printf("Text:%s\n", text);
     printf("Result:%d\n", result);
 }
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
     //compute_example("1abc3");
     compute_example("abc");
 
-    //compute_perf();
+    compute_perf();
 
-    compute_from_file();
+    //compute_from_file();
 }
