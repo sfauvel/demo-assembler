@@ -10,6 +10,9 @@
     global  calibration_from_file
     global  calibration_from_buffer
 
+    global  calibration_from_file_timer
+    global  calibration_from_buffer_timer
+
     SYS_EXIT  equ 1
     STDIN     equ 0
     STDOUT    equ 1
@@ -20,6 +23,23 @@
     END_OF_FILE           equ    0
     CARRIAGE_RETURN       equ    10
     
+    %macro MONITOR_EXECUTION 1
+        push rsi
+        rdtsc
+        mov [duration], rax
+        call %1
+        mov rbx, rax
+
+        rdtsc
+        sub rax, [duration]
+        pop rsi
+        mov [rsi], rax
+
+        mov rax, rbx
+        ret
+    %endmacro
+
+
     section .text
 calibration_from_file:
     mov rdx, rdi               ; Get filename
@@ -70,20 +90,13 @@ close_file:
     ret
 
 sum_of_lines_timer:
-    push rsi
-    rdtsc
-    mov [duration], rax
-    call calibration_from_buffer
-    mov rbx, rax
+    MONITOR_EXECUTION calibration_from_buffer
 
-    rdtsc
-    sub rax, [duration]
-    pop rsi
-    mov [rsi], rax
+calibration_from_file_timer:
+    MONITOR_EXECUTION calibration_from_file
 
-    mov rax, rbx
-    ret
-
+calibration_from_buffer_timer:
+    MONITOR_EXECUTION calibration_from_buffer
 
 calibration_from_buffer:
     mov rdx, rdi               ; Get buffer
@@ -104,7 +117,7 @@ calibration_from_buffer:
         ret
 
 reinit:
-    mov dword [value], 0
+    mov byte [value], 0
     mov byte [second_value], 0
     mov byte  [is_second_value], 0
     ret
@@ -125,7 +138,7 @@ calibration:
         jmp .next_character
 
     .finish:
-        mov rax, [value]
+        mov al, [value]
         ret
 
 compute_character:
@@ -153,14 +166,14 @@ compute_character:
     .first:
         mov cl, 10
         mul cl
-        mov [value], rax
+        mov [value], al
         mov byte [is_second_value], 1
         jmp .finish
 
     .end_of_line:
-        mov rax, [value]
+        mov al, [value]
         add al, [second_value]
-        mov [value], rax
+        mov [value], al
         mov byte [second_value], 0
 
         add rax, [total]
@@ -174,7 +187,7 @@ compute_character:
 
     section   .data
 is_second_value:    db     0
-value:              dq      0
+value:              db      0
 second_value:       db      0
 total:              dq      0
 duration:           dq      0
