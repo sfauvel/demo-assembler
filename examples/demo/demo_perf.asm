@@ -9,38 +9,54 @@
     global  long_method                 ;
     global  measure_perf_long_method    ;
 
+    %macro MONITOR_EXECUTION 1
+        push rax
+        rdtsc                ; Put timestamp counter to rax
+        mov [duration_value], rax
+        pop rax
+
+        call %1
+
+        push rax
+        rdtsc                ; Get the new timestamp counter
+        sub rax, [duration_value]  ; Calculate the duration
+        mov [duration_value], rax
+        pop rax
+    %endmacro
+
     section   .data
-duration:     dq      0
+duration_value: dq      0
+duration_param: dq      0
 
         section .text
 measure_perf_short_method:
-    push rdi             ; First parameter is a reference to a long
-    rdtsc                ; Put timestamp counter to rax
-    mov [duration], rax
-    call short_method
-    mov rbx, rax         ; Save value to return
+    mov [duration_param], rdi  ; First parameter is a reference to the long that will contain the duration
+    
+    MONITOR_EXECUTION short_method  ; Execute the method to monitor
 
-    rdtsc                ; Get the new timestamp counter
-    sub rax, [duration]  ; Calculate the duration
-    pop rsi              ; Set the value to return
-    mov [rsi], rax
+    push rax
+    push rbx
+    mov rbx, [duration_param]      ; Set the return parameter with duration value
+    mov rax, [duration_value]
+    mov [rbx], rax
+    pop rbx
+    pop rax
 
-    mov rax, rbx         ; Restore the value to return
     ret
 
 measure_perf_long_method:
-    push rdi             ; First parameter is a reference to a long
-    rdtsc                ; Put timestamp counter to rax
-    mov [duration], rax
-    call long_method
-    mov rbx, rax         ; Save value to return
+    mov [duration_param], rdi  ; First parameter is a reference to the long that will contain the duration
+    
+    MONITOR_EXECUTION long_method  ; Execute the method to monitor
 
-    rdtsc                ; Get the new timestamp counter
-    sub rax, [duration]  ; Calculate the duration
-    pop rsi              ; Set the value to return
-    mov [rsi], rax
+    push rax
+    push rbx
+    mov rbx, [duration_param]      ; Set the return parameter with duration value
+    mov rax, [duration_value]
+    mov [rbx], rax
+    pop rbx
+    pop rax
 
-    mov rax, rbx         ; Restore the value to return
     ret
 
 short_method:
@@ -51,12 +67,10 @@ long_method:
     mov rax, 1000
     
     .next_loop:
-        cmp rax, 0
         dec rax
+        cmp rax, 0
         jne .next_loop
 
         mov rax, 56
-        ret
-
-    section   .data
-fsdff:     dq      0
+        
+    ret
