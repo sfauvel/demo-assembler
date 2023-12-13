@@ -74,7 +74,7 @@ read_file_char_by_char:
                 mov rbx, [file_descriptor]
                 call close_file
 
-        .finish
+        .finish:
                 ; Add a 0 at the end of the buffer
                 ;mov rax, buffer
                 ;add rax, [current_length]

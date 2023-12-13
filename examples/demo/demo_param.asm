@@ -9,7 +9,29 @@
 
         section .text
 param_sum_param:
-        mov rax, rdi
-        add rax, rsi
-        add rax, rdx
+        push rdx
+        push rsi
+        push rdi
+
+        xor rbx, rbx
+
+        pop rax
+        mov rcx, 1
+        mul rcx
+        add rax, rbx
+        mov rbx, rax
+
+        pop rax
+        mov rcx, 10
+        mul rcx
+        add rax, rbx
+        mov rbx, rax
+       
+        pop rax
+        mov rcx, 100
+        mul rcx
+        add rax, rbx
+        mov rbx, rax
+        
+        mov rax, rbx
         ret
