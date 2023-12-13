@@ -173,7 +173,7 @@ function compile_asm() {
         [ -f "$asm_file" ] || continue
         local filename=$(extract_filename $asm_file asm)
         local output_file=${output_path}/${filename}.o
-        nasm $asm_file -o ${output_file} -felf64
+        nasm $asm_file -o ${output_file} -i ${asm_path} -felf64
 
         output_files+=" ${output_file} "
     done
