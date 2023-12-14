@@ -5,36 +5,38 @@ import textwrap
 def read_data(data_filepath):
     with open(data_filepath, "r") as file:
         content = file.read()
-    
+
     lines = content.split("\n")
 
     separator="|"
     table = [line.split(separator) for line in lines if len(line.split(separator)) == len(memory_registers) + 1]
-    
+
     return table
 
-def format_table(table):
-     
+def format_table(table, registers_to_display=None):
+    if registers_to_display is None:
+        registers_to_display = memory_registers
+
     output = "|====\n"
-    output += "| " + "| ".join([register.strip() + (12-len(register))*"{nbsp}" for register in memory_registers]) + "\n\n"
-    
+    output += "| " + "| ".join([register.strip() + (12-len(register))*"{nbsp}" for register in registers_to_display]) + "\n\n"
+
     for nb_line in range(len(table)):
         output += f"| {table[nb_line][1]} a|"
-        
+
         output += " a| ".join([format_register(register, table[nb_line][index+2], table[nb_line-1][index+2]) \
             if value_has_changed(table, nb_line, index+2) else "" \
-            for (index,register) in enumerate(memory_registers[1:])])
-        
+            for (index,register) in enumerate(memory_registers[1:]) if register in registers_to_display])
+
         output += "\n"
     output += "|===="
     return output
 
 def format_register(register, value, last_value):
-    
+
     if register == "RSP":
         return format_stack_value(value.split(","))
         #return "\n".join([format_stack_value(simple_value) for simple_value in value.split(",")])
-    
+
     if register == "FLAGS":
         return "".join([f"{flag}={value[flag_index]}&nbsp;" \
             for (flag_index,flag) in enumerate(FLAGS) \
@@ -51,31 +53,31 @@ def format_stack_value(values):
             if formatted_value == values[i].strip():
                 formatted_value += " +"
             formatted_value += "\n"
-            
-        result += formatted_value
-        
 
-        
+        result += formatted_value
+
+
+
     return result
-    
+
 def format_register_value(value):
     formatted_value = value.strip()
     if len(formatted_value) > 6:
         formatted_value = textwrap.dedent(f"""\
-            [%collapsible] 
+            [%collapsible]
             .{formatted_value[-4:]}
             ====
             {formatted_value}
             ====
         """)
-        
+
     return formatted_value
 
 
 
 def value_has_changed(table, nb_line, register_index):
     return nb_line == 0 or table[nb_line][register_index] != table[nb_line-1][register_index]
-    
+
 memory_registers = [
     "INSTRUCTION",
     "RAX",
@@ -90,7 +92,7 @@ memory_registers = [
     "R11",
     "RSP",
     "FLAGS"
-]    
+]
 
 
 #https://en.wikipedia.org/wiki/FLAGS_register
@@ -121,8 +123,11 @@ if __name__ == "__main__":
 
     output_doc = f"{DEBUG_PATH}/format.adoc"
     with open(output_doc, "w") as file:
-        doc = format_table(table)
+
+        registers_to_display = memory_registers.copy()
+        registers_to_display.remove("RSP")
+
+        doc = format_table(table, registers_to_display)
         file.write(doc)
-    
+
     print(f"File generated: {os.path.abspath(output_doc)}")
-    

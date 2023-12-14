@@ -26,24 +26,29 @@ def copy_asm():
             if (re.search('section +\.text', line)):
                 output.write(macro_code())
                 procedure_part = True
-            
+
             if (re.search('section +\.data', line)):
                 procedure_part = False
             if (re.search('section +\.bss', line)):
                 procedure_part = False
 
+            if procedure_part:
+                if (line.strip().startswith("call ")):
+                    output.write(f"        DISPLAY_CMD instruction_{DEMO}_{counter}\n")
+                    counter += 1
+                
             output.write(line)
             if procedure_part:
                 if (line.strip() != ""):
                     if line.startswith("algo_to_debug:"):
                         output.write(f"        call begin_table\n")
-                   
+                    
                     instructions.append(line.strip())
                     output.write(f"        DISPLAY_CMD instruction_{DEMO}_{counter}\n")
                     counter += 1
-            
+
         output.write(debug_code())
-        
+
         counter = 0
 
         output.write(f"        section   .data\n")
@@ -52,14 +57,25 @@ def copy_asm():
         output.write(f"cell       db       '|', 0;\n")
         output.write(f"new_line   db       10, 0;\n")
         output.write(f"next_line  db       ',',0;\n")
-            
+
         for line in instructions:
-            formatted_line = line.split(";")[0].strip().replace("'","\"")#.replace(':','\\:')
-            output.write(f"instruction_{DEMO}_{counter}  db       '{formatted_line}',0;\n")
-            counter += 1
-            
-            
-            
+            #.replace(':','\\:')
+            formatted_line = line.split(";")[0].strip() \
+                .replace("'","\"") \
+                .replace(" ", "&nbsp;")
+
+
+            if (line.strip().startswith("call ")):
+                output.write(f"instruction_{DEMO}_{counter}  db       '>>>&nbsp;{formatted_line}',0;\n")
+                counter += 1
+                output.write(f"instruction_{DEMO}_{counter}  db       '<<<&nbsp;{formatted_line}',0;\n")
+                counter += 1
+            else:
+                output.write(f"instruction_{DEMO}_{counter}  db       '{formatted_line}',0;\n")
+                counter += 1
+
+
+
             # rsp :140729689718504
             # rbp :140729689718544 => +40=5*8
 def macro_code():
@@ -70,11 +86,11 @@ def macro_code():
         extern display_flags
 
         %macro DISPLAY_CMD 1
-                
+
                 push rax
                 push rbx
                 push rcx
-                push rdi   
+                push rdi
                 push rsi
                 push rdx
                 push r8
@@ -82,14 +98,14 @@ def macro_code():
                 push r10
                 push r11
                 pushfq
-                
-                
+
+
                 mov rdi, cell
                 call print_text
-                
+
                 mov rdi, %1
                 call print_text
-                
+
                 PRINT_REGISTER 8*10
                 PRINT_REGISTER 8*9
                 PRINT_REGISTER 8*8
@@ -100,30 +116,30 @@ def macro_code():
                 PRINT_REGISTER 8*3
                 PRINT_REGISTER 8*2
                 PRINT_REGISTER 8*1
-                
-                
+
+
                 mov rdi, cell
                 call print_text
                 mov rax, rsp
                 add rax, 8*11 ; 8*Number of value pushed and printed in this macro
                 mov rdi, rax
                 call display_stack
-                
-                
+
+
                 mov rdi, cell
                 call print_text
                 mov rsi, [rsp]
                 call display_flags
-                
+
                 mov rdi, new_line
                 call print_text
-                
+
                 popfq
                 pop r11
                 pop r10
                 pop r9
                 pop r8
-                pop rdx   
+                pop rdx
                 pop rsi
                 pop rdi
                 pop rcx
@@ -131,23 +147,23 @@ def macro_code():
                 pop rax
 
         %endmacro
-        
-        
+
+
         %macro PRINT_REGISTER 1
                 mov rdi, cell
                 call print_text
-                
+
                 mov rdi, [rsp+%1]
-                call print_number  
-                
+                call print_number
+
                 mov rdi, space
                 call print_text
         %endmacro
-        
 
-        
+
+
     """
-    
+
 def debug_code():
     return """
 """
@@ -159,5 +175,5 @@ if __name__ == "__main__":
     PROJECT_PATH=sys.argv[1]
     DEMO=sys.argv[2]
     DEBUG_PATH=sys.argv[3]
-   
+
     copy_asm()
