@@ -2,6 +2,8 @@
 #include <inttypes.h>
 #include <limits.h>
 #include <string.h>
+#include <sys/time.h>
+#include <time.h>
 
 #include <stdlib.h>
 #include <fcntl.h>
@@ -9,6 +11,7 @@
 
 int run_perf_with_parameter(unsigned long* duration);
 unsigned long run_perf_return_value();
+void method_to_monitor();
 
 void run_with_duration_return_from_the_method() {
    unsigned long result = run_perf_return_value();
@@ -45,8 +48,72 @@ void iterate_to_compute_average_time() {
 
 }
 
+
+
+#define CYCLES_PER_SEC(ghz)     ((ghz) * 1e9)
+#define CYCLES_PER_MSEC(ghz)    ((ghz) * 1e6)
+#define CYCLES_PER_USEC(ghz)    ((ghz) * 1e3)
+#define GHZ 2.8 // Frequency of my computer : `cat /proc/cpuinfo | grep Hz`
+
+#define CALL_METHOD_TO_MONITOR method_to_monitor()
+
+double iteration_calibration_for_one_second(const int iteration_for_calibration) {
+   time_t start_clock_calibration = clock();
+    for (int i=0; i<iteration_for_calibration; i++) {
+       CALL_METHOD_TO_MONITOR;
+    }
+    time_t end_clock_calibration = clock();
+    unsigned long duration_clock_calibration = end_clock_calibration - start_clock_calibration;
+   
+    double iterations_in_1_second = 1e6*iteration_for_calibration/duration_clock_calibration;
+    return iterations_in_1_second;
+}
+
+void iterate_to_compute_average_time_from_c() {
+
+
+    unsigned long  NB_ITERATION_MAX = iteration_calibration_for_one_second(1000)*5;
+
+    //unsigned long  NB_ITERATION_MAX = 1000*1000*100;
+    unsigned long nb_iteration=0;
+    time_t start_clock = clock();
+    struct timeval stop_time, start_time;
+    gettimeofday(&start_time, NULL);
+
+    // Clock => number of ticks of a process (pause are not counted)
+    // Time => real time
+    //printf("%lu clock time, %f\n",duration_clock_calibration, (double)1e6/(double)duration_clock_calibration*nb_iteration_calibration);   
+    printf("Nb iteration: %lu \n",NB_ITERATION_MAX);
+
+    time_t t;   // not a primitive datatype
+    while (1) {   
+        nb_iteration++;
+  
+        CALL_METHOD_TO_MONITOR;
+        
+        if (nb_iteration >= NB_ITERATION_MAX) { 
+            time_t end_clock = clock();
+            time(&t);
+            gettimeofday(&stop_time, NULL);
+    
+            unsigned long duration_time =(stop_time.tv_sec - start_time.tv_sec) * 1000000 + (stop_time.tv_usec - start_time.tv_usec);
+            unsigned long duration_clock = end_clock - start_clock;
+
+            //  printf("%ld %s\n", end-start, ctime(&t));
+            printf("%.2f clocks, clock:%.6fms, time:%.6fms, (%ld iterations - %.3fs)\n", (double)duration_clock/(double)nb_iteration*CYCLES_PER_USEC(GHZ), (double)duration_clock/(double)nb_iteration/1000.0, (double)duration_time/(double)nb_iteration/1000.0, nb_iteration, (double)duration_time / 1e6);
+           
+            nb_iteration = 0;
+            start_clock = end_clock;
+            start_time = stop_time;
+        }
+   }
+
+}
+
+
 int main(int argc, char **argv) {
-   run_with_duration_return_from_the_method();
-   run_with_duration_passing_as_parameter_to_the_method();
-   iterate_to_compute_average_time();
+   //run_with_duration_return_from_the_method();
+   //run_with_duration_passing_as_parameter_to_the_method();
+   //iterate_to_compute_average_time();
+   iterate_to_compute_average_time_from_c();
 }

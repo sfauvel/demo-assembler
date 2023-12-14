@@ -6,7 +6,7 @@
         
         global run_perf_with_parameter ; Pass as first parameter the variable with timestamp counter to return. 
         global run_perf_return_value   ; Return the timestamp counter.
-
+        global method_to_monitor 
 
         %include "perf.mac"
 
