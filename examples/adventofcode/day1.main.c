@@ -97,7 +97,7 @@ void compute_perf_from_file() {
 #define GHZ 2.8 // Frequency of my computer : `cat /proc/cpuinfo | grep Hz`
 
 void iterate_to_compute_average_time_from_c(const char* filename) {
-    const unsigned long  NB_ITERATION_MAX = 200;
+    const unsigned long  NB_ITERATION_MAX = 1000;
     unsigned long nb_iteration=0;
     time_t start_clock = clock();
     struct timeval stop_time, start_time;
