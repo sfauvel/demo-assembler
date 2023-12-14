@@ -13,6 +13,10 @@ int run_perf_with_parameter(unsigned long* duration);
 unsigned long run_perf_return_value();
 void method_to_monitor();
 
+char* read_file_to_buffer();
+char* read_file_char_by_char();
+char* read_file_by_blocks();
+
 void run_with_duration_return_from_the_method() {
    unsigned long result = run_perf_return_value();
    printf("run_perf_return_value\n");
@@ -55,7 +59,10 @@ void iterate_to_compute_average_time() {
 #define CYCLES_PER_USEC(ghz)    ((ghz) * 1e3)
 #define GHZ 2.8 // Frequency of my computer : `cat /proc/cpuinfo | grep Hz`
 
-#define CALL_METHOD_TO_MONITOR method_to_monitor()
+//#define CALL_METHOD_TO_MONITOR method_to_monitor()
+//#define CALL_METHOD_TO_MONITOR read_file_to_buffer()
+//#define CALL_METHOD_TO_MONITOR read_file_char_by_char()
+#define CALL_METHOD_TO_MONITOR read_file_by_blocks()
 
 double iteration_calibration_for_one_second(const int iteration_for_calibration) {
    time_t start_clock_calibration = clock();
@@ -70,7 +77,6 @@ double iteration_calibration_for_one_second(const int iteration_for_calibration)
 }
 
 void iterate_to_compute_average_time_from_c() {
-
 
     unsigned long  NB_ITERATION_MAX = iteration_calibration_for_one_second(1000)*5;
 
@@ -110,10 +116,29 @@ void iterate_to_compute_average_time_from_c() {
 
 }
 
+void run_read_all_file_with_one_call() {
+   const char* x = read_file_to_buffer();
+   printf("%s", x);
+}
+
+void run_read_file_char_by_char() {
+   
+   const char* x = read_file_char_by_char();
+   printf("%s", x);
+   
+}
+
 
 int main(int argc, char **argv) {
+   system( "cp ../examples/perf/perf_file.asm ../work/target/demo_read_data.txt");
+   
    //run_with_duration_return_from_the_method();
    //run_with_duration_passing_as_parameter_to_the_method();
    //iterate_to_compute_average_time();
-   iterate_to_compute_average_time_from_c();
+   //iterate_to_compute_average_time_from_c();
+
+   //run_read_all_file_with_one_call();
+   //run_read_file_char_by_char();
+   
+   
 }

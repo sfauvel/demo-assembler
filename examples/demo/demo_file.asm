@@ -12,12 +12,76 @@ SYS_WRITE equ 4
 SYS_OPEN  equ 5
 SYS_CLOSE equ 6
 
+BLOCK_SIZE equ 1000
+
         global read_file_to_buffer;
         global write_hard_coded_file_with_alphabet;
         global write_given_file_with_alphabet;
         global read_file_char_by_char;
+        global read_file_by_blocks;
 
         section .text
+
+read_file_by_blocks:
+        mov dword [current_length], 0
+        mov dword [buffer_head], buffer
+        
+        call open_file
+         mov [file_descriptor], rax  ;store new (!) fd of the same file
+
+        .read_from_file:
+                mov rax, SYS_READ       ;sys_read
+                mov rbx, [file_descriptor]
+                mov rcx, short_buffer         ;pointer to destination buffer
+                mov rdx, BLOCK_SIZE         ;length of data to be read
+                int 80h
+
+                ; At this point rax contains number of characters read
+                cmp rax, 0
+                je .end_of_file
+                
+                mov rbx, short_buffer
+                mov rcx, rax
+                .next_char:
+                        push rcx
+                        push rax
+                       
+                        mov al, [rbx]
+                        mov [current_char], al
+
+                        push rbx
+                        call .do_some_stuff
+                        pop rbx
+
+                        inc rbx
+
+                        pop rax
+                        pop rcx
+                loop .next_char ; rcx = rcx - 1, if rcx != 0, then jump to .next
+
+                jmp .read_from_file
+
+        .end_of_file:
+                mov rax, [buffer_head] 
+                mov word [rax], 0
+
+        call close_file
+
+        mov rax, buffer
+        ret
+
+        .do_some_stuff:
+                ;mov rax, buffer
+                ;add rax, [current_length] ; Buffer + string length => after the last character
+                mov rax, [buffer_head]
+
+                mov cl, [current_char] ; copy char to buffer (rax)
+                mov [rax], cl
+
+                inc byte  [current_length]  ; increment length
+                inc dword [buffer_head]     ; increment buffer_head
+                ret
+
 read_file_to_buffer:
         
         call open_file
@@ -131,9 +195,10 @@ file_to_write:   db "../work/target/demo_write_data.txt", 0
 alphabet:        db "ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0
 current_length:  dq 0
 buffer_head:     dq 0
-buflen:          dw 2048 ; Size of our buffer to be used for read
 file_descriptor: dq 0
+buflen:          dw 2048 ; Size of our buffer to be used for read
 
         section .bss
 current_char:    resb 1
 buffer:          resb 2048 ; A 2 KB byte buffer used for read
+short_buffer:    resb BLOCK_SIZE ; 
