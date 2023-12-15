@@ -23,7 +23,6 @@
     END_OF_FILE           equ    0
     CARRIAGE_RETURN       equ    10
 
-    BLOCK_SIZE equ 1000
     
     %macro MONITOR_EXECUTION 1
         push rsi
@@ -41,56 +40,61 @@
         ret
     %endmacro
 
+BLOCK_SIZE equ 1000
+
+    section .data
+current_length:  dq 0
+file_descriptor: dq 0
+
+    section .bss
+current_char:    resb 1
+short_buffer:    resb BLOCK_SIZE
 
     section .text
 
-calibration_from_file:
-        mov rdx, rdi               ; Get filename
-        mov dword[total], 0        ; Reinit total value
-   
-        mov dword [current_length], 0
+compute_file:
+    mov dword [current_length], 0
         
-        call open_file
-         mov [file_descriptor], rax  ;store new (!) fd of the same file
+    call open_file
+    mov [file_descriptor], rax  ;store new (!) fd of the same file
 
-        .read_from_file:
-                mov rax, SYS_READ       ;sys_read
-                mov rbx, [file_descriptor]
-                mov rcx, short_buffer         ;pointer to destination buffer
-                mov rdx, BLOCK_SIZE         ;length of data to be read
-                int 80h
+    .read_from_file:
+        mov rax, SYS_READ       
+        mov rbx, [file_descriptor]
+        mov rcx, short_buffer         ;pointer to destination buffer
+        mov rdx, BLOCK_SIZE           ;length of data to be read
+        int 80h
 
-                ; At this point rax contains number of characters read
-                cmp rax, 0
-                je .end_of_file
-                
-                mov rbx, short_buffer
-                mov rcx, rax
-                .next_char:
-                        push rcx
-                        push rbx
-                       
-                        mov al, [rbx]
-                        mov [current_char], al
+        ; At this point rax contains number of characters read
+        cmp rax, 0
+        je .end_of_file
+        
+        mov rbx, short_buffer
+        mov rcx, rax
+        .next_char:
+            push rcx
+            push rbx
+            
+            mov al, [rbx]
+            mov [current_char], al
 
-                        ; Compute one character
-                        mov rdx, current_char
-                        call compute_character
+            ; Compute one character
+            mov rdx, current_char
+            call [function_pointer]
 
-                        pop rbx
-                        inc rbx
+            pop rbx
+            inc rbx
 
-                        pop rcx
-                loop .next_char ; rcx = rcx - 1, if rcx != 0, then jump to .next
+            pop rcx
+        loop .next_char ; rcx = rcx - 1, if rcx != 0, then jump to .next
 
-                jmp .read_from_file
+        jmp .read_from_file
 
-        .end_of_file:
-            call close_file
+    .end_of_file:
+        call close_file
 
-       .finish:
-            mov rax, [total]
-            ret
+    ret
+
 
 ; Parameters:
 ;   RDX:    filename
@@ -107,6 +111,18 @@ close_file:
     mov rax, SYS_CLOSE    ;sys_close file
     int 80h
     ret
+
+calibration_from_file:
+        mov rdx, rdi               ; Get filename
+        mov dword[total], 0        ; Reinit total value
+
+        mov dword [function_pointer], compute_character
+   
+        call compute_file
+       .finish:
+            mov rax, [total]
+            ret
+
 
 sum_of_lines_timer:
     MONITOR_EXECUTION calibration_from_buffer
@@ -211,11 +227,7 @@ second_value:       db      0
 total:              dq      0
 duration:           dq      0
 
-current_length:  dq 0
+
 buffer_head:     dq 0
-file_descriptor: dq 0
+function_pointer: dq 0
 
-
-    section .bss
-current_char:    resb 1
-short_buffer:    resb BLOCK_SIZE
