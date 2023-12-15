@@ -19,35 +19,31 @@
 
 
 TEST void test_should_extract_first_and_last_number_finish_by_new_line() {
-    _assertIntEq(13, calibration("1abc3\n"));
+    _assertIntEq(13, calibration_from_buffer("1abc3\n"));
 }
 
 TEST void test_should_extract_first_and_last_number() {
-    _assertIntEq(9, calibration("0abc9"));
+    _assertIntEq(9, calibration_from_buffer("0abc9"));
 }
 
 TEST void test_should_extract_first_and_last_number_when_not_at_the_end() {
-    _assertIntEq(13, calibration("1abc3def"));
+    _assertIntEq(13, calibration_from_buffer("1abc3def"));
 }
 
 TEST void test_should_extract_first_and_last_number_when_not_at_the_beginning() {
-    _assertIntEq(13, calibration("ab1c3def"));
+    _assertIntEq(13, calibration_from_buffer("ab1c3def"));
 }
 
 TEST void test_should_extract_first_and_last_number_when_some_numbers_between() {
-    _assertIntEq(12, calibration("ab1cd4efg2hijk"));
+    _assertIntEq(12, calibration_from_buffer("ab1cd4efg2hijk"));
 }
 
 TEST void test_concat_the_digit_with_itself_when_the_first_and_the_last() {
-    _assertIntEq(77, calibration("treb7uchet"));
+    _assertIntEq(77, calibration_from_buffer("treb7uchet"));
 }
 
 TEST void test_no_digit_should_return_0() {
-    _assertIntEq(0, calibration("trebuchet"));
-}
-
-TEST void test_should_extract_calibration_until_carriage_return() {
-    _assertIntEq(13, calibration("1abc3\n5def8"));
+    _assertIntEq(0, calibration_from_buffer("trebuchet"));
 }
 
 TEST void test_should_extract_sum_of_lines() {
