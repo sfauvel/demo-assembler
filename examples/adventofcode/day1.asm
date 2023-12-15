@@ -60,30 +60,38 @@ compute_character:
     xor rax,rax
     mov al, [rdx]
 
+    ; check if is a digit
+    cmp al, '9' ; It's faster to ckech character greater then '9' because letters are greater than number in ascii table.
+    ;;jg .finish
+    jle .less_or_equals_9 ; Inverting condition is faster because there is less jumps.
+    ret
+
+    .less_or_equals_9
     ; check end of line
     cmp al, CARRIAGE_RETURN ;It's faster to check first CARRIAGE_RETURN because there is more than END_OF_FILE.
     je .end_of_line
     cmp al, END_OF_FILE
     je .end_of_line
-
-    ; check if is a digit
-    cmp al, '9' ; It's faster to ckech character greater then '9' because letters are greater than number in ascii table.
-    jg .finish
-    cmp al, '0'
+  
+    cmp al, '0' ; We check that at the end bescause there is few charcters in that case.
     jl .finish
+
 
     sub al, '0'
     mov [second_value], al
 
     cmp byte [is_second_value], 1
-    je .finish
+    jne .first ; Inverting the condition, there is less jumps
+    ret    
 
     .first:
         mov cl, 10
         mul cl
         mov [value], al
         mov byte [is_second_value], 1
-        jmp .finish
+        ;jmp .finish
+        ret
+
 
     .end_of_line:
         mov al, [value]
@@ -95,7 +103,7 @@ compute_character:
         mov [total], rax
         mov byte [is_second_value], 0
         mov byte [value], 0
-        jmp .finish
+       ; jmp .finish
 
     .finish:
         ret
