@@ -61,16 +61,16 @@ compute_character:
     mov al, [rdx]
 
     ; check end of line
-    cmp al, END_OF_FILE
+    cmp al, CARRIAGE_RETURN ;It's faster to check first CARRIAGE_RETURN because there is more than END_OF_FILE.
     je .end_of_line
-    cmp al, CARRIAGE_RETURN
+    cmp al, END_OF_FILE
     je .end_of_line
 
     ; check if is a digit
+    cmp al, '9' ; It's faster to ckech character greater then '9' because letters are greater than number in ascii table.
+    jg .finish
     cmp al, '0'
     jl .finish
-    cmp al, '9'
-    jg .finish
 
     sub al, '0'
     mov [second_value], al
