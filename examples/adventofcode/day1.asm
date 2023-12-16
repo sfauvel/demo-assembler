@@ -66,7 +66,7 @@ compute_character:
     jle .less_or_equals_9 ; Inverting condition is faster because there is less jumps.
     ret
 
-    .less_or_equals_9
+    .less_or_equals_9:
     ; check end of line
     cmp al, CARRIAGE_RETURN ;It's faster to check first CARRIAGE_RETURN because there is more than END_OF_FILE.
     je .end_of_line
@@ -97,10 +97,10 @@ compute_character:
         mov al, [value]
         add al, [second_value]
         mov [value], al
-        mov byte [second_value], 0
 
         add rax, [total]
         mov [total], rax
+        mov byte [second_value], 0
         mov byte [is_second_value], 0
         mov byte [value], 0
        ; jmp .finish
