@@ -16,6 +16,18 @@ void method_to_monitor();
 char* read_file_to_buffer();
 char* read_file_char_by_char();
 char* read_file_by_blocks();
+void do_nothing();                       //  0.0000018ms
+void empty_loop();                       //  0.0000024ms
+void loop_of_1000();                     //  0.001080ms
+void jmp_do_nothing_1000_loop();         //  0.001636ms
+void call_do_nothing_1000_loop();        //  0.001885ms
+void call_do_nothing_1000_manual_loop(); //  0.001420ms
+void jmp_if_else_1000_loop(int);         //  (1):0.001960ms  (0)0.001680ms
+
+////////
+// Define the method to call for monitoring perf
+#define CALL_METHOD_TO_MONITOR call_do_nothing_1000_manual_loop()
+///////
 
 void run_with_duration_return_from_the_method() {
    unsigned long result = run_perf_return_value();
@@ -59,10 +71,7 @@ void iterate_to_compute_average_time() {
 #define CYCLES_PER_USEC(ghz)    ((ghz) * 1e3)
 #define GHZ 2.8 // Frequency of my computer : `cat /proc/cpuinfo | grep Hz`
 
-//#define CALL_METHOD_TO_MONITOR method_to_monitor()
-//#define CALL_METHOD_TO_MONITOR read_file_to_buffer()
-//#define CALL_METHOD_TO_MONITOR read_file_char_by_char()
-#define CALL_METHOD_TO_MONITOR read_file_by_blocks()
+
 
 double iteration_calibration_for_one_second(const int iteration_for_calibration) {
    time_t start_clock_calibration = clock();
@@ -106,7 +115,7 @@ void iterate_to_compute_average_time_from_c() {
             unsigned long duration_clock = end_clock - start_clock;
 
             //  printf("%ld %s\n", end-start, ctime(&t));
-            printf("%.2f clocks, clock:%.6fms, time:%.6fms, (%ld iterations - %.3fs)\n", (double)duration_clock/(double)nb_iteration*CYCLES_PER_USEC(GHZ), (double)duration_clock/(double)nb_iteration/1000.0, (double)duration_time/(double)nb_iteration/1000.0, nb_iteration, (double)duration_time / 1e6);
+            printf("%.2f clocks, clock:%.9fms, time:%.9fms, (%ld iterations - %.3fs)\n", (double)duration_clock/(double)nb_iteration*CYCLES_PER_USEC(GHZ), (double)duration_clock/(double)nb_iteration/1000.0, (double)duration_time/(double)nb_iteration/1000.0, nb_iteration, (double)duration_time / 1e6);
            
             nb_iteration = 0;
             start_clock = end_clock;
@@ -135,7 +144,7 @@ int main(int argc, char **argv) {
    //run_with_duration_return_from_the_method();
    //run_with_duration_passing_as_parameter_to_the_method();
    //iterate_to_compute_average_time();
-   //iterate_to_compute_average_time_from_c();
+   iterate_to_compute_average_time_from_c();
 
    //run_read_all_file_with_one_call();
    //run_read_file_char_by_char();
