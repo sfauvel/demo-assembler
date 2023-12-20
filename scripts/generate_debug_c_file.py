@@ -22,7 +22,11 @@ def generate_c_file():
         output.write("".join(lines))
         
         output.write("""
-          
+
+#include <stdlib.h>  // Need for debug: exit
+#include <fcntl.h>   // Need for debug: O_CREAT, O_TRUNC, ...
+#include <unistd.h>  // Need for debug: dup, dup2, close
+
 struct StdOutSwitch {
     int saved_stdout;
     int new_stdout;
