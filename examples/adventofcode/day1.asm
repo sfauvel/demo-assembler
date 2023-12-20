@@ -95,17 +95,63 @@ is_digit:
     dec rcx
     mov [rcx], al
     
+
+;    .check_0:
+;    cmp byte [digit_text_length], 4
+;    jne .check_1
+;
+;    cmp byte [digit_text], 'z'
+;    jne .check_1
+;    cmp byte [digit_text+1], 'e'
+;    jne .check_1
+;    cmp byte [digit_text+2], 'r'
+;    jne .check_1
+;    cmp byte [digit_text+3], 'o'
+;    jne .check_1
+;    mov rax, 0
+;    ret
+
+    .check_1:
     cmp byte [digit_text_length], 3
-    jne .return_false
+    jne .check_2
 
     cmp byte [digit_text], 'o'
-    jne .return_false
+    jne .check_2
     cmp byte [digit_text+1], 'n'
-    jne .return_false
+    jne .check_2
     cmp byte [digit_text+2], 'e'
+    jne .check_2
+    mov rax, 1
+    ret
+
+    .check_2:
+    cmp byte [digit_text_length], 3
+    jne .check_3
+
+    cmp byte [digit_text], 't'
+    jne .check_3
+    cmp byte [digit_text+1], 'w'
+    jne .check_3
+    cmp byte [digit_text+2], 'o'
+    jne .check_3
+    mov rax, 2
+    ret
+
+    .check_3:
+    cmp byte [digit_text_length], 5
     jne .return_false
 
-    mov rax, 1
+    cmp byte [digit_text], 't'
+    jne .return_false
+    cmp byte [digit_text+1], 'h'
+    jne .return_false
+    cmp byte [digit_text+2], 'r'
+    jne .return_false
+    cmp byte [digit_text+3], 'e'
+    jne .return_false
+    cmp byte [digit_text+4], 'e'
+    jne .return_false
+    mov rax, 3
     ret
 
     .return_false:
