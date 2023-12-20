@@ -146,7 +146,7 @@ nasm -felf64 hello.asm && gcc callhello.c hello.o && ./a.out
 === Continuously testing
 
 Go to your project folder and run following command to execute tests every 5 seconds.
----
+----
 while true; do . run.sh; date; sleep 5;  done
 ----
 
@@ -192,6 +192,58 @@ Then, we can call in an other terminal
 `pmap [PID]`
 or
 `cat /proc/[PID]/maps
+
+=== Debug
+
+see: https://redirect.cs.umbc.edu/portal/help/nasm/nasm.shtml[]
+
+----
+gdb [PRGRAM NAME]
+break main
+run
+set disassembly-flavor intel
+----
+
+.To see code and execution pointer
+----
+disassemble main
+----
+
+[%collapsible]
+.Result
+====
+----
+Dump of assembler code for function main:
+   0x0000000000401126 <+0>:     endbr64 
+   0x000000000040112a <+4>:     push   rbp
+   0x000000000040112b <+5>:     mov    rbp,rsp
+=> 0x000000000040112e <+8>:     sub    rsp,0x20
+   0x0000000000401132 <+12>:    mov    DWORD PTR [rbp-0x14],edi
+   0x0000000000401135 <+15>:    mov    QWORD PTR [rbp-0x20],rsi
+   0x0000000000401139 <+19>:    mov    edi,0x7
+   0x000000000040113e <+24>:    call   0x401170 <add_5>
+   0x0000000000401143 <+29>:    mov    DWORD PTR [rbp-0x4],eax
+   0x0000000000401146 <+32>:    mov    eax,DWORD PTR [rbp-0x4]
+   0x0000000000401149 <+35>:    mov    esi,eax
+   0x000000000040114b <+37>:    lea    rax,[rip+0xeb2]        # 0x402004
+   0x0000000000401152 <+44>:    mov    rdi,rax
+   0x0000000000401155 <+47>:    mov    eax,0x0
+   0x000000000040115a <+52>:    call   0x401030 <printf@plt>
+   0x000000000040115f <+57>:    mov    eax,0x0
+   0x0000000000401164 <+62>:    leave  
+----
+====
+
+
+.See registers
+----
+info registers
+----
+
+.Go to the next instruction
+----
+nexti
+----
 
 === inotifywait
 
