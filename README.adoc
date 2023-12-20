@@ -1,5 +1,7 @@
 = NASM 
+:toc: left
 :source-highlighter: rouge
+
 
 * link:https://www.nasm.us/[Nasm]
 * link:https://cs.lmu.edu/~ray/notes/nasmtutorial/[Nasm tutorial]
@@ -249,6 +251,10 @@ nexti
 
 link:https://makina-corpus.com/blog/metier/2013/utiliser-inotify-pour-tester-en-continu-son-code[]
 
+
+=== Syscall
+
+link:https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/[Linux System Call Table for x86 64]
 
 === CPU Architecture 
 
