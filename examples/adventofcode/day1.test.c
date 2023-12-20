@@ -17,6 +17,19 @@
 
 #include <day1.h>
 
+/// is_digit
+TEST void test_is_digit_return_the_digit() {
+    _assertIntEq(0, is_digit("0"));
+    _assertIntEq(1, is_digit("1"));
+    _assertIntEq(9, is_digit("9"));
+}
+TEST void test_is_digit_return_minus_1_when_not_a_digit() {
+    _assertIntEq(-1, is_digit("X"));
+    _assertIntEq(-1, is_digit("\n"));
+    _assertIntEq(-1, is_digit(""));
+}
+
+/// calibration
 
 TEST void test_should_extract_first_and_last_number_finish_by_new_line() {
     _assertIntEq(13, calibration_from_buffer("1abc3\n"));

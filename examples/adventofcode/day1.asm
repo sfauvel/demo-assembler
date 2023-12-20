@@ -7,6 +7,7 @@
     ; Define exported methods
     global  calibration_from_file
     global  calibration_from_buffer
+    global  is_digit
 
     extern compute_file
 
@@ -56,28 +57,46 @@ reinit:
     mov byte  [is_second_value], 0
     ret
 
-compute_character:
+; Param:
+;   RDI: character
+; Return:
+;   RAX: O if a digit.
+;   RBX: digit value
+is_digit:
+    xor rax, rax
+    mov al, [rdi]
+    cmp al, '9'
+    jg .not_a_digit 
+
+    cmp al, '0'
+    jl .not_a_digit
+    
+    sub byte rax, '0'
+    ret
+
+    .not_a_digit:
+    mov [digit_text], al
+    mov rax, -1
+    ret
+
+compute_character: 
     xor rax,rax
     mov al, [rdx]
 
-    ; check if is a digit
-    cmp al, '9' ; It's faster to ckech character greater then '9' because letters are greater than number in ascii table.
-    ;;jg .finish
-    jle .less_or_equals_9 ; Inverting condition is faster because there is less jumps.
-    ret
 
-    .less_or_equals_9:
     ; check end of line
     cmp al, CARRIAGE_RETURN ;It's faster to check first CARRIAGE_RETURN because there is more than END_OF_FILE.
     je .end_of_line
     cmp al, END_OF_FILE
     je .end_of_line
   
-    cmp al, '0' ; We check that at the end bescause there is few charcters in that case.
-    jl .finish
+    ; check if is a digit
+    mov rdi, rdx
+    call is_digit
+    cmp rax, -1
+    je .finish
 
-
-    sub al, '0'
+    .is_digit:
     mov [second_value], al
 
     cmp byte [is_second_value], 1
@@ -114,3 +133,6 @@ is_second_value:    db     0
 value:              db      0
 second_value:       db      0
 total:              dq      0
+
+    section   .bss
+digit_text:    resb 10
