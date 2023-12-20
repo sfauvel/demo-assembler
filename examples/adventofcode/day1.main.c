@@ -39,8 +39,12 @@ void compute_example(const char* text) {
 #define CYCLES_PER_USEC(ghz)    ((ghz) * 1e3)
 #define GHZ 2.8 // Frequency of my computer : `cat /proc/cpuinfo | grep Hz`
 
+// For 100.000 iterations:
+// Full algo                             => 12.05s
+// With  a return on `compute_character` => 8.150s 
+// Without calling `compute_character`   => 6.320s 
 void iterate_to_compute_average_time_from_c(const char* filename) {
-    const unsigned long  NB_ITERATION_MAX = 1000;
+    const unsigned long  NB_ITERATION_MAX = 1000*100;
     unsigned long nb_iteration=0;
     time_t start_clock = clock();
     struct timeval stop_time, start_time;
@@ -64,7 +68,7 @@ void iterate_to_compute_average_time_from_c(const char* filename) {
             unsigned long duration_clock = end_clock - start_clock;
 
             //  printf("%ld %s\n", end-start, ctime(&t));
-            printf("%.0f clocks, clock:%.2fms, time:%.2fms, (%ld iterations - %.3fs)\n", (double)duration_clock/(double)nb_iteration*CYCLES_PER_USEC(GHZ), (double)duration_clock/(double)nb_iteration/1000.0, (double)duration_time/(double)nb_iteration/1000.0, nb_iteration, (double)duration_time / 1e6);
+            printf("%.0f clocks, clock:%.4fms, time:%.4fms, (%ld iterations - %.3fs)\n", (double)duration_clock/(double)nb_iteration*CYCLES_PER_USEC(GHZ), (double)duration_clock/(double)nb_iteration/1000.0, (double)duration_time/(double)nb_iteration/1000.0, nb_iteration, (double)duration_time / 1e6);
            
             nb_iteration = 0;
             start_clock = end_clock;

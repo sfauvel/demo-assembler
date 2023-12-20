@@ -60,7 +60,11 @@ compute_file:
             inc rbx
 
             pop rcx
-        loop .next_char ; rcx = rcx - 1, if rcx != 0, then jump to .next
+
+            dec rcx
+            cmp rcx, 0
+            jne .next_char ; Seems to be more efficient than a loop instruction
+            ;loop .next_char ; rcx = rcx - 1, if rcx != 0, then jump to .next
 
         jmp .read_from_file
 
