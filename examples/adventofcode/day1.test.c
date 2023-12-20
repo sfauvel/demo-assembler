@@ -18,6 +18,8 @@
 #include <day1.h>
 
 /// is_digit
+
+
 TEST void test_is_digit_return_the_digit() {
     _assertIntEq(0, is_digit("0"));
     _assertIntEq(1, is_digit("1"));
@@ -27,6 +29,30 @@ TEST void test_is_digit_return_minus_1_when_not_a_digit() {
     _assertIntEq(-1, is_digit("X"));
     _assertIntEq(-1, is_digit("\n"));
     _assertIntEq(-1, is_digit(""));
+}
+
+TEST void test_one_is_digit_1() {
+    _assertIntEq(-1, is_digit(""));
+    _assertIntEq(-1, is_digit("o"));
+    _assertIntEq(-1, is_digit("n"));
+    _assertIntEq(1, is_digit("e"));
+}
+
+TEST void test_exactly_one_to_return_is_digit_1() {
+    _assertIntEq(-1, is_digit(""));
+    _assertIntEq(-1, is_digit("o"));
+    _assertIntEq(-1, is_digit("n"));
+    _assertIntEq(-1, is_digit("x"));
+
+    _assertIntEq(-1, is_digit(""));
+    _assertIntEq(-1, is_digit("o"));
+    _assertIntEq(-1, is_digit("x"));
+    _assertIntEq(-1, is_digit("e"));
+
+    _assertIntEq(-1, is_digit(""));
+    _assertIntEq(-1, is_digit("x"));
+    _assertIntEq(-1, is_digit("n"));
+    _assertIntEq(-1, is_digit("e"));
 }
 
 /// calibration

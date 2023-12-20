@@ -17,6 +17,7 @@
     END_OF_FILE           equ    0
     CARRIAGE_RETURN       equ    10
 
+    BUFFER_LETTER_SIZE    equ    10
 ; Parameters
 ;   rdi: filename
 ; Return
@@ -65,19 +66,55 @@ reinit:
 is_digit:
     xor rax, rax
     mov al, [rdi]
+    cmp al, 0
+    je .reset
+
     cmp al, '9'
     jg .not_a_digit 
 
     cmp al, '0'
     jl .not_a_digit
     
-    sub byte rax, '0'
+    sub rax, '0'
     ret
 
     .not_a_digit:
-    mov [digit_text], al
+    cmp byte [digit_text_length], BUFFER_LETTER_SIZE
+    jl .under_max
+    mov byte [digit_text_length], 0
+
+    .under_max:
+    mov rbx, [digit_text_length]
+    inc rbx
+    mov [digit_text_length], rbx
+
+    mov rcx, digit_text
+    add rcx, rbx
+    
+    mov byte [rcx], 0
+    dec rcx
+    mov [rcx], al
+    
+    cmp byte [digit_text_length], 3
+    jne .return_false
+
+    cmp byte [digit_text], 'o'
+    jne .return_false
+    cmp byte [digit_text+1], 'n'
+    jne .return_false
+    cmp byte [digit_text+2], 'e'
+    jne .return_false
+
+    mov rax, 1
+    ret
+
+    .return_false:
     mov rax, -1
     ret
+
+    .reset:
+    mov byte [digit_text_length], 0
+    jmp .return_false
 
 compute_character: 
     xor rax,rax
@@ -129,10 +166,11 @@ compute_character:
 
 
     section   .data
-is_second_value:    db     0
+is_second_value:    db      0
 value:              db      0
 second_value:       db      0
 total:              dq      0
+digit_text_length:  db      0
 
     section   .bss
-digit_text:    resb 10
+digit_text:    resb BUFFER_LETTER_SIZE
