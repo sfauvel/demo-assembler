@@ -17,6 +17,18 @@
 
 #include <day1.h>
 
+/// cmp_string
+
+
+TEST void test_cmp_string() {
+    _assertIntEq(0, cmp_string("one", "one"));
+
+    _assertIntEq(1, cmp_string("one", "two"));
+    _assertIntEq(1, cmp_string("onestly", "one"));
+    _assertIntEq(1, cmp_string("one", "onestly"));
+}
+
+
 /// is_digit
 
 
@@ -25,6 +37,7 @@ TEST void test_is_digit_return_the_digit() {
     _assertIntEq(1, is_digit("1"));
     _assertIntEq(9, is_digit("9"));
 }
+
 TEST void test_is_digit_return_minus_1_when_not_a_digit() {
     _assertIntEq(-1, is_digit("X"));
     _assertIntEq(-1, is_digit("\n"));
@@ -53,7 +66,7 @@ TEST void test_two_is_digit_2() {
     _assertIntEq(2, is_digit("o"));
 }
 
-TEST void test_two_is_digit_3() {
+TEST void test_three_is_digit_3() {
     _assertIntEq(-1, is_digit(""));
     _assertIntEq(-1, is_digit("t"));
     _assertIntEq(-1, is_digit("h"));
@@ -62,6 +75,54 @@ TEST void test_two_is_digit_3() {
     _assertIntEq(3, is_digit("e"));
 }
 
+TEST void test_four_is_digit_4() {
+    _assertIntEq(-1, is_digit(""));
+    _assertIntEq(-1, is_digit("f"));
+    _assertIntEq(-1, is_digit("o"));
+    _assertIntEq(-1, is_digit("u"));
+    _assertIntEq(4, is_digit("r"));
+}
+
+TEST void test_five_is_digit_5() {
+    _assertIntEq(-1, is_digit(""));
+    _assertIntEq(-1, is_digit("f"));
+    _assertIntEq(-1, is_digit("i"));
+    _assertIntEq(-1, is_digit("v"));
+    _assertIntEq(5, is_digit("e"));
+}
+
+TEST void test_six_is_digit_6() {
+    _assertIntEq(-1, is_digit(""));
+    _assertIntEq(-1, is_digit("s"));
+    _assertIntEq(-1, is_digit("i"));
+    _assertIntEq(6, is_digit("x"));
+}
+
+TEST void test_seven_is_digit_7() {
+    _assertIntEq(-1, is_digit(""));
+    _assertIntEq(-1, is_digit("s"));
+    _assertIntEq(-1, is_digit("e"));
+    _assertIntEq(-1, is_digit("v"));
+    _assertIntEq(-1, is_digit("e"));
+    _assertIntEq(7, is_digit("n"));
+}
+
+TEST void test_height_is_digit_8() {
+    _assertIntEq(-1, is_digit(""));
+    _assertIntEq(-1, is_digit("h"));
+    _assertIntEq(-1, is_digit("e"));
+    _assertIntEq(-1, is_digit("i"));
+    _assertIntEq(-1, is_digit("g"));
+    _assertIntEq(-1, is_digit("h"));
+    _assertIntEq(8, is_digit("t"));
+}
+TEST void test_nine_is_digit_9() {
+    _assertIntEq(-1, is_digit(""));
+    _assertIntEq(-1, is_digit("n"));
+    _assertIntEq(-1, is_digit("i"));
+    _assertIntEq(-1, is_digit("n"));
+    _assertIntEq(9, is_digit("e"));
+}
 TEST void test_exactly_one_to_return_is_digit_1() {
     _assertIntEq(-1, is_digit(""));
     _assertIntEq(-1, is_digit("o"));
@@ -77,6 +138,15 @@ TEST void test_exactly_one_to_return_is_digit_1() {
     _assertIntEq(-1, is_digit("x"));
     _assertIntEq(-1, is_digit("n"));
     _assertIntEq(-1, is_digit("e"));
+}
+
+TEST void test_xxone_is_digit_1() {
+    _assertIntEq(-1, is_digit(""));
+    _assertIntEq(-1, is_digit("x"));
+    _assertIntEq(-1, is_digit("x"));
+    _assertIntEq(-1, is_digit("o"));
+    _assertIntEq(-1, is_digit("n"));
+    _assertIntEq(1, is_digit("e"));
 }
 
 /// calibration

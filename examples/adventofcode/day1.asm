@@ -8,6 +8,7 @@
     global  calibration_from_file
     global  calibration_from_buffer
     global  is_digit
+    global  cmp_string
 
     extern compute_file
 
@@ -18,6 +19,8 @@
     CARRIAGE_RETURN       equ    10
 
     BUFFER_LETTER_SIZE    equ    10
+
+    section .text
 ; Parameters
 ;   rdi: filename
 ; Return
@@ -58,6 +61,51 @@ reinit:
     mov byte  [is_second_value], 0
     ret
 
+cmp_string:
+    mov r8, rdi  ; text
+    mov r9, rsi  ; label
+    mov r10, rsi
+    mov rax, 0
+    .to_the_end:
+        inc rax
+        mov r11b, [r10]
+        inc r10
+        cmp r11b, 0
+        jne .to_the_end
+        ; rax = label size
+    
+    mov rcx, 0
+    .to_the_end_text:
+        inc rcx
+        mov r11b, [r8]
+        inc r8
+        cmp r11b, 0
+        jne .to_the_end_text
+        ; rax = text size
+
+    cmp rcx, rax
+    jl .not_equals
+    sub r8, rax
+
+    .start_cmp:
+    mov al, [r8]
+    cmp al, [r9]
+    jne .not_equals
+    
+    cmp al, 0
+    jne .next
+    mov rax, 0
+    ret
+
+    .next:
+    inc r8
+    inc r9
+    jmp .start_cmp
+    
+    .not_equals:
+    mov rax, 1
+    ret
+
 ; Param:
 ;   RDI: character
 ; Return:
@@ -84,9 +132,10 @@ is_digit:
     mov byte [digit_text_length], 0
 
     .under_max:
-    mov rbx, [digit_text_length]
+    xor rbx, rbx
+    mov bl, [digit_text_length]
     inc rbx
-    mov [digit_text_length], rbx
+    mov [digit_text_length], bl
 
     mov rcx, digit_text
     add rcx, rbx
@@ -112,46 +161,111 @@ is_digit:
 ;    ret
 
     .check_1:
-    cmp byte [digit_text_length], 3
-    jne .check_2
-
-    cmp byte [digit_text], 'o'
-    jne .check_2
-    cmp byte [digit_text+1], 'n'
-    jne .check_2
-    cmp byte [digit_text+2], 'e'
+    mov rdi, digit_text
+    mov rsi, label_one
+    push rax
+    call cmp_string
+    mov r8, rax
+    pop rax
+    cmp r8, 0
     jne .check_2
     mov rax, 1
     ret
 
     .check_2:
-    cmp byte [digit_text_length], 3
-    jne .check_3
-
-    cmp byte [digit_text], 't'
-    jne .check_3
-    cmp byte [digit_text+1], 'w'
-    jne .check_3
-    cmp byte [digit_text+2], 'o'
+    mov rdi, digit_text
+    mov rsi, label_two
+    push rax
+    call cmp_string
+    mov r8, rax
+    pop rax
+    cmp r8, 0
     jne .check_3
     mov rax, 2
     ret
 
     .check_3:
-    cmp byte [digit_text_length], 5
-    jne .return_false
-
-    cmp byte [digit_text], 't'
-    jne .return_false
-    cmp byte [digit_text+1], 'h'
-    jne .return_false
-    cmp byte [digit_text+2], 'r'
-    jne .return_false
-    cmp byte [digit_text+3], 'e'
-    jne .return_false
-    cmp byte [digit_text+4], 'e'
-    jne .return_false
+    mov rdi, digit_text
+    mov rsi, label_three
+    push rax
+    call cmp_string
+    mov r8, rax
+    pop rax
+    cmp r8, 0
+    jne .check_4
     mov rax, 3
+    ret
+
+    .check_4:
+    mov rdi, digit_text
+    mov rsi, label_four
+    push rax
+    call cmp_string
+    mov r8, rax
+    pop rax
+    cmp r8, 0
+    jne .check_5
+    mov rax, 4
+    ret
+
+    .check_5:
+    mov rdi, digit_text
+    mov rsi, label_five
+    push rax
+    call cmp_string
+    mov r8, rax
+    pop rax
+    cmp r8, 0
+    jne .check_6
+    mov rax, 5
+    ret
+
+    .check_6:
+    mov rdi, digit_text
+    mov rsi, label_six
+    push rax
+    call cmp_string
+    mov r8, rax
+    pop rax
+    cmp r8, 0
+    jne .check_7
+    mov rax, 6
+    ret
+
+    .check_7:
+    mov rdi, digit_text
+    mov rsi, label_seven
+    push rax
+    call cmp_string
+    mov r8, rax
+    pop rax
+    cmp r8, 0
+    jne .check_8
+    mov rax, 7
+    ret
+
+    .check_8:
+    mov rdi, digit_text
+    mov rsi, label_height
+    push rax
+    call cmp_string
+    mov r8, rax
+    pop rax
+    cmp r8, 0
+    jne .check_9
+    mov rax, 8
+    ret
+
+    .check_9:
+    mov rdi, digit_text
+    mov rsi, label_nine
+    push rax
+    call cmp_string
+    mov r8, rax
+    pop rax
+    cmp r8, 0
+    jne .return_false
+    mov rax, 9
     ret
 
     .return_false:
@@ -217,6 +331,15 @@ value:              db      0
 second_value:       db      0
 total:              dq      0
 digit_text_length:  db      0
+label_one:          db      "one", 0
+label_two:          db      "two", 0
+label_three:        db      "three", 0
+label_four:         db      "four", 0
+label_five:         db      "five", 0
+label_six:          db      "six", 0
+label_seven:        db      "seven", 0
+label_height:       db      "height", 0
+label_nine:         db      "nine", 0
 
     section   .bss
 digit_text:    resb BUFFER_LETTER_SIZE
