@@ -129,26 +129,7 @@ is_digit:
     .not_a_digit:
     cmp byte [digit_text_length], BUFFER_LETTER_SIZE
     jl .under_max
-    ; shift text
-    push rax
-    push rbx
-    push rdx
-    mov rcx, 6 ; biggest number (height)
-    mov rax, digit_text
-    mov rbx, digit_text    
-    add rbx, BUFFER_LETTER_SIZE
-    sub rbx, 6
-    .shift_text:
-        mov dl, [rbx]
-        mov byte [rax], dl
-        inc rax
-        inc rbx
-    loop .shift_text
-    pop rdx
-    pop rbx
-    pop rax
-    mov byte [digit_text_length], 6  ; reset text
-    ;mov byte [digit_text_length], 0  ; reset text
+    call .shift_text
 
     .under_max:
     xor rbx, rbx
@@ -295,10 +276,29 @@ is_digit:
     mov byte [digit_text_length], 0
     jmp .return_false
 
+    .shift_text:
+    push rax
+    push rbx
+    push rdx
+    mov rax, digit_text
+    mov rbx, digit_text
+    add rbx, BUFFER_LETTER_SIZE-6
+    mov rcx, 6 ; biggest number (height)
+    .shift_next_char:
+        mov dl, [rbx]
+        mov byte [rax], dl
+        inc rax
+        inc rbx
+    loop .shift_next_char
+    mov byte [digit_text_length], 6  ; reset text
+    pop rdx
+    pop rbx
+    pop rax
+    ret
+
 compute_character: 
     xor rax,rax
     mov al, [rdx]
-
 
     ; check end of line
     cmp al, CARRIAGE_RETURN ;It's faster to check first CARRIAGE_RETURN because there is more than END_OF_FILE.

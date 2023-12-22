@@ -44,7 +44,7 @@ void compute_example(const char* text) {
 // With  a return on `compute_character` => 8.150s 
 // Without calling `compute_character`   => 6.320s 
 void iterate_to_compute_average_time_from_c(const char* filename) {
-    const unsigned long  NB_ITERATION_MAX = 1000*100;
+    const unsigned long  NB_ITERATION_MAX = 1000;
     unsigned long nb_iteration=0;
     time_t start_clock = clock();
     struct timeval stop_time, start_time;
@@ -84,10 +84,10 @@ int main(int argc, char **argv) {
     //compute_example("abc");
 
      //iterate_to_compute_average_time_from_c("../examples/adventofcode/input_short.txt");
-    //iterate_to_compute_average_time_from_c("../examples/adventofcode/input.txt");
+    iterate_to_compute_average_time_from_c("../examples/adventofcode/input.txt");
 
     //compute_from_file();
 
 
-    printf("%d\n", cmp_string("xxone", "one"));
+    //printf("%d\n", cmp_string("xxone", "one"));
 }
