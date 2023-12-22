@@ -16,6 +16,7 @@
     STDIN     equ 0
     STDOUT    equ 1
     END_OF_FILE           equ    0
+    END_OF_STRING         equ    0
     CARRIAGE_RETURN       equ    10
 
     BUFFER_LETTER_SIZE    equ    20
@@ -117,26 +118,27 @@ cmp_string:
     ret
 
 ; Param:
-;   RDI: character
+;   DIL: the character
 ; Return:
-;   RAX: O if a digit.
+;   AL: digit found (-1 otherwise).
 ;   RBX: digit value
 is_digit:
-    xor rax, rax
     mov al, dil
-    cmp al, 0
+    cmp al, END_OF_STRING
     je .reset
 
+    ; If the character is a digit, return it.
     cmp al, '9'
     jg .not_a_digit 
 
     cmp al, '0'
     jl .not_a_digit
     
-    sub rax, '0'
-    ret
+    sub al, '0'
+    ret               ; Return the digit for this character.
 
     .not_a_digit:
+    ; Check if there is space in buffer to put another character.
     cmp byte [digit_text_length], BUFFER_LETTER_SIZE
     jl .under_max
     call .shift_text
@@ -147,12 +149,10 @@ is_digit:
     inc rbx
     mov [digit_text_length], bl
 
-    ; Add character to the digit text
-    mov rcx, digit_text
-    add rcx, rbx
-    mov byte [rcx], 0
-    dec rcx
-    mov [rcx], al
+    ; Add character to the digit text and put a 0 after it
+    lea rcx, [digit_text + rbx]
+    mov byte [rcx]    , 0
+    mov byte [rcx - 1], al
 
     jmp .check_digit_from_text
     .digit_found_from_text:
