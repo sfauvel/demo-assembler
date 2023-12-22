@@ -20,6 +20,18 @@
 
     BUFFER_LETTER_SIZE    equ    20
 
+    %macro CHECK_DIGIT_TEXT 2
+        mov rdi, digit_text
+        mov rsi, %1
+        push rax
+        call cmp_string
+        mov r8, rax
+        pop rax
+        cmp r8, 0
+        mov rax, %2
+        je .digit_found_from_text
+    %endmacro
+
     section .text
 ; Parameters
 ;   rdi: filename
@@ -143,131 +155,22 @@ is_digit:
     mov byte [rcx], 0
     dec rcx
     mov [rcx], al
-    
 
-;    .check_0:
-;    cmp byte [digit_text_length], 4
-;    jne .check_1
-;
-;    cmp byte [digit_text], 'z'
-;    jne .check_1
-;    cmp byte [digit_text+1], 'e'
-;    jne .check_1
-;    cmp byte [digit_text+2], 'r'
-;    jne .check_1
-;    cmp byte [digit_text+3], 'o'
-;    jne .check_1
-;    mov rax, 0
-;    ret
-
-    .check_1:
-    mov rdi, digit_text
-    mov rsi, label_one
-    push rax
-    call cmp_string
-    mov r8, rax
-    pop rax
-    cmp r8, 0
-    jne .check_2
-    mov rax, 1
+    jmp .check_digit_from_text
+    .digit_found_from_text:
     ret
 
-    .check_2:
-    mov rdi, digit_text
-    mov rsi, label_two
-    push rax
-    call cmp_string
-    mov r8, rax
-    pop rax
-    cmp r8, 0
-    jne .check_3
-    mov rax, 2
-    ret
-
-    .check_3:
-    mov rdi, digit_text
-    mov rsi, label_three
-    push rax
-    call cmp_string
-    mov r8, rax
-    pop rax
-    cmp r8, 0
-    jne .check_4
-    mov rax, 3
-    ret
-
-    .check_4:
-    mov rdi, digit_text
-    mov rsi, label_four
-    push rax
-    call cmp_string
-    mov r8, rax
-    pop rax
-    cmp r8, 0
-    jne .check_5
-    mov rax, 4
-    ret
-
-    .check_5:
-    mov rdi, digit_text
-    mov rsi, label_five
-    push rax
-    call cmp_string
-    mov r8, rax
-    pop rax
-    cmp r8, 0
-    jne .check_6
-    mov rax, 5
-    ret
-
-    .check_6:
-    mov rdi, digit_text
-    mov rsi, label_six
-    push rax
-    call cmp_string
-    mov r8, rax
-    pop rax
-    cmp r8, 0
-    jne .check_7
-    mov rax, 6
-    ret
-
-    .check_7:
-    mov rdi, digit_text
-    mov rsi, label_seven
-    push rax
-    call cmp_string
-    mov r8, rax
-    pop rax
-    cmp r8, 0
-    jne .check_8
-    mov rax, 7
-    ret
-
-    .check_8:
-    mov rdi, digit_text
-    mov rsi, label_height
-    push rax
-    call cmp_string
-    mov r8, rax
-    pop rax
-    cmp r8, 0
-    jne .check_9
-    mov rax, 8
-    ret
-
-    .check_9:
-    mov rdi, digit_text
-    mov rsi, label_nine
-    push rax
-    call cmp_string
-    mov r8, rax
-    pop rax
-    cmp r8, 0
-    jne .return_false
-    mov rax, 9
-    ret
-
+    .check_digit_from_text:
+    CHECK_DIGIT_TEXT label_one, 1
+    CHECK_DIGIT_TEXT label_two, 2
+    CHECK_DIGIT_TEXT label_three, 3
+    CHECK_DIGIT_TEXT label_four, 4
+    CHECK_DIGIT_TEXT label_five, 5
+    CHECK_DIGIT_TEXT label_six, 6
+    CHECK_DIGIT_TEXT label_seven, 7
+    CHECK_DIGIT_TEXT label_eight, 8
+    CHECK_DIGIT_TEXT label_nine, 9
+ 
     .return_false:
     mov rax, -1
     ret
@@ -357,7 +260,7 @@ label_four:         db      "four", 0
 label_five:         db      "five", 0
 label_six:          db      "six", 0
 label_seven:        db      "seven", 0
-label_height:       db      "eight", 0
+label_eight:        db      "eight", 0
 label_nine:         db      "nine", 0
 
     section   .bss
