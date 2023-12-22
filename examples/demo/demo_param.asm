@@ -9,9 +9,9 @@
 
         section .text
 param_sum_param:
-        push rdx
-        push rsi
-        push rdi
+        push rdx ; Third
+        push rsi ; Second
+        push rdi ; First
 
         xor rbx, rbx
 
