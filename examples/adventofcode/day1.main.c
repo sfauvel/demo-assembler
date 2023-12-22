@@ -81,10 +81,13 @@ void iterate_to_compute_average_time_from_c(const char* filename) {
 
 int main(int argc, char **argv) {
     //compute_example("1abc3");
-    compute_example("abc");
+    //compute_example("abc");
 
      //iterate_to_compute_average_time_from_c("../examples/adventofcode/input_short.txt");
-    iterate_to_compute_average_time_from_c("../examples/adventofcode/input.txt");
+    //iterate_to_compute_average_time_from_c("../examples/adventofcode/input.txt");
 
     //compute_from_file();
+
+
+    printf("%d\n", cmp_string("xxone", "one"));
 }

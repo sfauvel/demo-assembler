@@ -109,7 +109,6 @@ TEST void test_seven_is_digit_7() {
 
 TEST void test_height_is_digit_8() {
     _assertIntEq(-1, is_digit(""));
-    _assertIntEq(-1, is_digit("h"));
     _assertIntEq(-1, is_digit("e"));
     _assertIntEq(-1, is_digit("i"));
     _assertIntEq(-1, is_digit("g"));
@@ -149,6 +148,35 @@ TEST void test_xxone_is_digit_1() {
     _assertIntEq(1, is_digit("e"));
 }
 
+TEST void test_several_one() {
+    _assertIntEq(-1, is_digit(""));
+    _assertIntEq(-1, is_digit("o"));
+    _assertIntEq(-1, is_digit("n"));
+    _assertIntEq(1, is_digit("e"));
+    _assertIntEq(-1, is_digit("o"));
+    _assertIntEq(-1, is_digit("n"));
+    _assertIntEq(1, is_digit("e"));
+}
+
+TEST void test_al_lot_of_one() {
+    _assertIntEq(-1, is_digit(""));
+    for (int i=0; i<20; i++) {
+        _assertIntEq(-1, is_digit("o"));
+        _assertIntEq(-1, is_digit("n"));
+        _assertIntEq(1, is_digit("e"));
+    }
+    
+}
+
+TEST void test_a_long_string() {
+    _assertIntEq(-1, is_digit(""));
+    for (int i=0; i<1000; i++) {
+        _assertIntEq(-1, is_digit("x"));
+    }
+    _assertIntEq(-1, is_digit("o"));
+    _assertIntEq(-1, is_digit("n"));
+    _assertIntEq(1, is_digit("e"));
+}
 /// calibration
 
 TEST void test_should_extract_first_and_last_number_finish_by_new_line() {
@@ -183,12 +211,26 @@ TEST void test_should_extract_sum_of_lines() {
     _assertIntEq(71, calibration_from_buffer("1abc3\n5def8"));
 }
 
-TEST void test_advent_of_code_example() {
+TEST void test_advent_of_code_example_part_1() {
     _assertIntEq(142, calibration_from_buffer("1abc2\npqr3stu8vwx\na1b2c3d4e5f\ntreb7uchet"));
 }
 
-TEST void test_advent_from_input_file() {
-    _assertIntEq(55172, calibration_from_file("../examples/adventofcode/input.txt"));
+TEST void test_advent_part_2_line_1() {
+    _assertIntEq(29, calibration_from_buffer("two1nine"));
+}
+
+TEST void test_advent_part_2_line_2() {
+    _assertIntEq(83, calibration_from_buffer("eightwothree"));
+}
+
+
+TEST void test_advent_of_code_example_part_2() {
+    _assertIntEq(281, calibration_from_buffer("two1nine\neightwothree\nabcone2threexyz\nxtwone3four\n4nineeightseven2\nzoneight234\n7pqrstsixteen"));
+}
+
+
+TEST void test_advent_part_2_from_input_file() {
+    _assertIntEq(54925, calibration_from_file("../examples/adventofcode/input.txt"));
 }
 
 

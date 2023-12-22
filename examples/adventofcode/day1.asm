@@ -18,7 +18,7 @@
     END_OF_FILE           equ    0
     CARRIAGE_RETURN       equ    10
 
-    BUFFER_LETTER_SIZE    equ    10
+    BUFFER_LETTER_SIZE    equ    20
 
     section .text
 ; Parameters
@@ -85,7 +85,7 @@ cmp_string:
 
     cmp rcx, rax
     jl .not_equals
-    sub r8, rax
+    sub r8, rax  ; Start from end minus buffer
 
     .start_cmp:
     mov al, [r8]
@@ -129,7 +129,26 @@ is_digit:
     .not_a_digit:
     cmp byte [digit_text_length], BUFFER_LETTER_SIZE
     jl .under_max
-    mov byte [digit_text_length], 0
+    ; shift text
+    push rax
+    push rbx
+    push rdx
+    mov rcx, 6 ; biggest number (height)
+    mov rax, digit_text
+    mov rbx, digit_text    
+    add rbx, BUFFER_LETTER_SIZE
+    sub rbx, 6
+    .shift_text:
+        mov dl, [rbx]
+        mov byte [rax], dl
+        inc rax
+        inc rbx
+    loop .shift_text
+    pop rdx
+    pop rbx
+    pop rax
+    mov byte [digit_text_length], 6  ; reset text
+    ;mov byte [digit_text_length], 0  ; reset text
 
     .under_max:
     xor rbx, rbx
@@ -137,9 +156,9 @@ is_digit:
     inc rbx
     mov [digit_text_length], bl
 
+    ; Add character to the digit text
     mov rcx, digit_text
     add rcx, rbx
-    
     mov byte [rcx], 0
     dec rcx
     mov [rcx], al
@@ -338,7 +357,7 @@ label_four:         db      "four", 0
 label_five:         db      "five", 0
 label_six:          db      "six", 0
 label_seven:        db      "seven", 0
-label_height:       db      "height", 0
+label_height:       db      "eight", 0
 label_nine:         db      "nine", 0
 
     section   .bss
