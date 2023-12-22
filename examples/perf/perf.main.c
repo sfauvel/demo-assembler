@@ -23,10 +23,12 @@ void jmp_do_nothing_1000_loop();         //  0.001636ms
 void call_do_nothing_1000_loop();        //  0.001885ms
 void call_do_nothing_1000_manual_loop(); //  0.001420ms
 void jmp_if_else_1000_loop(int);         //  (1):0.001960ms  (0)0.001680ms
+void variable_mov_1000_loop();           //  0.00139ms  // Very few difference between register and variable
+void register_mov_1000_loop();           //  0.00139ms 
 
 ////////
 // Define the method to call for monitoring perf
-#define CALL_METHOD_TO_MONITOR call_do_nothing_1000_manual_loop()
+#define CALL_METHOD_TO_MONITOR register_mov_1000_loop()
 ///////
 
 void run_with_duration_return_from_the_method() {
@@ -87,42 +89,41 @@ double iteration_calibration_for_one_second(const int iteration_for_calibration)
 
 void iterate_to_compute_average_time_from_c() {
 
-    unsigned long  NB_ITERATION_MAX = iteration_calibration_for_one_second(1000)*5;
+   unsigned long  NB_ITERATION_MAX = iteration_calibration_for_one_second(1000)*5;
+   // unsigned long  NB_ITERATION_MAX = 1000*1000;
+   
+   unsigned long nb_iteration=0;
+   time_t start_clock = clock();
+   struct timeval stop_time, start_time;
+   gettimeofday(&start_time, NULL);
 
-    //unsigned long  NB_ITERATION_MAX = 1000*1000*100;
-    unsigned long nb_iteration=0;
-    time_t start_clock = clock();
-    struct timeval stop_time, start_time;
-    gettimeofday(&start_time, NULL);
+   // Clock => number of ticks of a process (pause are not counted)
+   // Time => real time
+   //printf("%lu clock time, %f\n",duration_clock_calibration, (double)1e6/(double)duration_clock_calibration*nb_iteration_calibration);   
+   printf("Nb iteration: %lu \n",NB_ITERATION_MAX);
 
-    // Clock => number of ticks of a process (pause are not counted)
-    // Time => real time
-    //printf("%lu clock time, %f\n",duration_clock_calibration, (double)1e6/(double)duration_clock_calibration*nb_iteration_calibration);   
-    printf("Nb iteration: %lu \n",NB_ITERATION_MAX);
+   time_t t;   // not a primitive datatype
+   while (1) {   
+      nb_iteration++;
 
-    time_t t;   // not a primitive datatype
-    while (1) {   
-        nb_iteration++;
-  
-        CALL_METHOD_TO_MONITOR;
-        
-        if (nb_iteration >= NB_ITERATION_MAX) { 
-            time_t end_clock = clock();
-            time(&t);
-            gettimeofday(&stop_time, NULL);
-    
-            unsigned long duration_time =(stop_time.tv_sec - start_time.tv_sec) * 1000000 + (stop_time.tv_usec - start_time.tv_usec);
-            unsigned long duration_clock = end_clock - start_clock;
+      CALL_METHOD_TO_MONITOR;
+      
+      if (nb_iteration >= NB_ITERATION_MAX) { 
+         time_t end_clock = clock();
+         time(&t);
+         gettimeofday(&stop_time, NULL);
+   
+         unsigned long duration_time =(stop_time.tv_sec - start_time.tv_sec) * 1000000 + (stop_time.tv_usec - start_time.tv_usec);
+         unsigned long duration_clock = end_clock - start_clock;
 
-            //  printf("%ld %s\n", end-start, ctime(&t));
-            printf("%.2f clocks, clock:%.9fms, time:%.9fms, (%ld iterations - %.3fs)\n", (double)duration_clock/(double)nb_iteration*CYCLES_PER_USEC(GHZ), (double)duration_clock/(double)nb_iteration/1000.0, (double)duration_time/(double)nb_iteration/1000.0, nb_iteration, (double)duration_time / 1e6);
-           
-            nb_iteration = 0;
-            start_clock = end_clock;
-            start_time = stop_time;
-        }
+         //  printf("%ld %s\n", end-start, ctime(&t));
+         printf("%.2f clocks, clock:%.9fms, time:%.9fms, (%ld iterations - %.3fs)\n", (double)duration_clock/(double)nb_iteration*CYCLES_PER_USEC(GHZ), (double)duration_clock/(double)nb_iteration/1000.0, (double)duration_time/(double)nb_iteration/1000.0, nb_iteration, (double)duration_time / 1e6);
+         
+         nb_iteration = 0;
+         start_clock = end_clock;
+         start_time = stop_time;
+      }
    }
-
 }
 
 void run_read_all_file_with_one_call() {

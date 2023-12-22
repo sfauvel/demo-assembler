@@ -6,6 +6,8 @@ global call_do_nothing_1000_loop
 global call_do_nothing_1000_manual_loop
 global jmp_do_nothing_1000_loop
 global jmp_if_else_1000_loop
+global register_mov_1000_loop
+global variable_mov_1000_loop
 
     section .text
 ; Use to have a reference
@@ -67,3 +69,26 @@ jmp_if_else_1000_loop:
         .end
     loop .next ; rcx = rcx - 1, if rcx !=
     ret
+
+register_mov_1000_loop:
+    mov rax, 123
+    mov rcx, 1001 ; RCX must be greater than 1 it not exit from loop (0-1 != 0)
+    .next:
+        mov [value], rax
+        mov rax, [value]
+        mov rax, 0
+    loop .next ; rcx = rcx - 1, if rcx !=
+    ret
+
+variable_mov_1000_loop:
+    mov rax, 123
+    mov rcx, 1001 ; RCX must be greater than 1 it not exit from loop (0-1 != 0)
+    .next:
+        mov rbx, rax
+        mov rax, rbx
+        mov rax, 0
+    loop .next ; rcx = rcx - 1, if rcx !=
+    ret
+
+    section .data
+value   dq  0
