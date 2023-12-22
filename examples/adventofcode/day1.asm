@@ -47,8 +47,6 @@ calibration_from_file:
     mov rax, [total]
     ret
 
-
-
 calibration_from_buffer:
     mov rdx, rdi               ; Get buffer
     mov dword[total], 0        ; Reinit total value
@@ -125,7 +123,7 @@ cmp_string:
 ;   RBX: digit value
 is_digit:
     xor rax, rax
-    mov al, [rdi]
+    mov al, dil
     cmp al, 0
     je .reset
 
@@ -161,15 +159,15 @@ is_digit:
     ret
 
     .check_digit_from_text:
-    CHECK_DIGIT_TEXT label_one, 1
-    CHECK_DIGIT_TEXT label_two, 2
+    CHECK_DIGIT_TEXT label_one,   1
+    CHECK_DIGIT_TEXT label_two,   2
     CHECK_DIGIT_TEXT label_three, 3
-    CHECK_DIGIT_TEXT label_four, 4
-    CHECK_DIGIT_TEXT label_five, 5
-    CHECK_DIGIT_TEXT label_six, 6
+    CHECK_DIGIT_TEXT label_four,  4
+    CHECK_DIGIT_TEXT label_five,  5
+    CHECK_DIGIT_TEXT label_six,   6
     CHECK_DIGIT_TEXT label_seven, 7
     CHECK_DIGIT_TEXT label_eight, 8
-    CHECK_DIGIT_TEXT label_nine, 9
+    CHECK_DIGIT_TEXT label_nine,  9
  
     .return_false:
     mov rax, -1
@@ -199,9 +197,11 @@ is_digit:
     pop rax
     ret
 
+; Params:
+;   RDX: Pointer to the character
 compute_character: 
     xor rax,rax
-    mov al, [rdx]
+    mov al, [rdx]           ; Put character in AL
 
     ; check end of line
     cmp al, CARRIAGE_RETURN ;It's faster to check first CARRIAGE_RETURN because there is more than END_OF_FILE.
@@ -210,7 +210,7 @@ compute_character:
     je .end_of_line
   
     ; check if is a digit
-    mov rdi, rdx
+    mov rdi, [rdx]
     call is_digit
     cmp rax, -1
     je .finish

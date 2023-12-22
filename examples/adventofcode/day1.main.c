@@ -39,10 +39,15 @@ void compute_example(const char* text) {
 #define CYCLES_PER_USEC(ghz)    ((ghz) * 1e3)
 #define GHZ 2.8 // Frequency of my computer : `cat /proc/cpuinfo | grep Hz`
 
+// Day 1 - part 1
 // For 100.000 iterations:
 // Full algo                             => 12.05s
 // With  a return on `compute_character` => 8.150s 
 // Without calling `compute_character`   => 6.320s 
+//
+// Day 1 - part 2
+// For 1.000 iterations:
+// Initial version => 2.45s
 void iterate_to_compute_average_time_from_c(const char* filename) {
     const unsigned long  NB_ITERATION_MAX = 1000;
     unsigned long nb_iteration=0;
