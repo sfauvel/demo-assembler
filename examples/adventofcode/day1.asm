@@ -30,10 +30,15 @@
         pop rax
         cmp r8, 0
         mov rax, %2
-        je .digit_found_from_text
+        je return
     %endmacro
 
     section .text
+
+; You can jmp here to make a return
+return:
+    ret
+
 ; Parameters
 ;   rdi: filename
 ; Return
@@ -153,10 +158,6 @@ is_digit:
     lea rcx, [digit_text + rbx]
     mov byte [rcx]    , 0
     mov byte [rcx - 1], al
-
-    jmp .check_digit_from_text
-    .digit_found_from_text:
-    ret
 
     .check_digit_from_text:
     CHECK_DIGIT_TEXT label_one,   1
