@@ -21,6 +21,9 @@
 
     BUFFER_LETTER_SIZE    equ    20
 
+
+    BIGGEST_NUMBER_NAME   equ    5 ; biggest number (eight)
+
     %macro CHECK_DIGIT_TEXT 2
         mov rdi, digit_text
         mov rsi, %1
@@ -148,15 +151,15 @@ is_digit:
     jl .under_max
     call .shift_text
 
-    .under_max:
-    xor rbx, rbx
+    .under_max:    
+    xor rbx, rbx  ; Needed to add the value to digit_text below.
     mov bl, [digit_text_length]
-    inc rbx
+    inc bl
     mov [digit_text_length], bl
 
     ; Add character to the digit text and put a 0 after it
     lea rcx, [digit_text + rbx]
-    mov byte [rcx]    , 0
+    mov byte [rcx]    , END_OF_STRING
     mov byte [rcx - 1], al
 
     .check_digit_from_text:
@@ -181,19 +184,14 @@ is_digit:
     .shift_text:
     push rax
     push rbx
-    push rdx
-    mov rax, digit_text
-    mov rbx, digit_text
-    add rbx, BUFFER_LETTER_SIZE-6
-    mov rcx, 6 ; biggest number (height)
-    .shift_next_char:
-        mov dl, [rbx]
-        mov byte [rax], dl
-        inc rax
-        inc rbx
+    mov rax, digit_text                                                 ; target at the beginning
+    mov rcx, BIGGEST_NUMBER_NAME 
+    .shift_next_char:        
+        mov bl, [rax + BUFFER_LETTER_SIZE - BIGGEST_NUMBER_NAME]  ; Value between the first character (0) and the beginning of text to shift
+        mov byte [rax], bl
+        inc rax        
     loop .shift_next_char
-    mov byte [digit_text_length], 6  ; reset text
-    pop rdx
+    mov byte [digit_text_length], BIGGEST_NUMBER_NAME  ; reset text
     pop rbx
     pop rax
     ret
