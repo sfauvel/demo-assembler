@@ -21,18 +21,17 @@
 
     BUFFER_LETTER_SIZE    equ    20
 
+    EQUALS      equ 0
+    NOT_EQUALS  equ 1
 
     BIGGEST_NUMBER_NAME   equ    5 ; biggest number (eight)
 
     %macro CHECK_DIGIT_TEXT 2
         mov rdi, digit_text
         mov rsi, %1
-        push rax
         call cmp_string
-        mov r8, rax
-        pop rax
-        cmp r8, 0
-        mov rax, %2
+        cmp rax, EQUALS ; Check if we need to return a value
+        mov rax, %2     ; Set return value 
         je return
     %endmacro
 
@@ -80,40 +79,38 @@ reinit:
     mov byte  [is_second_value], 0
     ret
 
+
+; Param:
+;   RDI: Text
+;   RSI: Label
+; Return:
+;   RAX: 0 if equals else 1
 cmp_string:
     mov r8, rdi  ; text
     mov r9, rsi  ; label
-    mov r10, rsi
-    mov rax, 0
-    .to_the_end:
-        inc rax
-        mov r11b, [r10]
-        inc r10
-        cmp r11b, 0
-        jne .to_the_end
-        ; rax = label size
     
-    mov rcx, 0
-    .to_the_end_text:
-        inc rcx
-        mov r11b, [r8]
-        inc r8
-        cmp r11b, 0
-        jne .to_the_end_text
-        ; rax = text size
+    mov rdi, r9
+    call .get_size_and_move_to_the_end
+    mov r10, rax ; label size
 
-    cmp rcx, rax
+    mov rdi, r8
+    call .get_size_and_move_to_the_end
+    mov r11, rax ; text size
+
+    cmp r11, r10
     jl .not_equals
-    sub r8, rax  ; Start from end minus buffer
+    mov r8, rdi
+    sub r8, r10  ; Start from end minus label size.
 
+    ; Start comparison between the two strings.
     .start_cmp:
     mov al, [r8]
     cmp al, [r9]
-    jne .not_equals
+    jne .not_equals ; When [r8] and [r9] are not equals, we can return 1.
     
-    cmp al, 0
-    jne .next
-    mov rax, 0
+    cmp al, END_OF_STRING
+    jne .next   ; When [r8] and [r9] are equals but not to 0, we need to continue.
+    mov rax, EQUALS
     ret
 
     .next:
@@ -122,8 +119,24 @@ cmp_string:
     jmp .start_cmp
     
     .not_equals:
-    mov rax, 1
+    mov rax, NOT_EQUALS
     ret
+
+    ; Parameters:
+    ;   RDI: Text
+    ; Return:
+    ;   RAX: size + 1 (with the EOL character)
+    ; At the end, RDI is on the first 0 at the end of the string.
+    .get_size_and_move_to_the_end:
+        mov rcx, 0
+        .to_the_end:
+            inc rcx
+            mov al, [rdi]
+            inc rdi
+            cmp al, END_OF_STRING
+            jne .to_the_end
+        mov rax, rcx
+        ret
 
 ; Param:
 ;   DIL: the character
