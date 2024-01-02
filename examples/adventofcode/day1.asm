@@ -19,7 +19,7 @@
     END_OF_STRING         equ    0
     CARRIAGE_RETURN       equ    10
 
-    BUFFER_LETTER_SIZE    equ    20
+    BUFFER_LETTER_SIZE    equ    8 ; Reducing the buffer make it go faster
 
     EQUALS      equ 0
     NOT_EQUALS  equ 1
@@ -196,16 +196,14 @@ is_digit:
 
     .shift_text:
     push rax
-    push rbx
     mov rax, digit_text                                                 ; target at the beginning
     mov rcx, BIGGEST_NUMBER_NAME 
-    .shift_next_char:        
+    .shift_next_char:
         mov bl, [rax + BUFFER_LETTER_SIZE - BIGGEST_NUMBER_NAME]  ; Value between the first character (0) and the beginning of text to shift
         mov byte [rax], bl
-        inc rax        
+        inc rax
     loop .shift_next_char
     mov byte [digit_text_length], BIGGEST_NUMBER_NAME  ; reset text
-    pop rbx
     pop rax
     ret
 
