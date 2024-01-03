@@ -31,9 +31,8 @@
         mov rsi, %1
         mov r11, %2 ; Put parameter in r10. It's not conventional
 
-        xor r10, r10  ; Needed to add the value to digit_text below.
-        mov r10b, [digit_text_length]
-        inc r10b ; Because we want the 0 at the end of the string
+        mov r10, [digit_text_length]
+        inc r10 ; Because we want to count the 0 at the end of the string
         
         call cmp_string_with_size
         cmp rax, EQUALS ; Check if we need to return a value
@@ -177,15 +176,15 @@ is_digit:
 
     .not_a_digit:
     ; Check if there is space in buffer to put another character.
-    cmp byte [digit_text_length], BUFFER_LETTER_SIZE
+    cmp qword [digit_text_length], BUFFER_LETTER_SIZE
     jl .under_max
     call .shift_text
 
     .under_max:    
     xor rbx, rbx  ; Needed to add the value to digit_text below.
-    mov bl, [digit_text_length]
-    inc bl
-    mov [digit_text_length], bl
+    mov rbx, [digit_text_length]
+    inc rbx
+    mov [digit_text_length], rbx
 
     ; Add character to the digit text and put a 0 after it
     lea rcx, [digit_text + rbx]
@@ -209,7 +208,7 @@ is_digit:
     ret
 
     .reset:
-    mov byte [digit_text_length], 0
+    mov qword [digit_text_length], 0
     jmp .return_false
 
     .shift_text:   ; This part modify RBX and RCX
@@ -221,7 +220,7 @@ is_digit:
         mov byte [rax], bl
         inc rax
     loop .shift_next_char
-    mov byte [digit_text_length], BIGGEST_NUMBER_NAME  ; reset text
+    mov qword [digit_text_length], BIGGEST_NUMBER_NAME  ; reset text
     pop rax
     ret
 
@@ -280,7 +279,7 @@ is_second_value:    db      0
 value:              db      0
 second_value:       db      0
 total:              dq      0
-digit_text_length:  db      0
+digit_text_length:  dq      0
 label_one:          db      "one", 0
 label_two:          db      "two", 0
 label_three:        db      "three", 0
