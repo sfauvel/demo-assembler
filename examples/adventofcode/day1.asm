@@ -27,12 +27,11 @@
     BIGGEST_NUMBER_NAME   equ    5 ; biggest number (eight)
 
     %macro CHECK_DIGIT_TEXT 3
-        mov rdi, digit_text
-        mov rsi, %1
-        mov r11, %2 ; Put parameter in r10. It's not conventional
-
+        mov r8, digit_text
+        mov r9, %1
         mov r10, [digit_text_length]
         inc r10 ; Because we want to count the 0 at the end of the string
+        mov r11, %2 ; Put parameter in r11. It's not conventional
         
         call cmp_string_with_size
         cmp rax, EQUALS ; Check if we need to return a value
@@ -97,8 +96,6 @@ cmp_string:
     call .get_size_and_move_to_the_end
     mov r10, rax ; text size
 
-    mov rdi, r8
-    mov rsi, r9
     call cmp_string_with_size
     ret 
 
@@ -119,16 +116,13 @@ cmp_string:
         ret
 
 ; Param:
-;   RDI: Text
-;   RSI: Label
+;   R8 : Text
+;   R9 : Label
 ;   R10: Text size
 ;   R11: Label size
 ; Return:
 ;   RAX: 0 if equals else 1
 cmp_string_with_size:
-    mov r8, rdi  ; text
-    mov r9, rsi  ; label
-
     cmp r10, r11
     jl .not_equals
     add r8, r10
@@ -140,10 +134,9 @@ cmp_string_with_size:
     cmp al, [r9]
     jne .not_equals ; When [r8] and [r9] are not equals, we can return 1.
     
+    .equals:
     cmp al, END_OF_STRING
-    jne .next   ; When [r8] and [r9] are equals but not to 0, we need to continue.
-    mov rax, EQUALS
-    ret
+    je .return_equals ; When [r8] and [r9] are equals and it's a 0, string are equals.
 
     .next:
     inc r8
@@ -152,6 +145,10 @@ cmp_string_with_size:
     
     .not_equals:
     mov rax, NOT_EQUALS
+    ret
+
+    .return_equals:
+    mov rax, EQUALS
     ret
 
 ; Param:
