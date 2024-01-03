@@ -19,19 +19,25 @@
     END_OF_STRING         equ    0
     CARRIAGE_RETURN       equ    10
 
-    BUFFER_LETTER_SIZE    equ    8 ; Reducing the buffer make it go faster
+    BUFFER_LETTER_SIZE    equ    100 ; It's work with a lower value but this slightly impacts performance
 
     EQUALS      equ 0
     NOT_EQUALS  equ 1
 
     BIGGEST_NUMBER_NAME   equ    5 ; biggest number (eight)
 
-    %macro CHECK_DIGIT_TEXT 2
+    %macro CHECK_DIGIT_TEXT 3
         mov rdi, digit_text
         mov rsi, %1
-        call cmp_string
+        mov r11, %2 ; Put parameter in r10. It's not conventional
+
+        xor r10, r10  ; Needed to add the value to digit_text below.
+        mov r10b, [digit_text_length]
+        inc r10b ; Because we want the 0 at the end of the string
+        
+        call cmp_string_with_size
         cmp rax, EQUALS ; Check if we need to return a value
-        mov rax, %2     ; Set return value 
+        mov rax, %3     ; Set return value 
         je return
     %endmacro
 
@@ -80,27 +86,54 @@ reinit:
     ret
 
 
-; Param:
-;   RDI: Text
-;   RSI: Label
-; Return:
-;   RAX: 0 if equals else 1
 cmp_string:
     mov r8, rdi  ; text
     mov r9, rsi  ; label
     
     mov rdi, r9
     call .get_size_and_move_to_the_end
-    mov r10, rax ; label size
+    mov r11, rax ; label size
 
     mov rdi, r8
     call .get_size_and_move_to_the_end
-    mov r11, rax ; text size
+    mov r10, rax ; text size
 
-    cmp r11, r10
+    mov rdi, r8
+    mov rsi, r9
+    call cmp_string_with_size
+    ret 
+
+    ; Parameters:
+    ;   RDI: Text
+    ; Return:
+    ;   RAX: size + 1 (with the EOL character)
+    ; At the end, RDI is on the first 0 at the end of the string.
+    .get_size_and_move_to_the_end:
+        mov rcx, 0
+        .to_the_end:
+            inc rcx
+            mov al, [rdi]
+            inc rdi
+            cmp al, END_OF_STRING
+            jne .to_the_end
+        mov rax, rcx
+        ret
+
+; Param:
+;   RDI: Text
+;   RSI: Label
+;   R10: Text size
+;   R11: Label size
+; Return:
+;   RAX: 0 if equals else 1
+cmp_string_with_size:
+    mov r8, rdi  ; text
+    mov r9, rsi  ; label
+
+    cmp r10, r11
     jl .not_equals
-    mov r8, rdi
-    sub r8, r10  ; Start from end minus label size.
+    add r8, r10
+    sub r8, r11  ; Start from end minus label size.
 
     ; Start comparison between the two strings.
     .start_cmp:
@@ -121,22 +154,6 @@ cmp_string:
     .not_equals:
     mov rax, NOT_EQUALS
     ret
-
-    ; Parameters:
-    ;   RDI: Text
-    ; Return:
-    ;   RAX: size + 1 (with the EOL character)
-    ; At the end, RDI is on the first 0 at the end of the string.
-    .get_size_and_move_to_the_end:
-        mov rcx, 0
-        .to_the_end:
-            inc rcx
-            mov al, [rdi]
-            inc rdi
-            cmp al, END_OF_STRING
-            jne .to_the_end
-        mov rax, rcx
-        ret
 
 ; Param:
 ;   DIL: the character
@@ -176,15 +193,16 @@ is_digit:
     mov byte [rcx - 1], al
 
     .check_digit_from_text:
-    CHECK_DIGIT_TEXT label_one,   1
-    CHECK_DIGIT_TEXT label_two,   2
-    CHECK_DIGIT_TEXT label_three, 3
-    CHECK_DIGIT_TEXT label_four,  4
-    CHECK_DIGIT_TEXT label_five,  5
-    CHECK_DIGIT_TEXT label_six,   6
-    CHECK_DIGIT_TEXT label_seven, 7
-    CHECK_DIGIT_TEXT label_eight, 8
-    CHECK_DIGIT_TEXT label_nine,  9
+    ; MACRO          Label,      Label size,   Value
+    CHECK_DIGIT_TEXT label_one,   4,           1
+    CHECK_DIGIT_TEXT label_two,   4,           2
+    CHECK_DIGIT_TEXT label_three, 6,           3
+    CHECK_DIGIT_TEXT label_four,  5,           4
+    CHECK_DIGIT_TEXT label_five,  5,           5
+    CHECK_DIGIT_TEXT label_six,   4,           6
+    CHECK_DIGIT_TEXT label_seven, 6,           7
+    CHECK_DIGIT_TEXT label_eight, 6,           8
+    CHECK_DIGIT_TEXT label_nine,  5,           9
  
     .return_false:
     mov rax, -1
@@ -194,7 +212,7 @@ is_digit:
     mov byte [digit_text_length], 0
     jmp .return_false
 
-    .shift_text:
+    .shift_text:   ; This part modify RBX and RCX
     push rax
     mov rax, digit_text                                                 ; target at the beginning
     mov rcx, BIGGEST_NUMBER_NAME 
