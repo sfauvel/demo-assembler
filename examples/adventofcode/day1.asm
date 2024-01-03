@@ -30,7 +30,6 @@
         mov r8, digit_text
         mov r9, %1
         mov r10, [digit_text_length]
-        inc r10 ; Because we want to count the 0 at the end of the string
         mov r11, %2 ; Put parameter in r11. It's not conventional
         
         call cmp_string_with_size
@@ -107,9 +106,9 @@ cmp_string:
     .get_size_and_move_to_the_end:
         mov rcx, 0
         .to_the_end:
-            inc rcx
             mov al, [rdi]
             inc rdi
+            inc rcx
             cmp al, END_OF_STRING
             jne .to_the_end
         mov rax, rcx
@@ -190,15 +189,15 @@ is_digit:
 
     .check_digit_from_text:
     ; MACRO          Label,      Label size,   Value
-    CHECK_DIGIT_TEXT label_one,   4,           1
-    CHECK_DIGIT_TEXT label_two,   4,           2
-    CHECK_DIGIT_TEXT label_three, 6,           3
-    CHECK_DIGIT_TEXT label_four,  5,           4
-    CHECK_DIGIT_TEXT label_five,  5,           5
-    CHECK_DIGIT_TEXT label_six,   4,           6
-    CHECK_DIGIT_TEXT label_seven, 6,           7
-    CHECK_DIGIT_TEXT label_eight, 6,           8
-    CHECK_DIGIT_TEXT label_nine,  5,           9
+    CHECK_DIGIT_TEXT label_one,   3,           1
+    CHECK_DIGIT_TEXT label_two,   3,           2
+    CHECK_DIGIT_TEXT label_three, 5,           3
+    CHECK_DIGIT_TEXT label_four,  4,           4
+    CHECK_DIGIT_TEXT label_five,  4,           5
+    CHECK_DIGIT_TEXT label_six,   3,           6
+    CHECK_DIGIT_TEXT label_seven, 5,           7
+    CHECK_DIGIT_TEXT label_eight, 5,           8
+    CHECK_DIGIT_TEXT label_nine,  4,           9
  
     .return_false:
     mov rax, -1
