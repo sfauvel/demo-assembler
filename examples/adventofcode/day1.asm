@@ -32,6 +32,9 @@
         mov r10, [digit_text_length]
         mov r11, %2 ; Put parameter in r11. It's not conventional
         
+        cmp r10, r11
+        jl return_not_equals
+
         call cmp_string_with_size
         cmp rax, EQUALS ; Check if we need to return a value
         mov rax, %3     ; Set return value 
@@ -42,6 +45,11 @@
 
 ; You can jmp here to make a return
 return:
+    ret
+
+; You can jmp here to make a return
+return_not_equals:
+    mov rax, -1
     ret
 
 ; Parameters
@@ -94,6 +102,8 @@ cmp_string:
     mov rdi, r8
     call .get_size_and_move_to_the_end
     mov r10, rax ; text size
+    cmp r10, r11
+    jl .not_equals
 
     call cmp_string_with_size
     ret 
@@ -113,6 +123,10 @@ cmp_string:
             jne .to_the_end
         mov rax, rcx
         ret
+    
+    .not_equals:
+    mov rax, NOT_EQUALS
+    ret
 
 ; Param:
 ;   R8 : Text
@@ -122,8 +136,6 @@ cmp_string:
 ; Return:
 ;   RAX: 0 if equals else 1
 cmp_string_with_size:
-    cmp r10, r11
-    jl .not_equals
     add r8, r10
     sub r8, r11  ; Start from end minus label size.
 
@@ -188,16 +200,17 @@ is_digit:
     mov byte [rcx - 1], al
 
     .check_digit_from_text:
+    ; Need to be in length order to exit as soon as the length is not long enough.
     ; MACRO          Label,      Label size,   Value
     CHECK_DIGIT_TEXT label_one,   3,           1
     CHECK_DIGIT_TEXT label_two,   3,           2
-    CHECK_DIGIT_TEXT label_three, 5,           3
+    CHECK_DIGIT_TEXT label_six,   3,           6
     CHECK_DIGIT_TEXT label_four,  4,           4
     CHECK_DIGIT_TEXT label_five,  4,           5
-    CHECK_DIGIT_TEXT label_six,   3,           6
+    CHECK_DIGIT_TEXT label_nine,  4,           9
+    CHECK_DIGIT_TEXT label_three, 5,           3
     CHECK_DIGIT_TEXT label_seven, 5,           7
     CHECK_DIGIT_TEXT label_eight, 5,           8
-    CHECK_DIGIT_TEXT label_nine,  4,           9
  
     .return_false:
     mov rax, -1
