@@ -139,24 +139,23 @@ cmp_string_with_size:
     add r8, r10
     sub r8, r11  ; Start from end minus label size.
 
-    ; Start comparison between the two strings.
+    ; Start comparison between the two strings with a fixed size.
     .start_cmp:
+    cmp byte r11, 0
+    je .return_equals
     mov al, [r8]
     cmp al, [r9]
-    jne .not_equals ; When [r8] and [r9] are not equals, we can return 1.
-    
-    .equals:
-    cmp al, END_OF_STRING
-    je .return_equals ; When [r8] and [r9] are equals and it's a 0, string are equals.
-
-    .next:
-    inc r8
-    inc r9
-    jmp .start_cmp
+    je .next ; When [r8] and [r9] are equals, we continue to the next character.
     
     .not_equals:
     mov rax, NOT_EQUALS
     ret
+
+    .next:
+    inc r8
+    inc r9
+    dec r11
+    jmp .start_cmp
 
     .return_equals:
     mov rax, EQUALS
@@ -188,16 +187,14 @@ is_digit:
     jl .under_max
     call .shift_text
 
-    .under_max:    
-    xor rbx, rbx  ; Needed to add the value to digit_text below.
+    .under_max:
     mov rbx, [digit_text_length]
     inc rbx
     mov [digit_text_length], rbx
 
-    ; Add character to the digit text and put a 0 after it
-    lea rcx, [digit_text + rbx]
-    mov byte [rcx]    , END_OF_STRING
-    mov byte [rcx - 1], al
+    ; Add character to the digit text
+    lea rcx, [digit_text + rbx - 1]
+    mov byte [rcx], al
 
     .check_digit_from_text:
     ; Need to be in length order to exit as soon as the length is not long enough.
