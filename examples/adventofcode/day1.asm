@@ -141,7 +141,7 @@ cmp_string_with_size:
 
     ; Start comparison between the two strings with a fixed size.
     .start_cmp:
-    cmp byte r11, 0
+    cmp r11, 0
     je .return_equals
     mov al, [r8]
     cmp al, [r9]
