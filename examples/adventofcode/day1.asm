@@ -38,7 +38,7 @@
         call cmp_string_with_size_%2 ; Call specific method for a given number
         cmp rax, EQUALS ; Check if we need to return a value
         mov rax, %3     ; Set return value 
-        je return
+        je .return_value
     %endmacro
 
     %macro CHECK_DIGIT_TEXT 3
@@ -53,14 +53,10 @@
         call cmp_string_with_size
         cmp rax, EQUALS ; Check if we need to return a value
         mov rax, %3     ; Set return value 
-        je return
+        je .return_value
     %endmacro
 
     section .text
-
-; You can jmp here to make a return
-return:
-    ret
 
 ; You can jmp here to make a return
 return_not_equals:
@@ -207,7 +203,7 @@ cmp_string_with_size:
     ret
 
 ; Param:
-;   DIL: the character
+;   DIL: the character (DIL is the lower bits of RDI)
 ; Return:
 ;   AL: digit found (-1 otherwise).
 ;   RBX: digit value
@@ -273,6 +269,9 @@ is_digit:
     loop .shift_next_char
     mov qword [digit_text_length], BIGGEST_NUMBER_NAME  ; reset text
     pop rax
+    ret
+
+    .return_value:
     ret
 
 ; Params:
