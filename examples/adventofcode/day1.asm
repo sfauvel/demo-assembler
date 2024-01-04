@@ -27,7 +27,6 @@
     BIGGEST_NUMBER_NAME   equ    5 ; biggest number (eight)
 
     %macro CHECK_DIGIT_TEXT_FIXED_SIZE 3
-        mov r10, [digit_text_length]
         cmp r10, %2 ; It seems to be faster to move to register and then compare instead of compare with `cmp word [digit_text_length], %2` and then move to register.
         jl return_not_equals
 
@@ -35,6 +34,7 @@
         add r8, r10
         sub r8, %2  ; Hard code the size
         mov r9, %1
+
         call cmp_string_with_size_%2 ; Call specific method for a given number
         cmp rax, EQUALS ; Check if we need to return a value (Comparing rax is faster than comparing al)
         mov rax, %3     ; Set return value 
@@ -249,6 +249,7 @@ is_digit:
     .check_digit_from_text:
     ; Need to be in length order to exit as soon as the length is not long enough.
     ; MACRO          Label,      Label size,   Value
+    mov r10, [digit_text_length] ; Put text lenght only once in r10
     CHECK_DIGIT_TEXT_FIXED_SIZE label_one,   3,           1
     CHECK_DIGIT_TEXT_FIXED_SIZE label_two,   3,           2
     CHECK_DIGIT_TEXT_FIXED_SIZE label_six,   3,           6
