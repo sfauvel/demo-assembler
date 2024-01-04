@@ -25,9 +25,10 @@ void call_do_nothing_1000_manual_loop(); //  0.001420ms
 void jmp_if_else_1000_loop(int);         //  (1):0.001960ms  (0)0.001680ms
 void variable_mov_1000_loop();           //  0.00139ms  // Very few difference between register and variable
 void register_mov_1000_loop();           //  0.00139ms 
-void cmp_rax_1000_loop();                //  0.00136ms 
-void cmp_rdi_1000_loop();                //  0.00136ms 
-void cmp_value_1000_loop();              //  0.00136ms 
+void cmp_rax_1000_loop();                //  0.00138ms 
+void cmp_al_1000_loop();                 //  0.00138ms 
+void cmp_rdi_1000_loop();                //  0.00138ms 
+void cmp_value_1000_loop();              //  0.00138ms 
 
 ////////
 // Define the method to call for monitoring perf. We can put some parameters.

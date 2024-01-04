@@ -7,6 +7,7 @@ global call_do_nothing_1000_manual_loop
 global jmp_do_nothing_1000_loop
 global jmp_if_else_1000_loop
 global cmp_rax_1000_loop
+global cmp_al_1000_loop
 global cmp_rdi_1000_loop
 global cmp_value_1000_loop
 global register_mov_1000_loop
@@ -79,7 +80,19 @@ cmp_rax_1000_loop:
     mov rcx, 1001 ; RCX must be greater than 1 it not exit from loop (0-1 != 0)
     .next:
         cmp rax, 1
+        je .finish
     loop .next ; rcx = rcx - 1, if rcx !=
+    .finish:
+    ret
+
+cmp_al_1000_loop:
+    mov rax, 42
+    mov rcx, 1001 ; RCX must be greater than 1 it not exit from loop (0-1 != 0)
+    .next:
+        cmp al, 1
+        je .finish
+    loop .next ; rcx = rcx - 1, if rcx !=
+    .finish:
     ret
 
 cmp_rdi_1000_loop:
@@ -87,7 +100,9 @@ cmp_rdi_1000_loop:
     mov rcx, 1001 ; RCX must be greater than 1 it not exit from loop (0-1 != 0)
     .next:
         cmp rdi, 1
+        je .finish
     loop .next ; rcx = rcx - 1, if rcx !=
+    .finish:
     ret
 
 cmp_value_1000_loop:
@@ -95,7 +110,9 @@ cmp_value_1000_loop:
     mov rcx, 1001 ; RCX must be greater than 1 it not exit from loop (0-1 != 0)
     .next:
         cmp qword [value], 1
+        je .finish
     loop .next ; rcx = rcx - 1, if rcx !=
+    .finish:
     ret
 
 register_mov_1000_loop:
