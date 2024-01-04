@@ -51,6 +51,7 @@ void compute_example(const char* text) {
 // Given text size     => 0.58s
 // Optimize comparison => 0.51s
 // Reinit buffer       => 0.51s
+// Inline return       => 0.48s
 void iterate_to_compute_average_time_from_c(const char* filename) {
     const unsigned long  NB_ITERATION_MAX = 1000;
     unsigned long nb_iteration=0;

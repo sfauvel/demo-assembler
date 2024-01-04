@@ -36,7 +36,7 @@
         sub r8, %2  ; Hard code the size
         mov r9, %1
         call cmp_string_with_size_%2 ; Call specific method for a given number
-        cmp rax, EQUALS ; Check if we need to return a value
+        cmp rax, EQUALS ; Check if we need to return a value (Comparing rax is faster than comparing al)
         mov rax, %3     ; Set return value 
         je .return_value
     %endmacro
@@ -106,7 +106,7 @@ init:
 reinit:
     mov byte [value], 0
     mov byte [second_value], 0
-    mov byte  [is_second_value], 0
+    mov byte [is_second_value], 0
     ret
 
 
@@ -217,6 +217,7 @@ cmp_string_with_size:
 ;   RBX: digit value
 is_digit:
     mov al, dil
+
     cmp al, END_OF_STRING
     je .reset
 
@@ -264,7 +265,9 @@ is_digit:
 
     .reset:
     mov qword [digit_text_length], 0
-    jmp .return_false
+    ;jmp .return_false  ; Inline instruction 
+    mov rax, -1
+    ret
 
     .shift_text:   ; This part modify RBX and RCX
 
@@ -297,9 +300,9 @@ compute_character:
     je .end_of_line
     cmp al, END_OF_FILE
     je .end_of_line
-  
+
     ; check if is a digit
-    mov rdi, [rdx]
+    mov dil, al
     call is_digit
     cmp rax, -1
     je .finish
