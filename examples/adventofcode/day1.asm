@@ -19,7 +19,7 @@
     END_OF_STRING         equ    0
     CARRIAGE_RETURN       equ    10
 
-    BUFFER_LETTER_SIZE    equ    100 ; It's work with a lower value but this slightly impacts performance
+    BUFFER_LETTER_SIZE    equ    1000 ; It's work with a lower value but this slightly impacts performance
 
     EQUALS      equ 0
     NOT_EQUALS  equ 1
@@ -68,18 +68,21 @@ return_not_equals:
 ; Return
 ;   rax: total
 calibration_from_file:
-    mov dword[total], 0        ; Reinit total value
+    call init
 
     mov rdx, rdi               ; Get filename
     mov rsi, compute_character
     call compute_file
     
+    ;mov rdi, end_message
+    ;call print_text
+
     mov rax, [total]
     ret
 
 calibration_from_buffer:
     mov rdx, rdi               ; Get buffer
-    mov dword[total], 0        ; Reinit total value
+    call init
 
     .read_next_char:
     
@@ -94,6 +97,11 @@ calibration_from_buffer:
     .finish:
         mov rax, [total]
         ret
+
+init:
+    mov dword[total], 0        ; Reinit total value
+    mov qword[digit_text_length], 0
+    ; Continue to call reinit
 
 reinit:
     mov byte [value], 0
@@ -259,6 +267,9 @@ is_digit:
     jmp .return_false
 
     .shift_text:   ; This part modify RBX and RCX
+
+    ;mov rdi, dot_message
+    ;call print_text
     push rax
     mov rax, digit_text                                                 ; target at the beginning
     mov rcx, BIGGEST_NUMBER_NAME 
@@ -266,6 +277,7 @@ is_digit:
         mov bl, [rax + BUFFER_LETTER_SIZE - BIGGEST_NUMBER_NAME]  ; Value between the first character (0) and the beginning of text to shift
         mov byte [rax], bl
         inc rax
+        
     loop .shift_next_char
     mov qword [digit_text_length], BIGGEST_NUMBER_NAME  ; reset text
     pop rax
@@ -324,6 +336,37 @@ compute_character:
         ret
 
 
+
+print:
+	mov rbx,1            ; file descriptor 1 = STDOUT
+    mov rdx,1            ; length of string to write
+    mov rcx,rdi          ; string to write
+    .next:
+        mov al, [rcx]
+        test al,al
+        jz .finish
+
+        mov rax,4            ; 'write' system call = 4
+        int 80h   
+
+        inc rcx
+    jmp .next
+
+    .finish:
+    ret
+
+print_text:
+      push rax
+      push rbx
+      push rcx
+      push rdx
+      call print
+      pop rdx
+      pop rcx
+      pop rbx
+      pop rax
+      ret
+
     section   .data
 is_second_value:    db      0
 value:              db      0
@@ -339,6 +382,8 @@ label_six:          db      "six", 0
 label_seven:        db      "seven", 0
 label_eight:        db      "eight", 0
 label_nine:         db      "nine", 0
+dot_message:            db  ".", 0
+end_message:            db  "|", 0
 
     section   .bss
 digit_text:    resb BUFFER_LETTER_SIZE
