@@ -26,6 +26,21 @@
 
     BIGGEST_NUMBER_NAME   equ    5 ; biggest number (eight)
 
+    %macro CHECK_DIGIT_TEXT_FIXED_SIZE 3
+        mov r10, [digit_text_length]
+        cmp r10, %2 ; It seems to be faster to move to register and then compare instead of compare with `cmp word [digit_text_length], %2` and then move to register.
+        jl return_not_equals
+
+        mov r8, digit_text
+        add r8, r10
+        sub r8, %2  ; Hard code the size
+        mov r9, %1
+        call cmp_string_with_size_%2 ; Call specific method for a given number
+        cmp rax, EQUALS ; Check if we need to return a value
+        mov rax, %3     ; Set return value 
+        je return
+    %endmacro
+
     %macro CHECK_DIGIT_TEXT 3
         mov r8, digit_text
         mov r9, %1
@@ -135,6 +150,78 @@ cmp_string:
 ;   R11: Label size
 ; Return:
 ;   RAX: 0 if equals else 1
+cmp_string_with_size_3:
+
+    ; Start comparison between the two strings with a fixed size.
+    mov al, [r8]
+    cmp al, [r9]
+    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
+    mov al, [r8 + 1]
+    cmp al, [r9 + 1]
+    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
+    mov al, [r8 + 2]
+    cmp al, [r9 + 2]
+    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
+    
+    .return_equals:
+    mov rax, EQUALS
+    ret
+
+    .not_equals:
+    mov rax, NOT_EQUALS
+    ret
+
+cmp_string_with_size_4:
+
+    ; Start comparison between the two strings with a fixed size.
+    mov al, [r8]
+    cmp al, [r9]
+    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
+    mov al, [r8 + 1]
+    cmp al, [r9 + 1]
+    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
+    mov al, [r8 + 2]
+    cmp al, [r9 + 2]
+    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
+    mov al, [r8 + 3]
+    cmp al, [r9 + 3]
+    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
+    
+    .return_equals:
+    mov rax, EQUALS
+    ret
+
+    .not_equals:
+    mov rax, NOT_EQUALS
+    ret
+
+cmp_string_with_size_5:
+
+    ; Start comparison between the two strings with a fixed size.
+    mov al, [r8]
+    cmp al, [r9]
+    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
+    mov al, [r8 + 1]
+    cmp al, [r9 + 1]
+    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
+    mov al, [r8 + 2]
+    cmp al, [r9 + 2]
+    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
+    mov al, [r8 + 3]
+    cmp al, [r9 + 3]
+    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
+    mov al, [r8 + 4]
+    cmp al, [r9 + 4]
+    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
+    
+    .return_equals:
+    mov rax, EQUALS
+    ret
+
+    .not_equals:
+    mov rax, NOT_EQUALS
+    ret
+
 cmp_string_with_size:
     add r8, r10
     sub r8, r11  ; Start from end minus label size.
@@ -199,15 +286,15 @@ is_digit:
     .check_digit_from_text:
     ; Need to be in length order to exit as soon as the length is not long enough.
     ; MACRO          Label,      Label size,   Value
-    CHECK_DIGIT_TEXT label_one,   3,           1
-    CHECK_DIGIT_TEXT label_two,   3,           2
-    CHECK_DIGIT_TEXT label_six,   3,           6
-    CHECK_DIGIT_TEXT label_four,  4,           4
-    CHECK_DIGIT_TEXT label_five,  4,           5
-    CHECK_DIGIT_TEXT label_nine,  4,           9
-    CHECK_DIGIT_TEXT label_three, 5,           3
-    CHECK_DIGIT_TEXT label_seven, 5,           7
-    CHECK_DIGIT_TEXT label_eight, 5,           8
+    CHECK_DIGIT_TEXT_FIXED_SIZE label_one,   3,           1
+    CHECK_DIGIT_TEXT_FIXED_SIZE label_two,   3,           2
+    CHECK_DIGIT_TEXT_FIXED_SIZE label_six,   3,           6
+    CHECK_DIGIT_TEXT_FIXED_SIZE label_four,  4,           4
+    CHECK_DIGIT_TEXT_FIXED_SIZE label_five,  4,           5
+    CHECK_DIGIT_TEXT_FIXED_SIZE label_nine,  4,           9
+    CHECK_DIGIT_TEXT_FIXED_SIZE label_three, 5,           3
+    CHECK_DIGIT_TEXT_FIXED_SIZE label_seven, 5,           7
+    CHECK_DIGIT_TEXT_FIXED_SIZE label_eight, 5,           8
  
     .return_false:
     mov rax, -1
