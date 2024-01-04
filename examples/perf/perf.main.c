@@ -25,10 +25,13 @@ void call_do_nothing_1000_manual_loop(); //  0.001420ms
 void jmp_if_else_1000_loop(int);         //  (1):0.001960ms  (0)0.001680ms
 void variable_mov_1000_loop();           //  0.00139ms  // Very few difference between register and variable
 void register_mov_1000_loop();           //  0.00139ms 
+void cmp_rax_1000_loop();                //  0.00136ms 
+void cmp_rdi_1000_loop();                //  0.00136ms 
+void cmp_value_1000_loop();              //  0.00136ms 
 
 ////////
-// Define the method to call for monitoring perf
-#define CALL_METHOD_TO_MONITOR register_mov_1000_loop()
+// Define the method to call for monitoring perf. We can put some parameters.
+#define CALL_METHOD_TO_MONITOR cmp_value_1000_loop()
 ///////
 
 void run_with_duration_return_from_the_method() {
@@ -106,6 +109,7 @@ void iterate_to_compute_average_time_from_c() {
    while (1) {   
       nb_iteration++;
 
+      // Call the method to monitor
       CALL_METHOD_TO_MONITOR;
       
       if (nb_iteration >= NB_ITERATION_MAX) { 
