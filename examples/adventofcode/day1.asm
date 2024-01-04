@@ -143,82 +143,40 @@ cmp_string:
     mov rax, NOT_EQUALS
     ret
 
+
 ; Param:
 ;   R8 : Text
 ;   R9 : Label
-;   R10: Text size
-;   R11: Label size
 ; Return:
 ;   RAX: 0 if equals else 1
-cmp_string_with_size_3:
-
-    ; Start comparison between the two strings with a fixed size.
-    mov al, [r8]
-    cmp al, [r9]
-    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
-    mov al, [r8 + 1]
-    cmp al, [r9 + 1]
-    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
-    mov al, [r8 + 2]
-    cmp al, [r9 + 2]
-    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
-    
-    .return_equals:
-    mov rax, EQUALS
-    ret
-
-    .not_equals:
-    mov rax, NOT_EQUALS
-    ret
-
-cmp_string_with_size_4:
-
-    ; Start comparison between the two strings with a fixed size.
-    mov al, [r8]
-    cmp al, [r9]
-    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
-    mov al, [r8 + 1]
-    cmp al, [r9 + 1]
-    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
-    mov al, [r8 + 2]
-    cmp al, [r9 + 2]
-    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
-    mov al, [r8 + 3]
-    cmp al, [r9 + 3]
-    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
-    
-    .return_equals:
-    mov rax, EQUALS
-    ret
-
-    .not_equals:
-    mov rax, NOT_EQUALS
-    ret
-
 cmp_string_with_size_5:
 
     ; Start comparison between the two strings with a fixed size.
-    mov al, [r8]
-    cmp al, [r9]
-    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
-    mov al, [r8 + 1]
-    cmp al, [r9 + 1]
-    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
-    mov al, [r8 + 2]
-    cmp al, [r9 + 2]
-    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
-    mov al, [r8 + 3]
-    cmp al, [r9 + 3]
-    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
     mov al, [r8 + 4]
     cmp al, [r9 + 4]
-    jne .not_equals ; When [r8] and [r9] are equals, we continue to the next character.
+    jne cmp_string_return_not_equals ; When [r8] and [r9] are equals, we continue to the next character.
+
+cmp_string_with_size_4:
+    mov al, [r8 + 3]
+    cmp al, [r9 + 3]
+    jne cmp_string_return_not_equals ; When [r8] and [r9] are equals, we continue to the next character.
+
+cmp_string_with_size_3:
+    mov al, [r8 + 2]
+    cmp al, [r9 + 2]
+    jne cmp_string_return_not_equals ; When [r8] and [r9] are equals, we continue to the next character.
+    mov al, [r8 + 1]
+    cmp al, [r9 + 1]
+    jne cmp_string_return_not_equals ; When [r8] and [r9] are equals, we continue to the next character.
+    mov al, [r8]
+    cmp al, [r9]
+    jne cmp_string_return_not_equals ; When [r8] and [r9] are equals, we continue to the next character.
     
-    .return_equals:
+cmp_string_return_equals:
     mov rax, EQUALS
     ret
 
-    .not_equals:
+cmp_string_return_not_equals:
     mov rax, NOT_EQUALS
     ret
 
