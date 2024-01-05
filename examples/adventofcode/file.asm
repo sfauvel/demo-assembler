@@ -8,7 +8,7 @@ SYS_READ  equ 3
 SYS_WRITE equ 4
 SYS_OPEN  equ 5
 SYS_CLOSE equ 6
-BLOCK_SIZE equ 1000
+BLOCK_SIZE equ 1000 ; We can slightly improve perf with a greater value
 
     section .data
 current_length:   dq 0

@@ -147,7 +147,7 @@ init:
     ; Continue to call reinit
 
 reinit:
-    mov byte [value], 0
+    mov byte [first_value], 0
     mov byte [second_value], 0
     mov byte [is_second_value], 0
     ret
@@ -287,9 +287,9 @@ compute_character:
 
     ; check end of line
     cmp al, CARRIAGE_RETURN ;It's faster to check first CARRIAGE_RETURN because there is more than END_OF_FILE.
-    je .end_of_line
+    je .compute_line
     cmp al, END_OF_FILE
-    je .end_of_line
+    je .compute_line
 
     ; check if is a digit
     mov dil, al
@@ -305,25 +305,22 @@ compute_character:
     ret    
 
     .first:
-        mov cl, 10
-        mul cl
-        mov [value], al
+        mov [first_value], al
         mov byte [is_second_value], 1
-        ;jmp .finish
         ret
 
-
-    .end_of_line:
-        mov al, [value]
+    .compute_line:
+        mov al, [first_value]
+        mov cl, 10
+        mul cl
         add al, [second_value]
-        mov [value], al
 
         add rax, [total]
         mov [total], rax
+        mov byte [first_value], 0
         mov byte [second_value], 0
         mov byte [is_second_value], 0
-        mov byte [value], 0
-       ; jmp .finish
+        ret
 
     .finish:
         ret
@@ -332,7 +329,7 @@ compute_character:
 
     section   .data
 is_second_value:    db      0
-value:              db      0
+first_value:              db      0
 second_value:       db      0
 total:              dq      0
 ;label_one:          db      "one", 0,0,0,0,0,0,0,0
