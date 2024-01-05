@@ -1,5 +1,8 @@
     extern printf
     
+    global print_number
+    global print_syscall
+
     section .text
 
 ; Param
@@ -90,4 +93,4 @@ print_number:
         ret
 
     section .data
-format_number:   db ' %llu ',10,0
+format_number:   db '--- %llu ',10,0

@@ -8,9 +8,10 @@
     global  calibration_from_file
     global  calibration_from_buffer
     global  is_digit
-    global  cmp_string
 
     extern compute_file
+    extern print_number
+    extern print_syscall
 
     SYS_EXIT  equ 1
     STDIN     equ 0
@@ -19,69 +20,44 @@
     END_OF_STRING         equ    0
     CARRIAGE_RETURN       equ    10
 
-    BUFFER_LETTER_SIZE    equ    1000 ; It's work with a lower value but this slightly impacts performance
-
     EQUALS      equ 0
     NOT_EQUALS  equ 1
 
-    BIGGEST_NUMBER_NAME   equ    5 ; biggest number (eight)
-
-        %macro PRINT_X 2
-
-            ;push rdx
-            ;push rsi
-            ;mov rsi, %1   ; message to write using the stack address
-            ;mov rdx, %2   ; message length do not include the last 0
-            ;call print_syscall
-            ;pop rdx
-            ;pop rsi
-
-                push rax
-                push rbx
-                push rcx
-                push rdi
-                push rdx
-                push rsi
-                push r9
-                push r10
-                push r11
-                
-                mov rsi, %1   ; message to write using the stack address
-                mov rdx, %2   ; message length do not include the last 0
-                mov rdi, 1   ; file descriptor: 1 = STDOUT
-                mov rax, 1   ; system call number (sys_write)
-                syscall
-                pop r11
-                pop r10
-                pop r9
-                pop rsi
-                pop rdx
-                pop rdi
-                pop rcx
-                pop rbx
-                pop rax
-        %endmacro
-
         %macro PRINT_MSG 2
-            ;    PRINT_X %1, %2
+            push rdx
+            push rsi
+            mov rsi, %1   ; message to write
+            mov rdx, %2   ; message length do not include the last 0
+            call print_syscall
+            pop rdx
+            pop rsi
         %endmacro
 
+        ; PRINT unitl 8 characters contain in a memory address (64 bits)
         %macro PRINT 1
                 push rdi
                 mov rdi, %1
                 mov [tmp_text], rdi
                 pop rdi
-            ;    PRINT_X tmp_text, 8
+        ;        PRINT_MSG tmp_text, 8
         %endmacro
 
         %macro PRINTLN 1
                 PRINT %1
-            ;    PRINT_MSG carriage_return, 1
+        ;        PRINT_MSG carriage_return, 1
         %endmacro
 
-        %macro PRINT_NUMBER 0
+        ; Print the value of a register or a variable
+        ;    PRINT_NUMBER rax
+        ;    PRINT_NUMBER [text_as_number]
+        %macro PRINT_NUMBER 1
                 push rbp
+                push rax
+                push rbp
+                mov rax, %1
                 call print_number
+                pop rbp
+                pop rax
                 pop rbp
         %endmacro
 
@@ -100,12 +76,6 @@
 
     section .text
 
-
-; You can jmp here to make a return
-return_not_equals:
-    mov rax, -1
-    ret
-
 ; Parameters
 ;   rdi: filename
 ; Return
@@ -117,9 +87,6 @@ calibration_from_file:
     mov rsi, compute_character
     call compute_file
     
-    ;mov rdi, end_message
-    ;call print_text
-
     mov rax, [total]
     ret
 
@@ -153,77 +120,6 @@ reinit:
     ret
 
 
-cmp_string:
-    mov r8, rdi  ; text
-    mov r9, rsi  ; label
-    
-    mov rdi, r9
-    call .get_size_and_move_to_the_end
-    mov r11, rax ; label size
-
-    mov rdi, r8
-    call .get_size_and_move_to_the_end
-    mov r10, rax ; text size
-    cmp r10, r11
-    jl .not_equals
-
-    call cmp_string_with_size
-    ret 
-
-    ; Parameters:
-    ;   RDI: Text
-    ; Return:
-    ;   RAX: size + 1 (with the EOL character)
-    ; At the end, RDI is on the first 0 at the end of the string.
-    .get_size_and_move_to_the_end:
-        mov rcx, 0
-        .to_the_end:
-            mov al, [rdi]
-            inc rdi
-            inc rcx
-            cmp al, END_OF_STRING
-            jne .to_the_end
-        mov rax, rcx
-        ret
-    
-    .not_equals:
-    mov rax, NOT_EQUALS
-    ret
-
-cmp_string_return_equals:
-    mov rax, EQUALS
-    ret
-
-cmp_string_return_not_equals:
-    mov rax, NOT_EQUALS
-    ret
-
-cmp_string_with_size:
-    add r8, r10
-    sub r8, r11  ; Start from end minus label size.
-
-    ; Start comparison between the two strings with a fixed size.
-    .start_cmp:
-    cmp r11, 0
-    je .return_equals
-    mov al, [r8]
-    cmp al, [r9]
-    je .next ; When [r8] and [r9] are equals, we continue to the next character.
-    
-    .not_equals:
-    mov rax, NOT_EQUALS
-    ret
-
-    .next:
-    inc r8
-    inc r9
-    dec r11
-    jmp .start_cmp
-
-    .return_equals:
-    mov rax, EQUALS
-    ret
-
 ; Param:
 ;   DIL: the character (DIL is the lower bits of RDI)
 ; Return:
@@ -231,7 +127,6 @@ cmp_string_with_size:
 ;   RBX: digit value
 is_digit:
     mov al, dil
-    
     cmp al, END_OF_STRING
     je .return_false
 
@@ -252,21 +147,21 @@ is_digit:
     mov r10, [text_as_number]
     ; Need to remove first 5 characters and then 4 and then 3.
     SHRINK_TO_LENGTH r10, 5
-                ;    PRINTLN r10
+            ;        PRINTLN r10
     ; MACRO                     Label,         Value
     CHECK_DIGIT_TEXT_FIXED_SIZE label_three,   3
     CHECK_DIGIT_TEXT_FIXED_SIZE label_seven,   7
     CHECK_DIGIT_TEXT_FIXED_SIZE label_eight,   8
 
     SHRINK_TO_LENGTH r10, 4
-                ;    PRINTLN r10
+            ;        PRINTLN r10
     ; MACRO                     Label,         Value
     CHECK_DIGIT_TEXT_FIXED_SIZE label_four,   4
     CHECK_DIGIT_TEXT_FIXED_SIZE label_five,   5
     CHECK_DIGIT_TEXT_FIXED_SIZE label_nine,   9
 
     SHRINK_TO_LENGTH r10, 3
-                ;    PRINTLN r10
+            ;        PRINTLN r10
     ; MACRO                     Label,         Value
     CHECK_DIGIT_TEXT_FIXED_SIZE label_one,    1
     CHECK_DIGIT_TEXT_FIXED_SIZE label_two,    2
@@ -325,42 +220,24 @@ compute_character:
     .finish:
         ret
 
-
-
     section   .data
+text_as_number:     dq      0
 is_second_value:    db      0
-first_value:              db      0
+first_value:        db      0
 second_value:       db      0
 total:              dq      0
-;label_one:          db      "one", 0,0,0,0,0,0,0,0
-label_one:          db      "eno", 0,0,0,0,0,0,0,0
-;label_two:          db      "two", 0,0,0,0,0,0,0,0
-label_two:          db      "owt", 0,0,0,0,0,0,0,0
-;label_three:        db      "three", 0,0,0,0,0,0,0,0
-label_three:        db      "eerht", 0,0,0,0,0,0,0,0
-;label_four:         db      "four", 0,0,0,0,0,0,0,0
-label_four:         db      "ruof", 0,0,0,0,0,0,0,0
-;label_five:         db      "five", 0,0,0,0,0,0,0,0
-label_five:         db      "evif", 0,0,0,0,0,0,0,0
-;label_six:          db      "six", 0,0,0,0,0,0,0,0
-label_six:          db      "xis", 0,0,0,0,0,0,0,0
-;label_seven:        db      "seven", 0,0,0,0,0,0,0,0
-label_seven:        db      "neves", 0,0,0,0,0,0,0,0
-;label_eight:        db      "eight", 0,0,0,0,0,0,0,0
-label_eight:        db      "thgie", 0,0,0,0,0,0,0,0
-;label_nine:         db      "nine", 0,0,0,0,0,0,0,0
-label_nine:         db      "enin", 0,0,0,0,0,0,0,0
-dot_message:            db  ".", 0
-end_message:            db  "|", 0
 
+; Labels need to be 8 characters to be compare with an 8 characters string.
+; Lable is written in reverse order because the reading string push to the write characters read.
+label_one:          db      "eno",   0,0,0,0,0
+label_two:          db      "owt",   0,0,0,0,0
+label_three:        db      "eerht", 0,0,0
+label_four:         db      "ruof",  0,0,0,0
+label_five:         db      "evif",  0,0,0,0
+label_six:          db      "xis",   0,0,0,0,0
+label_seven:        db      "neves", 0,0,0,0,0
+label_eight:        db      "thgie", 0,0,0,0,0
+label_nine:         db      "enin",  0,0,0,0
 
-space:            db  ".", 0
-equals:            db  "EQUALS", 0
-carriage_return: db  0xa, 0
-
-text_as_number:  dq      0
-tmp_text:  dq      0
-
-    section   .bss
-digit_text:    resb BUFFER_LETTER_SIZE
-
+carriage_return:    db  0xa, 0
+tmp_text:           dq      0

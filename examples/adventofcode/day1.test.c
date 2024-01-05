@@ -17,17 +17,6 @@
 
 #include <day1.h>
 
-/// cmp_string
-
-
-TEST void test_cmp_string() {
-    _assertIntEq(0, cmp_string("one", "one"));
-
-    _assertIntEq(1, cmp_string("one", "two"));
-    _assertIntEq(1, cmp_string("onestly", "one"));
-    _assertIntEq(1, cmp_string("one", "onestly"));
-}
-
 
 /// is_digit
 
