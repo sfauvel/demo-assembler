@@ -84,20 +84,11 @@
                 call print_number
                 pop rbp
         %endmacro
-    %macro CHECK_DIGIT_TEXT_FIXED_SIZE 3
-        cmp r10, %2 ; It seems to be faster to move to register and then compare instead of compare with `cmp word [digit_text_length], %2` and then move to register.
-        jl return_not_equals
 
-        mov r10, [text_as_number]
-                ;    PRINTLN r10
-                ;    PRINTLN [%1]
 
-        shl r10, 8*(8-%2); Remove 3 characters moving to the right then to the left
-        shr r10, 8*(8-%2)
-                ;    PRINTLN r10
-                ;    PRINT_MSG carriage_return, 1
+    %macro CHECK_DIGIT_TEXT_FIXED_SIZE 2
         cmp r10, [%1]
-        mov rax, %3     ; Set return value 
+        mov rax, %2     ; Set return value 
         je .return_value
 
     %endmacro
@@ -147,7 +138,6 @@ calibration_from_buffer:
 
 init:
     mov dword[total], 0        ; Reinit total value
-    mov qword[digit_text_length], 0
     mov qword[text_as_number], 0
     ; Continue to call reinit
 
@@ -236,9 +226,9 @@ cmp_string_with_size:
 ;   RBX: digit value
 is_digit:
     mov al, dil
-
+    
     cmp al, END_OF_STRING
-    je .reset
+    je .return_false
 
     ; If the character is a digit, return it.
     cmp al, '9'
@@ -251,44 +241,40 @@ is_digit:
     ret               ; Return the digit for this character.
 
     .not_a_digit:
-    shl qword [text_as_number], 8   ; NEW
-    add [text_as_number], al        ; NEW    
-                        ;push rax
-                        ;xor rax, rax
-                        ;mov rax, [text_as_number]    
-                        ;call print_number
-                        ;pop rax
+    shl qword [text_as_number], 8 ; Shift bits to add the value of then new character
+    add [text_as_number], al
 
-    .under_max:
-    mov rbx, [digit_text_length]
-    inc rbx
-    mov [digit_text_length], rbx
+    mov r10, [text_as_number]
+    ; Need to remove first 5 characters and then 4 and then 3.
+    shl r10, 8*(8-5); Remove 3 characters moving to the right then to the left
+    shr r10, 8*(8-5)
+                ;    PRINTLN r10
+    ; MACRO                     Label,         Value
+    CHECK_DIGIT_TEXT_FIXED_SIZE label_three,   3
+    CHECK_DIGIT_TEXT_FIXED_SIZE label_seven,   7
+    CHECK_DIGIT_TEXT_FIXED_SIZE label_eight,   8
 
-    .check_digit_from_text:
+    shl r10, 8*(8-4); Remove 3 characters moving to the right then to the left
+    shr r10, 8*(8-4)
+                ;    PRINTLN r10
+    ; MACRO                     Label,         Value
+    CHECK_DIGIT_TEXT_FIXED_SIZE label_four,   4
+    CHECK_DIGIT_TEXT_FIXED_SIZE label_five,   5
+    CHECK_DIGIT_TEXT_FIXED_SIZE label_nine,   9
 
-    ; Need to be in length order to exit as soon as the length is not long enough.
-    ; MACRO          Label,      Label size,   Value
-    mov r10, [digit_text_length] ; Put text lenght only once in r10
-    CHECK_DIGIT_TEXT_FIXED_SIZE label_one,   3,           1
-    CHECK_DIGIT_TEXT_FIXED_SIZE label_two,   3,           2
-    CHECK_DIGIT_TEXT_FIXED_SIZE label_six,   3,           6
-    CHECK_DIGIT_TEXT_FIXED_SIZE label_four,  4,           4
-    CHECK_DIGIT_TEXT_FIXED_SIZE label_five,  4,           5
-    CHECK_DIGIT_TEXT_FIXED_SIZE label_nine,  4,           9
-    CHECK_DIGIT_TEXT_FIXED_SIZE label_three, 5,           3
-    CHECK_DIGIT_TEXT_FIXED_SIZE label_seven, 5,           7
-    CHECK_DIGIT_TEXT_FIXED_SIZE label_eight, 5,           8
+    shl r10, 8*(8-3); Remove 3 characters moving to the right then to the left
+    shr r10, 8*(8-3)
+                ;    PRINTLN r10
+    ; MACRO                     Label,         Value
+    CHECK_DIGIT_TEXT_FIXED_SIZE label_one,    1
+    CHECK_DIGIT_TEXT_FIXED_SIZE label_two,    2
+    CHECK_DIGIT_TEXT_FIXED_SIZE label_six,    6
  
     .return_false:
     mov rax, -1
     ret
 
-    .reset:
-    mov qword [digit_text_length], 0
-    mov rax, -1
-    ret
-
-    .return_value:
+     .return_value:
     ret
 
 ; Params:
@@ -347,7 +333,6 @@ is_second_value:    db      0
 value:              db      0
 second_value:       db      0
 total:              dq      0
-digit_text_length:  dq      0
 ;label_one:          db      "one", 0,0,0,0,0,0,0,0
 label_one:          db      "eno", 0,0,0,0,0,0,0,0
 ;label_two:          db      "two", 0,0,0,0,0,0,0,0
