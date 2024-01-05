@@ -26,37 +26,84 @@
 
     BIGGEST_NUMBER_NAME   equ    5 ; biggest number (eight)
 
+        %macro PRINT_X 2
+
+            ;push rdx
+            ;push rsi
+            ;mov rsi, %1   ; message to write using the stack address
+            ;mov rdx, %2   ; message length do not include the last 0
+            ;call print_syscall
+            ;pop rdx
+            ;pop rsi
+
+                push rax
+                push rbx
+                push rcx
+                push rdi
+                push rdx
+                push rsi
+                push r9
+                push r10
+                push r11
+                
+                mov rsi, %1   ; message to write using the stack address
+                mov rdx, %2   ; message length do not include the last 0
+                mov rdi, 1   ; file descriptor: 1 = STDOUT
+                mov rax, 1   ; system call number (sys_write)
+                syscall
+                pop r11
+                pop r10
+                pop r9
+                pop rsi
+                pop rdx
+                pop rdi
+                pop rcx
+                pop rbx
+                pop rax
+        %endmacro
+
+        %macro PRINT_MSG 2
+            ;    PRINT_X %1, %2
+        %endmacro
+
+        %macro PRINT 1
+                push rdi
+                mov rdi, %1
+                mov [tmp_text], rdi
+                pop rdi
+            ;    PRINT_X tmp_text, 8
+        %endmacro
+
+        %macro PRINTLN 1
+                PRINT %1
+            ;    PRINT_MSG carriage_return, 1
+        %endmacro
+
+        %macro PRINT_NUMBER 0
+                push rbp
+                call print_number
+                pop rbp
+        %endmacro
     %macro CHECK_DIGIT_TEXT_FIXED_SIZE 3
         cmp r10, %2 ; It seems to be faster to move to register and then compare instead of compare with `cmp word [digit_text_length], %2` and then move to register.
         jl return_not_equals
 
-        mov r8, digit_text
-        add r8, r10
-        sub r8, %2  ; Hard code the size
-        mov r9, %1
+        mov r10, [text_as_number]
+                ;    PRINTLN r10
+                ;    PRINTLN [%1]
 
-        call cmp_string_with_size_%2 ; Call specific method for a given number
-        cmp rax, EQUALS ; Check if we need to return a value (Comparing rax is faster than comparing al)
+        shl r10, 8*(8-%2); Remove 3 characters moving to the right then to the left
+        shr r10, 8*(8-%2)
+                ;    PRINTLN r10
+                ;    PRINT_MSG carriage_return, 1
+        cmp r10, [%1]
         mov rax, %3     ; Set return value 
         je .return_value
-    %endmacro
 
-    %macro CHECK_DIGIT_TEXT 3
-        mov r8, digit_text
-        mov r9, %1
-        mov r10, [digit_text_length]
-        mov r11, %2 ; Put parameter in r11. It's not conventional
-        
-        cmp r10, r11
-        jl return_not_equals
-
-        call cmp_string_with_size
-        cmp rax, EQUALS ; Check if we need to return a value
-        mov rax, %3     ; Set return value 
-        je .return_value
     %endmacro
 
     section .text
+
 
 ; You can jmp here to make a return
 return_not_equals:
@@ -101,6 +148,7 @@ calibration_from_buffer:
 init:
     mov dword[total], 0        ; Reinit total value
     mov qword[digit_text_length], 0
+    mov qword[text_as_number], 0
     ; Continue to call reinit
 
 reinit:
@@ -147,35 +195,6 @@ cmp_string:
     mov rax, NOT_EQUALS
     ret
 
-
-; Param:
-;   R8 : Text
-;   R9 : Label
-; Return:
-;   RAX: 0 if equals else 1
-cmp_string_with_size_5:
-
-    ; Start comparison between the two strings with a fixed size.
-    mov al, [r8 + 4]
-    cmp al, [r9 + 4]
-    jne cmp_string_return_not_equals ; When [r8] and [r9] are equals, we continue to the next character.
-
-cmp_string_with_size_4:
-    mov al, [r8 + 3]
-    cmp al, [r9 + 3]
-    jne cmp_string_return_not_equals ; When [r8] and [r9] are equals, we continue to the next character.
-
-cmp_string_with_size_3:
-    mov al, [r8 + 2]
-    cmp al, [r9 + 2]
-    jne cmp_string_return_not_equals ; When [r8] and [r9] are equals, we continue to the next character.
-    mov al, [r8 + 1]
-    cmp al, [r9 + 1]
-    jne cmp_string_return_not_equals ; When [r8] and [r9] are equals, we continue to the next character.
-    mov al, [r8]
-    cmp al, [r9]
-    jne cmp_string_return_not_equals ; When [r8] and [r9] are equals, we continue to the next character.
-    
 cmp_string_return_equals:
     mov rax, EQUALS
     ret
@@ -232,21 +251,21 @@ is_digit:
     ret               ; Return the digit for this character.
 
     .not_a_digit:
-    ; Check if there is space in buffer to put another character.
-    cmp qword [digit_text_length], BUFFER_LETTER_SIZE
-    jl .under_max
-    call .shift_text
+    shl qword [text_as_number], 8   ; NEW
+    add [text_as_number], al        ; NEW    
+                        ;push rax
+                        ;xor rax, rax
+                        ;mov rax, [text_as_number]    
+                        ;call print_number
+                        ;pop rax
 
     .under_max:
     mov rbx, [digit_text_length]
     inc rbx
     mov [digit_text_length], rbx
 
-    ; Add character to the digit text
-    lea rcx, [digit_text + rbx - 1]
-    mov byte [rcx], al
-
     .check_digit_from_text:
+
     ; Need to be in length order to exit as soon as the length is not long enough.
     ; MACRO          Label,      Label size,   Value
     mov r10, [digit_text_length] ; Put text lenght only once in r10
@@ -266,25 +285,7 @@ is_digit:
 
     .reset:
     mov qword [digit_text_length], 0
-    ;jmp .return_false  ; Inline instruction 
     mov rax, -1
-    ret
-
-    .shift_text:   ; This part modify RBX and RCX
-
-    ;mov rdi, dot_message
-    ;call print_text
-    push rax
-    mov rax, digit_text                                                 ; target at the beginning
-    mov rcx, BIGGEST_NUMBER_NAME 
-    .shift_next_char:
-        mov bl, [rax + BUFFER_LETTER_SIZE - BIGGEST_NUMBER_NAME]  ; Value between the first character (0) and the beginning of text to shift
-        mov byte [rax], bl
-        inc rax
-        
-    loop .shift_next_char
-    mov qword [digit_text_length], BIGGEST_NUMBER_NAME  ; reset text
-    pop rax
     ret
 
     .return_value:
@@ -341,53 +342,41 @@ compute_character:
 
 
 
-print:
-	mov rbx,1            ; file descriptor 1 = STDOUT
-    mov rdx,1            ; length of string to write
-    mov rcx,rdi          ; string to write
-    .next:
-        mov al, [rcx]
-        test al,al
-        jz .finish
-
-        mov rax,4            ; 'write' system call = 4
-        int 80h   
-
-        inc rcx
-    jmp .next
-
-    .finish:
-    ret
-
-print_text:
-      push rax
-      push rbx
-      push rcx
-      push rdx
-      call print
-      pop rdx
-      pop rcx
-      pop rbx
-      pop rax
-      ret
-
     section   .data
 is_second_value:    db      0
 value:              db      0
 second_value:       db      0
 total:              dq      0
 digit_text_length:  dq      0
-label_one:          db      "one", 0
-label_two:          db      "two", 0
-label_three:        db      "three", 0
-label_four:         db      "four", 0
-label_five:         db      "five", 0
-label_six:          db      "six", 0
-label_seven:        db      "seven", 0
-label_eight:        db      "eight", 0
-label_nine:         db      "nine", 0
+;label_one:          db      "one", 0,0,0,0,0,0,0,0
+label_one:          db      "eno", 0,0,0,0,0,0,0,0
+;label_two:          db      "two", 0,0,0,0,0,0,0,0
+label_two:          db      "owt", 0,0,0,0,0,0,0,0
+;label_three:        db      "three", 0,0,0,0,0,0,0,0
+label_three:        db      "eerht", 0,0,0,0,0,0,0,0
+;label_four:         db      "four", 0,0,0,0,0,0,0,0
+label_four:         db      "ruof", 0,0,0,0,0,0,0,0
+;label_five:         db      "five", 0,0,0,0,0,0,0,0
+label_five:         db      "evif", 0,0,0,0,0,0,0,0
+;label_six:          db      "six", 0,0,0,0,0,0,0,0
+label_six:          db      "xis", 0,0,0,0,0,0,0,0
+;label_seven:        db      "seven", 0,0,0,0,0,0,0,0
+label_seven:        db      "neves", 0,0,0,0,0,0,0,0
+;label_eight:        db      "eight", 0,0,0,0,0,0,0,0
+label_eight:        db      "thgie", 0,0,0,0,0,0,0,0
+;label_nine:         db      "nine", 0,0,0,0,0,0,0,0
+label_nine:         db      "enin", 0,0,0,0,0,0,0,0
 dot_message:            db  ".", 0
 end_message:            db  "|", 0
 
+
+space:            db  ".", 0
+equals:            db  "EQUALS", 0
+carriage_return: db  0xa, 0
+
+text_as_number:  dq      0
+tmp_text:  dq      0
+
     section   .bss
 digit_text:    resb BUFFER_LETTER_SIZE
+
