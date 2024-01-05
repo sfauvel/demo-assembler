@@ -14,6 +14,7 @@ BLOCK_SIZE equ 1000 ; We can slightly improve perf with a greater value
 current_length:   dq 0
 file_descriptor:  dq 0
 function_pointer: dq 0
+buffer_end: dq 0
 
     section .bss
 current_char:    resb 1
@@ -39,32 +40,24 @@ compute_file:
         mov rdx, BLOCK_SIZE           ;length of data to be read
         int 80h
 
-        ; At this point rax contains number of characters read
+        ; At this point rax contains number of characters read.
         cmp rax, 0
-        je .end_of_file
+        je .end_of_file ; If no characters read, it's the end of file.
         
-        mov rbx, short_buffer
-        mov rcx, rax
-        .next_char:
-            push rcx
-            push rbx
-            
-            mov al, [rbx]
-            mov [current_char], al
+        mov rbx, rax
+        add rbx, short_buffer
+        mov [buffer_end], rbx
 
-            ; Compute one character
-            mov rdx, current_char
+        mov r11, rax ; Use a not used register so we don't need to push/pop value at each loop
+        .next_char:
+            ; Compute one character passing the address of the character
+            mov rdx, [buffer_end]
+            sub rdx, r11
             call [function_pointer]
 
-            pop rbx
-            inc rbx
-
-            pop rcx
-
-            dec rcx
-            cmp rcx, 0
-            jne .next_char ; Seems to be more efficient than a loop instruction
-            ;loop .next_char ; rcx = rcx - 1, if rcx != 0, then jump to .next
+            dec r11
+        jnz .next_char ; Seems to be more efficient than a loop instruction
+        ;loop .next_char ; rcx = rcx - 1, if rcx != 0, then jump to .next
 
         jmp .read_from_file
 

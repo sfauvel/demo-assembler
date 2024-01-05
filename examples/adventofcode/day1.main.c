@@ -47,13 +47,14 @@ void compute_example(const char* text) {
 //
 // Day 1 - part 2
 // For 1.000 iterations:
-// Initial version             => 2.45s
-// Given text size             => 0.58s
-// Optimize comparison         => 0.51s
-// Reinit buffer               => 0.51s
-// Inline return               => 0.48s
-// Only one cmp                => 0.26s
-// Remove useless instruction  => 0.25s
+// Initial version                => 2.45s
+// Given text size                => 0.58s
+// Optimize comparison            => 0.51s
+// Reinit buffer                  => 0.51s
+// Inline return                  => 0.48s
+// Only one cmp                   => 0.26s
+// Remove useless instruction     => 0.25s
+// Optimize sending reading char  => 0.24s
 void iterate_to_compute_average_time_from_c(const char* filename) {
     const unsigned long  NB_ITERATION_MAX = 1000;
     unsigned long nb_iteration=0;
