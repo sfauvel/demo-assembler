@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <inttypes.h>
 #include <limits.h>
@@ -13,6 +14,11 @@ int run_perf_with_parameter(unsigned long* duration);
 unsigned long run_perf_return_value();
 void method_to_monitor();
 
+// !!! Performance seems to be dependent of the method location in file.
+// Maybe calling a method takes a different time depending on its location in file and binary.
+// It may be better to have only one asm file with one method and calling always the same.
+// Or in an asm file, change the content of the method with the content to compare with.
+
 char* read_file_to_buffer();
 char* read_file_char_by_char();
 char* read_file_by_blocks();
@@ -23,16 +29,18 @@ void jmp_do_nothing_1000_loop();         //  0.001636ms
 void call_do_nothing_1000_loop();        //  0.001885ms
 void call_do_nothing_1000_manual_loop(); //  0.001420ms
 void jmp_if_else_1000_loop(int);         //  (1):0.001960ms  (0)0.001680ms
-void variable_mov_1000_loop();           //  0.00139ms  // Very few difference between register and variable
-void register_mov_1000_loop();           //  0.00139ms 
-void cmp_rax_1000_loop();                //  0.00138ms 
-void cmp_al_1000_loop();                 //  0.00138ms 
-void cmp_rdi_1000_loop();                //  0.00138ms 
+void variable_mov_1000_loop();           //  0.00298ms  // 10% faster than using variable
+void register_mov_1000_loop();           //  0.00325ms 
+void cmp_rax_1000_loop();                //  0.00351ms 
+void cmp_al_1000_loop();                 //  0.00351ms // No real difference with comparing RAX
+void cmp_rdi_1000_loop();                //  0.00351ms // No real difference with comparing RAX
 void cmp_value_1000_loop();              //  0.00138ms 
 
 ////////
 // Define the method to call for monitoring perf. We can put some parameters.
-#define CALL_METHOD_TO_MONITOR cmp_value_1000_loop()
+#define CALL_METHOD_TO_MONITOR variable_mov_1000_loop()
+#define CALL_METHOD_TO_MONITOR_A cmp_rax_1000_loop()
+#define CALL_METHOD_TO_MONITOR_B cmp_rax_1000_loop()
 ///////
 
 void run_with_duration_return_from_the_method() {
@@ -82,7 +90,7 @@ void iterate_to_compute_average_time() {
 double iteration_calibration_for_one_second(const int iteration_for_calibration) {
    time_t start_clock_calibration = clock();
     for (int i=0; i<iteration_for_calibration; i++) {
-       CALL_METHOD_TO_MONITOR;
+       CALL_METHOD_TO_MONITOR_A;
     }
     time_t end_clock_calibration = clock();
     unsigned long duration_clock_calibration = end_clock_calibration - start_clock_calibration;
@@ -106,12 +114,18 @@ void iterate_to_compute_average_time_from_c() {
    //printf("%lu clock time, %f\n",duration_clock_calibration, (double)1e6/(double)duration_clock_calibration*nb_iteration_calibration);   
    printf("Nb iteration: %lu \n",NB_ITERATION_MAX);
 
+   bool algo_A = true;
    time_t t;   // not a primitive datatype
    while (1) {   
       nb_iteration++;
 
       // Call the method to monitor
-      CALL_METHOD_TO_MONITOR;
+      if (algo_A) {
+         CALL_METHOD_TO_MONITOR_A;
+      } 
+      if (!algo_A) {
+         CALL_METHOD_TO_MONITOR_B;
+      }
       
       if (nb_iteration >= NB_ITERATION_MAX) { 
          time_t end_clock = clock();
@@ -122,11 +136,12 @@ void iterate_to_compute_average_time_from_c() {
          unsigned long duration_clock = end_clock - start_clock;
 
          //  printf("%ld %s\n", end-start, ctime(&t));
-         printf("%.2f clocks, clock:%.9fms, time:%.9fms, (%ld iterations - %.3fs)\n", (double)duration_clock/(double)nb_iteration*CYCLES_PER_USEC(GHZ), (double)duration_clock/(double)nb_iteration/1000.0, (double)duration_time/(double)nb_iteration/1000.0, nb_iteration, (double)duration_time / 1e6);
+         printf("%s: %.2f clocks, clock:%.9fms, time:%.9fms, (%ld iterations - %.3fs)", algo_A?"\nA":"   B", (double)duration_clock/(double)nb_iteration*CYCLES_PER_USEC(GHZ), (double)duration_clock/(double)nb_iteration/1000.0, (double)duration_time/(double)nb_iteration/1000.0, nb_iteration, (double)duration_time / 1e6);
          
+         algo_A = !algo_A;
          nb_iteration = 0;
-         start_clock = end_clock;
-         start_time = stop_time;
+         start_clock = clock();
+         gettimeofday(&start_time, NULL);
       }
    }
 }
