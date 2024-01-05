@@ -93,6 +93,11 @@
 
     %endmacro
 
+    %macro SHRINK_TO_LENGTH 2
+        shl %1, 8*(8-%2); Remove %2 characters moving to the right then to the left
+        shr %1, 8*(8-%2)
+    %endmacro
+
     section .text
 
 
@@ -246,24 +251,21 @@ is_digit:
 
     mov r10, [text_as_number]
     ; Need to remove first 5 characters and then 4 and then 3.
-    shl r10, 8*(8-5); Remove 3 characters moving to the right then to the left
-    shr r10, 8*(8-5)
+    SHRINK_TO_LENGTH r10, 5
                 ;    PRINTLN r10
     ; MACRO                     Label,         Value
     CHECK_DIGIT_TEXT_FIXED_SIZE label_three,   3
     CHECK_DIGIT_TEXT_FIXED_SIZE label_seven,   7
     CHECK_DIGIT_TEXT_FIXED_SIZE label_eight,   8
 
-    shl r10, 8*(8-4); Remove 3 characters moving to the right then to the left
-    shr r10, 8*(8-4)
+    SHRINK_TO_LENGTH r10, 4
                 ;    PRINTLN r10
     ; MACRO                     Label,         Value
     CHECK_DIGIT_TEXT_FIXED_SIZE label_four,   4
     CHECK_DIGIT_TEXT_FIXED_SIZE label_five,   5
     CHECK_DIGIT_TEXT_FIXED_SIZE label_nine,   9
 
-    shl r10, 8*(8-3); Remove 3 characters moving to the right then to the left
-    shr r10, 8*(8-3)
+    SHRINK_TO_LENGTH r10, 3
                 ;    PRINTLN r10
     ; MACRO                     Label,         Value
     CHECK_DIGIT_TEXT_FIXED_SIZE label_one,    1
