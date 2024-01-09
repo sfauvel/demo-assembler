@@ -53,7 +53,6 @@ char* restore_stdout(StdOutSwitch stdout_switch) {
 
 
 TEST void test_print_text() {
-
     char buffer[1024] = {0};
     StdOutSwitch stdout_switch = change_stdout(buffer);
 
@@ -62,15 +61,61 @@ TEST void test_print_text() {
     _assertStringEq("abcdefghijklmnopqrstuvwxyz", restore_stdout(stdout_switch));
 }
 
+
+TEST void test_print_empty_string() {
+    char buffer[1024] = {0};
+    StdOutSwitch stdout_switch = change_stdout(buffer);
+
+    print_text("");
+
+    _assertStringEq("", restore_stdout(stdout_switch));
+}
+
+TEST void test_print_carriage_return() {
+    char buffer[1024] = {0};
+    StdOutSwitch stdout_switch = change_stdout(buffer);
+
+    print_ln();
+
+    _assertStringEq("\n", restore_stdout(stdout_switch));
+}
+
+TEST void test_print_number_0() {
+    char buffer[1024] = {0};
+    StdOutSwitch stdout_switch = change_stdout(buffer);
+
+    print_number(0);
+
+    _assertStringEq("0", restore_stdout(stdout_switch));
+}
+
+
 TEST void test_print_number() {
-   
     char buffer[1024] = {0};
     StdOutSwitch stdout_switch = change_stdout(buffer);
 
     print_number(1024);
 
     _assertStringEq("1024", restore_stdout(stdout_switch));
+}
 
+TEST void test_print_long_number() {
+    char buffer[1024] = {0};
+    StdOutSwitch stdout_switch = change_stdout(buffer);
+
+    print_number(123456789123456789);
+
+    _assertStringEq("123456789123456789", restore_stdout(stdout_switch));
+}
+
+
+TEST void test_print_long_number_with_zero() {
+    char buffer[1024] = {0};
+    StdOutSwitch stdout_switch = change_stdout(buffer);
+
+    print_number(100000000000000002);
+
+    _assertStringEq("100000000000000002", restore_stdout(stdout_switch));
 }
 
 RUN_TESTS()
