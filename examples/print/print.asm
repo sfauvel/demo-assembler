@@ -6,10 +6,10 @@
 ; https://man7.org/linux/man-pages/man2/syscalls.2.html
 ; https://github.com/torvalds/linux/blob/v3.13/arch/x86/syscalls/syscall_64.tbl
 
-        ; Define methods exported
-      GLOBAL print_text
-      GLOBAL print_number
-      GLOBAL print_ln
+; Define methods exported
+GLOBAL print_text
+GLOBAL print_number
+GLOBAL print_ln
 
 
 WRITE            equ 0x01
@@ -55,12 +55,11 @@ write_until_0:
 
     ; Compute size
     mov rdx, rsi
-    dec rdx       ; Decrement so we can start loop with an increment
     .not_the_end:
         inc rdx
-        test dl,dl ; Check if it's the end (O)
+        cmp byte [rdx], 0 ; Check if it's the end (O)
     jnz .not_the_end
-    sub rdx, rsi   ; Size is the difference between address of the last char and address of the buffer
+    sub rdx, rsi   ; Size is the difference between address of the last character (0) and address of the buffer
 
     mov rdi, STDOUT
     mov rax, WRITE ; write syscall on x64 Linux
@@ -138,7 +137,7 @@ _print_number:
         push rcx
         call _print_reg
         pop rcx
-        mov rdx, 8 ; After the firdt text, the others have 8 characters
+        mov rdx, 8 ; After the first text, the others have 8 characters
 
     loop .next_part
     

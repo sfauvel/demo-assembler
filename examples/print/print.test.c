@@ -61,6 +61,17 @@ TEST void test_print_text() {
     _assertStringEq("abcdefghijklmnopqrstuvwxyz", restore_stdout(stdout_switch));
 }
 
+TEST void test_print_with_only_0_zero_in_the_middle() {
+    char buffer[1024] = {0};
+    StdOutSwitch stdout_switch = change_stdout(buffer);
+
+    char text[] = "abcdefghijklmnopqrstuvwxyz";
+    text[4] = '\0';
+    print_text(text);
+
+    _assertStringEq("abcd", restore_stdout(stdout_switch));
+}
+
 
 TEST void test_print_empty_string() {
     char buffer[1024] = {0};
