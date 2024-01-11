@@ -16,6 +16,49 @@ WRITE            equ 0x01
 STDOUT           equ 0x01
 CARRIAGE_RETURN  equ 0x0A
 
+; Set character at the address and increment it.
+; Params:
+;    1: register that contain address of the character to set
+;    2: ascii code of character to insert (48 for '0')  
+; Example:
+;     mov rax, message
+;     ADD_CHAR rax, 'a'
+%macro ADD_CHAR 2
+    mov byte [%1], %2
+    inc %1
+%endmacro
+
+; Set a character into a string
+; Params:
+;   1: variable that contain string
+;   2: index of the character to set
+;   3: ascii code of character to insert (48 for '0')
+; Example:
+;     SET_CHAR message, 8, cl
+%macro SET_CHAR 3
+    push rax
+    mov rax, %1
+    add rax, %2
+    mov byte [rax], %3
+    pop rax
+%endmacro
+
+; Transform number to its digit 
+; Params:
+;   1: variable that contain string
+;   2: index of the character to set
+;   3: value to insert (a number 0 for '0')
+; Example:
+;     SET_NUMBER_CHAR message, 8, cl
+%macro SET_NUMBER_CHAR 3
+    push rax
+    mov rax, %1
+    add rax, %2
+    mov byte [rax], %3
+    add byte [rax], '0'
+    pop rax
+%endmacro
+
         section .text
 
 ;write:
@@ -69,8 +112,21 @@ write_until_0:
 
 ; Write a crriage return
 print_ln:
+    push rax
+    push rbx
+    push rcx
+    push rdi
+    push rdx
+    push rsi
     mov rdi, CARRIAGE_RETURN
     call _print_full_reg
+
+    pop rsi
+    pop rdx
+    pop rdi
+    pop rcx
+    pop rbx
+    pop rax
     ret
 
 ; Print all characters stored in RDI
@@ -126,12 +182,17 @@ _print_number:
     inc r11
     push r10
 
-    ; Stack contains text to display
-    ; r11: number of value in stack
-    ; r8: number of characters in the last value
+    push r8 ; number of characters in the last value
+    push r11 ; number of value in stack
 
-    mov rcx, r11
-    mov rdx, r8   ; Size of first text to diplay
+    ; Stack contains text to display
+    ; - number of value in stack
+    ; - number of characters in the last value
+    ; - text to display
+    
+    pop rcx ; number of value in stack
+    pop rdx ; number of characters in the last value
+
     .next_part:
         pop rdi
         push rcx
@@ -146,23 +207,23 @@ _print_number:
 ; Param:
 ;    RDI: Pointer to the buffer to write
 print_text:
-      push rax
-      push rbx
-      push rcx
-      push rdi
-      push rdx
-      push rsi
-      mov  rsi,rdi
+    push rax
+    push rbx
+    push rcx
+    push rdi
+    push rdx
+    push rsi
+    mov  rsi,rdi
 
-      call write_until_0
-      
-      pop rsi
-      pop rdx
-      pop rdi
-      pop rcx
-      pop rbx
-      pop rax
-      ret
+    call write_until_0
+    
+    pop rsi
+    pop rdx
+    pop rdi
+    pop rcx
+    pop rbx
+    pop rax
+    ret
 
 ; Display the number in RDI
 ; Param:
