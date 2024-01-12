@@ -13,6 +13,8 @@
 
 #include "print.h"
 
+void test_asm_println_between_text();
+
 
 struct StdOutSwitch {
     int saved_stdout;
@@ -77,18 +79,32 @@ TEST void test_print_empty_string() {
     char buffer[1024] = {0};
     StdOutSwitch stdout_switch = change_stdout(buffer);
 
+    print_text("abc");
     print_text("");
+    print_text("def");
 
-    _assertStringEq("", restore_stdout(stdout_switch));
+    _assertStringEq("abcdef", restore_stdout(stdout_switch));
+    // If we just change and restore stdout without writing anything, there is a problem
+    // It's the same if we just call print_text with an empty string
+    // There is a warning using printf with an empty string.
 }
 
-TEST void test_print_carriage_return() {
+TEST void test_print_line_feed() {
     char buffer[1024] = {0};
     StdOutSwitch stdout_switch = change_stdout(buffer);
 
     print_ln();
 
     _assertStringEq("\n", restore_stdout(stdout_switch));
+}
+
+TEST void test_print_line_feed_between_two_text() {
+    char buffer[1024] = {0};
+    StdOutSwitch stdout_switch = change_stdout(buffer);
+    
+    test_asm_println_between_text();
+
+    _assertStringEq(">>>\n<<<", restore_stdout(stdout_switch));
 }
 
 TEST void test_print_number_0() {

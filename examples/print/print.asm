@@ -59,6 +59,17 @@ CARRIAGE_RETURN  equ 0x0A
     pop rax
 %endmacro
 
+; Example:
+;     PRINT_ONE_CHAR 'A'
+%macro PRINT_ONE_CHAR 1
+    push rdi
+    push %1
+    mov rdi, rsp
+    call print_one_char
+    add rsp, 8
+    pop rdi
+%endmacro
+
         section .text
 
 ;write:
@@ -90,6 +101,31 @@ write_stdout:
     syscall
     ret
 
+; write to the stdout
+;    buf   (RDI): Pointer to the buffer to write
+; return (RAX) number of characters
+print_one_char:
+    push rax
+    push rbx
+    push rcx
+    push rdi
+    push rdx
+    push rsi
+    mov  rsi,rdi
+
+    mov rdx, 1
+    mov rdi, STDOUT   ; STDOUT file descriptor
+    mov rax, WRITE    ; write syscall on x64 Linux
+    syscall
+    
+    pop rsi
+    pop rdx
+    pop rdi
+    pop rcx
+    pop rbx
+    pop rax
+    ret
+
 ; Print char until 0
 ; Param: 
 ;   buf   (RDI): pointer to the buffer to write
@@ -98,6 +134,7 @@ write_until_0:
 
     ; Compute size
     mov rdx, rsi
+    dec rdx
     .not_the_end:
         inc rdx
         cmp byte [rdx], 0 ; Check if it's the end (O)
@@ -119,7 +156,8 @@ print_ln:
     push rdx
     push rsi
     mov rdi, CARRIAGE_RETURN
-    call _print_full_reg
+    mov rdx, 1
+    call _print_reg
 
     pop rsi
     pop rdx
