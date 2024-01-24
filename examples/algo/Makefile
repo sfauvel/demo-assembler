@@ -12,30 +12,26 @@ OBJECTS=$(SOURCES:.asm=.o)
 LIBS = $(foreach dir, $(OBJECTS), $(addprefix $(LIB_PATH)/, $(dir)))
 #LIBS = $(filter-out $(LIB_PATH)/$(PROGRAM_NAME).main.o, $(LIBS))
 
-all: lib
-	@echo Build all
-	@echo $(LIBS)
+.PHONY: init clean
 
+all: run
+
+# Compile all asm files
 lib: init $(LIBS)
 	
-
-compile_$(PROGRAM_NAME).main.asm: lib
+# Compile an asm program
+compile_$(PROGRAM_NAME).main.asm: init lib
 	ld $(LIBS) -o $(MAIN_PATH)/$(PROGRAM_NAME)
 
-compile_$(PROGRAM_NAME).main.c: lib
+# Compile an c program
+compile_$(PROGRAM_NAME).main.c: init lib
 	gcc -no-pie $(PROGRAM_SOURCE) $(LIBS) -o $(MAIN_PATH)/$(PROGRAM_NAME)
 
+build: compile_$(PROGRAM_SOURCE)
 
-main: lib
-	ld $(LIBS) -o $(MAIN_PATH)/$(PROGRAM_NAME)
+$(MAIN_PATH)/$(PROGRAM_NAME): build
 
-$(MAIN_PATH)/$(PROGRAM_NAME): lib
-	gcc -no-pie $(PROGRAM_SOURCE) $(LIBS) -o $@
-
-run: compile_$(PROGRAM_SOURCE)
-	$(MAIN_PATH)/$(PROGRAM_NAME)
-
-run_c: $(MAIN_PATH)/$(PROGRAM_NAME)
+run: $(MAIN_PATH)/$(PROGRAM_NAME)
 	$(MAIN_PATH)/$(PROGRAM_NAME)
 
 test:
@@ -44,7 +40,6 @@ test:
 $(LIB_PATH)/%.o: %.asm
 	@echo Compile: $^
 	nasm $^ -o $@ -felf64
-
 
 init:
 	mkdir -p $(WORK_PATH)
