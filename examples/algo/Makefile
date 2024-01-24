@@ -1,11 +1,15 @@
-
-WORK_PATH=../../work
-LIB_PATH=../../work/lib
-MAIN_PATH=../../work/target
+ROOT_PATH     =../..
+WORK_PATH     =$(ROOT_PATH)/work
+TEST_PATH     =$(ROOT_PATH)/test
+TEST_WORK_PATH=$(WORK_PATH)/test
+LIB_PATH      =$(ROOT_PATH)/work/lib
+MAIN_PATH     =$(ROOT_PATH)/work/target
 
 CURRENT_PATH=$(shell pwd)
 PROGRAM_NAME=$(shell basename $(CURRENT_PATH))
 PROGRAM_SOURCE=$(shell ls $(PROGRAM_NAME).main.*)
+TEST_SOURCE=$(shell ls $(PROGRAM_NAME).test.*)
+PROGRAM_TEST=$(TEST_SOURCE:.c=)
 SOURCES=*.asm 
 
 OBJECTS=$(SOURCES:.asm=.o)
@@ -34,8 +38,10 @@ $(MAIN_PATH)/$(PROGRAM_NAME): build
 run: $(MAIN_PATH)/$(PROGRAM_NAME)
 	$(MAIN_PATH)/$(PROGRAM_NAME)
 
-test:
-	@echo test
+test: init lib
+	bash $(TEST_PATH)/build_test_file.sh $(TEST_SOURCE) $(TEST_WORK_PATH)/$(TEST_SOURCE)
+	gcc -no-pie $(TEST_WORK_PATH)/$(TEST_SOURCE) $(LIBS) -I$(TEST_PATH) -I$(WORK_PATH)/examples/print -o $(MAIN_PATH)/$(PROGRAM_TEST)
+	$(MAIN_PATH)/$(PROGRAM_TEST)
 
 $(LIB_PATH)/%.o: %.asm
 	@echo Compile: $^
@@ -43,8 +49,9 @@ $(LIB_PATH)/%.o: %.asm
 
 init:
 	mkdir -p $(WORK_PATH)
-	mkdir -p $(WORK_PATH)/lib
-	mkdir -p $(WORK_PATH)/target
+	mkdir -p $(LIB_PATH)
+	mkdir -p $(MAIN_PATH)
+	mkdir -p $(TEST_WORK_PATH)
 	
 clean:
 	@echo "Clean $(WORK_PATH)"

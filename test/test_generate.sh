@@ -35,7 +35,7 @@ function build_test_file() {
     writeln "int main(int argc, char **argv) { "
     writeln "    const char* testName = argv[1];"
     write_tests
-    writeln "    return reportTests();"
+    writeln "    return reportTests() ? 0 : 1;"
     writeln "}"
     writeln ""
 }
