@@ -1,0 +1,4 @@
+# Execute a program written in a `.asm` file.
+PROGRAM_NAME=hithere
+ROOT_PATH=../..
+include $(ROOT_PATH)/scripts/Makefile

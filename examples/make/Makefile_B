@@ -1,0 +1,4 @@
+# Execute a program or test that are name with a specific name.
+PROGRAM_NAME=other
+ROOT_PATH=../..
+include $(ROOT_PATH)/scripts/Makefile

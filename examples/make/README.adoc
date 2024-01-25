@@ -1,0 +1,20 @@
+= Makefile usage
+
+You can try the Makefile you want with the option `-f`.
+
+----
+make -f Makefile_A run
+----
+
+
+The makefile just include a shared Makefile. 
+By default, program name and test name are the name of the folder.
+
+You can change it with the variable `PROGRAM_NAME`.
+So, you could have several programs in a same folder. 
+
+The main file should be: [PROGRAM_NAME].main.c +
+And the test file should be: [PROGRAM_NAME].test.c
+
+You can have several main files and test files in the same folder.
+
