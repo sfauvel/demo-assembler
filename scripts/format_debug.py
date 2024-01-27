@@ -116,12 +116,13 @@ FLAGS= [
 #Always 1 on 8086/186, 0 on 286 and later. 	Control 	(NEC only)
 ]
 
-DEBUG_PATH="../work/debug"
 if __name__ == "__main__":
     debug_file = sys.argv[1]
     table = read_data(debug_file)
+    
+    output_folder = sys.argv[2];
 
-    output_doc = f"{DEBUG_PATH}/format.adoc"
+    output_doc = f"{output_folder}/format.adoc"
     with open(output_doc, "w") as file:
 
         registers_to_display = memory_registers.copy()

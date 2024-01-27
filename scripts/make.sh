@@ -155,7 +155,7 @@ function compile_and_run_debug() {
 
     ${output_program} $debug_data_file
 
-    $PYTHON format_debug.py $debug_data_file
+    $PYTHON format_debug.py $debug_data_file $DEBUG_PATH
 }
 
 
