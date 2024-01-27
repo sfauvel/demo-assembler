@@ -9,6 +9,7 @@ TEST_PATH     ?=$(ROOT_PATH)/test
 
 LIB_PATH      ?=$(WORK_PATH)/lib
 MAIN_PATH     ?=$(WORK_PATH)/target
+DEBUG_PATH    ?=$(WORK_PATH)/debug
 TEST_WORK_PATH?=$(WORK_PATH)/test
 
 CURRENT_PATH?=$(shell pwd)
@@ -31,6 +32,10 @@ LIBS_ASM?=$(filter-out %.main.asm,$(SOURCES_ASM))
 LIB_OBJECTS?=$(LIBS_ASM:%.asm=%.o)
 # LIBS: List of full path `.o` to build from `.asm`files.
 LIBS?=$(foreach obj_file, $(LIB_OBJECTS), $(addprefix $(LIB_PATH)/, $(obj_file)))
+
+DEBUGS=$(foreach obj_file, $(LIB_OBJECTS), $(addprefix generate_debug_, $(obj_file)))
+
+PYTHON=python3
 
 .PHONY: init clean
 
@@ -71,11 +76,37 @@ test: init lib
 	@echo Execute tests
 	@$(MAIN_PATH)/$(PROGRAM_TEST)
 
+generate_debug_%.o: %.asm
+	@echo Generate debug file: $<
+	
+	@$(PYTHON) $(ROOT_PATH)/scripts/generate_debug.py . $(<:%.asm=%) $(DEBUG_PATH)
+
+	@echo Compile: $^
+	@nasm $(DEBUG_PATH)/$(<:%.asm=%.debug.asm) -o $(LIB_PATH)/$(<:%.asm=%.o) -felf64
+
+
+compile_debug_%.main: %.main.c
+	@echo Generate debug file: $<
+	@$(PYTHON) $(ROOT_PATH)/scripts/generate_debug_c_file.py . $(<:%.c=%) $(DEBUG_PATH)
+	@echo Compile: $(PROGRAM_NAME).main.c
+	@gcc -no-pie $(DEBUG_PATH)/$(PROGRAM_NAME).main.debug.c $(LIB_PATH)/print.o $(LIB_PATH)/debug.o $(foreach obj_file, $(LIB_OBJECTS), $(addprefix $(LIB_PATH)/, $(obj_file))) -o $(MAIN_PATH)/$(PROGRAM_NAME).debug
+	                                                        
+lib_for_debug:
+	@nasm $(ROOT_PATH)/examples/print/print.asm -o $(LIB_PATH)/print.o -felf64
+	@nasm $(ROOT_PATH)/examples/debug/debug.asm -o $(LIB_PATH)/debug.o -felf64
+
+$(MAIN_PATH)/$(PROGRAM_NAME).debug: compile_debug_$(PROGRAM_NAME).main
+
+debug: init $(DEBUGS) lib_for_debug $(MAIN_PATH)/$(PROGRAM_NAME).debug
+	$(MAIN_PATH)/$(PROGRAM_NAME).debug $(DEBUG_PATH)/debug.data
+	@$(PYTHON) $(ROOT_PATH)/scripts/format_debug.py $(DEBUG_PATH)/debug.data $(DEBUG_PATH)
+
 init:
 	@echo Create working dirs
 	@mkdir -p $(WORK_PATH)
 	@mkdir -p $(LIB_PATH)
 	@mkdir -p $(MAIN_PATH)
+	@mkdir -p $(DEBUG_PATH)
 	@mkdir -p $(TEST_WORK_PATH)
 	
 clean:
@@ -92,6 +123,8 @@ info:
 	@echo "TEST_PATH:$(TEST_PATH)"
 	@echo "TEST_SOURCE:$(TEST_SOURCE)"
 	@echo "TEST_WORK_PATH:$(TEST_WORK_PATH)"
+	@echo "DEBUGS:$(DEBUGS)"
+	
 
 #    $@ : produit (ou but) de la règle 
 #    $< : nom de la première dépendance (ou source) 
