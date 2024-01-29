@@ -29,7 +29,7 @@
 ///////////////
 // Demo parameter
 TEST void test_pass_param() {
-    _assertIntEq(321, param_sum_param(1, 2, 3));
+    _assertIntEq(123, param_sum_param(1, 2, 3));
 }
 
 TEST void test_return_2() {

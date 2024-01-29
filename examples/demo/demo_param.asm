@@ -13,25 +13,22 @@ param_sum_param:
         push rsi ; Second
         push rdi ; First
 
-        xor rbx, rbx
-
-        pop rax
-        mov rcx, 1
-        mul rcx
-        add rax, rbx
-        mov rbx, rax
-
-        pop rax
         mov rcx, 10
+        xor rax, rax
+
+        ; First
         mul rcx
-        add rax, rbx
-        mov rbx, rax
-       
-        pop rax
-        mov rcx, 100
+        pop rdx
+        add rax, rdx
+
+        ; Second
         mul rcx
-        add rax, rbx
-        mov rbx, rax
-        
-        mov rax, rbx
+        pop rdx
+        add rax, rdx
+
+        ; Thord
+        mul rcx
+        pop rdx
+        add rax, rdx
+
         ret
