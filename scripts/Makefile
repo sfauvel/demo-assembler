@@ -13,6 +13,7 @@ DEBUG_PATH    ?=$(WORK_PATH)/debug
 TEST_WORK_PATH?=$(WORK_PATH)/test
 
 CURRENT_PATH?=$(shell pwd)
+INCLUDE_PATH=$(CURRENT_PATH)
 # PROGRAM_NAME: name of the programm/test to build. 
 #               be default, it's the name of the folder.
 PROGRAM_NAME?=$(shell basename $(CURRENT_PATH))
@@ -35,6 +36,8 @@ LIBS?=$(foreach obj_file, $(LIB_OBJECTS), $(addprefix $(LIB_PATH)/, $(obj_file))
 
 DEBUGS=$(foreach obj_file, $(LIB_OBJECTS), $(addprefix generate_debug_, $(obj_file)))
 
+INCLUDE_OPTION?=$(INCLUDE_PATH:%=-I%)
+
 PYTHON=python3
 
 .PHONY: init clean
@@ -52,7 +55,7 @@ compile_$(PROGRAM_NAME).main.asm: init lib $(LIB_PATH)/$(PROGRAM_NAME).main.o
 # Compile an c program
 compile_$(PROGRAM_NAME).main.c: init lib
 	@echo Compile: $(PROGRAM_NAME).main.c
-	@gcc -no-pie $(PROGRAM_SOURCE) $(LIBS) -o $(MAIN_PATH)/$(PROGRAM_NAME)
+	@gcc -no-pie $(PROGRAM_SOURCE) $(LIBS) $(INCLUDE_OPTION) -o $(MAIN_PATH)/$(PROGRAM_NAME)
 
 # Compile asm files
 $(LIB_PATH)/%.o: %.asm
@@ -72,7 +75,7 @@ test: init lib
 	@echo Generate test launcher
 	@bash $(TEST_PATH)/build_test_file.sh $(TEST_SOURCE) $(TEST_WORK_PATH)/$(TEST_SOURCE)
 	@echo Compile test file: $(TEST_SOURCE)
-	@gcc -no-pie $(TEST_WORK_PATH)/$(TEST_SOURCE) $(LIBS) -I$(TEST_PATH) -I$(WORK_PATH)/examples/print -o $(MAIN_PATH)/$(PROGRAM_TEST)
+	@gcc -no-pie $(TEST_WORK_PATH)/$(TEST_SOURCE) $(LIBS) -I$(TEST_PATH) -I$(WORK_PATH)/examples/print $(INCLUDE_OPTION) -o $(MAIN_PATH)/$(PROGRAM_TEST)
 	@echo Execute tests
 	@$(MAIN_PATH)/$(PROGRAM_TEST)
 
@@ -116,6 +119,7 @@ clean:
 info:
 	@echo "SOURCES_ASM:$(SOURCES_ASM)"
 	@echo "LIBS_ASM:$(LIBS_ASM)"
+	@echo "INCLUDE_OPTION:$(INCLUDE_OPTION)"
 	@echo "LIB_OBJECTS:$(LIB_OBJECTS)"	
 	@echo "LIBS:$(LIBS)"
 	@echo "CURRENT_PATH:$(CURRENT_PATH)"
