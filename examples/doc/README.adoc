@@ -1,0 +1,20 @@
+= Documenting a assembler program
+
+We show how to document an assemble program.
+
+You can experiment it calling:
+----
+./make.sh test
+----
+
+This command add debug instructions in the .asm file. 
+You can see the intermediate file `demo_if.debug.asm` in the `work/debug` folder.
+
+This file is compiled and it's used during the test. 
+When executing, it outputs register values and instruction executed.
+
+The test gets the output and show the result after some transformation to keep only important lines or information.
+
+The assembler code to include in the documentation is retrieve using asciidoc include directives with tags.
+
+All `.adoc` generated are moved in the `docs`folder after the execution.

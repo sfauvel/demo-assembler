@@ -1,0 +1,30 @@
+:SOURCE_PATH: ../../examples/spike/doc
+= Comparators
+
+Call function: +
+`if_equals_10(10)` -> `1`
+
+[%collapsible]
+.Code .asm
+====
+----
+include::{SOURCE_PATH}/demo_if.asm[tag=if_equals_10]
+
+include::{SOURCE_PATH}/demo_if.asm[tag=common]
+----
+====
+
+.Instructions executed
+[options="autowidth,header"]
+|====
+^| Instruction ^| RAX ^| RDI ^| Carry ^| Auxillary +
+Carry ^| Parity ^| Zero ^| Sign 
+
+| if_equals_10: | 10  | 10  ^| 0 ^| 1 ^| 0 ^| 0 ^| 0 
+| cmp&nbsp;rdi,10 | 10  | 10  ^| 0 ^| 1 ^| 0 ^| 1 ^| 0 
+| return_true: | 10  | 10  ^| 0 ^| 1 ^| 0 ^| 1 ^| 0 
+| mov&nbsp;rax,&nbsp;1 | 1  | 10  ^| 0 ^| 1 ^| 0 ^| 1 ^| 0 
+
+|====
+`RAX` may contain the input value but we have to read it from `RDI`.
+After the comparison, the flag `Zero` is `1` when values are equal.In that case, the `je` is activated and the jump is made.

@@ -212,35 +212,36 @@ TEST void test_if_equals_no_redirect_stdout() {
 
 
 TEST void test_document_if_equals() {
+    // Redirect output
     stdout_switch = change_stdout_to_buffer();
     
+    // Execution
     int input_value = 10;
-    //if_equals_10(9);
     int result = if_equals_10(input_value);
-    //if_equals_10(11);
-    //_assertIntEq(0, result);
     
+    // Restore output
     restore_stdout(stdout_switch);
     read_buffer(stdout_switch, buffer, SIZE); 
    
+    // Format document
     char* filename = "../work/target/if_equals.adoc";
     printf("Change stdout to file %s\n", filename);
     FILE* fptr = fopen(filename, "w");
+    {
+        fprintf(fptr, ":SOURCE_PATH: ../../examples/spike/doc\n");
+        fprintf(fptr, "= Comparators\n");
 
-    fprintf(fptr, ":SOURCE_PATH: ../../examples/spike/doc\n");
-    fprintf(fptr, "= Comparators\n");
+        fprintf(fptr, "\nCall function: +\n`if_equals_10(%d)` -> `%d`\n", input_value, result);
+        
+        fprintf(fptr, "\n[%%collapsible]\n.Code .asm\n====\n----\ninclude::{SOURCE_PATH}/demo_if.asm[tag=if_equals_10]\n\ninclude::{SOURCE_PATH}/demo_if.asm[tag=common]\n----\n====\n");
 
-    fprintf(fptr, "\nCall function: +\n`if_equals_10(%d)` -> `%d`\n", input_value, result);
-    
-    fprintf(fptr, "%s", "\n[%%collapsible]\n.Code .asm\n====\n----\ninclude::{SOURCE_PATH}/demo_if.asm[tag=if_equals_10]\n\ninclude::{SOURCE_PATH}/demo_if.asm[tag=common]\n----\n====\n");
+        print_execution(fptr, buffer);
 
-    print_execution(fptr, buffer);
-
-    fprintf(fptr, "`RAX` may contain the input value but we have to read it from `RDI`.\n");
-    fprintf(fptr, "After the comparison, the flag `Zero` is `1` when values are equal.");
-    fprintf(fptr, "In that case, the `je` is activated and the jump is made.");
+        fprintf(fptr, "`RAX` may contain the input value but we have to read it from `RDI`.\n");
+        fprintf(fptr, "After the comparison, the flag `Zero` is `1` when values are equal.");
+        fprintf(fptr, "In that case, the `je` is activated and the jump is made.");
+    }
     fclose(fptr);
 }
-
 
 RUN_TESTS()
