@@ -11,6 +11,8 @@
 next_generation:
         cmp rdi, 4
         jge .die
+        cmp rdi, 2
+        jl .die
         mov rax, 1
         ret
 

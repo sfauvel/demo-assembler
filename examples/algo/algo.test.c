@@ -28,5 +28,10 @@ TEST void test_cell_with_3_neighbor_is_alive() {
     _assertIntEq(ALIVE, next_generation(3));
 }
 
+TEST void test_cell_with_less_than_2_neighbor_is_dead() {
+    _assertIntEq(DEAD, next_generation(1));
+    _assertIntEq(DEAD, next_generation(0));
+}
+
 
 RUN_TESTS()
