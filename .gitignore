@@ -2,5 +2,6 @@
 **/lib/
 **/target/
 **/work/
+**/spike/
 in_progress/
 *.o
