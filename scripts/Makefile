@@ -49,18 +49,18 @@ lib: init $(LIBS)
 	
 # Compile an asm program
 compile_$(PROGRAM_NAME).main.asm: init lib $(LIB_PATH)/$(PROGRAM_NAME).main.o
-	@echo Compile: $(PROGRAM_NAME).main.asm
-	@ld $(LIB_PATH)/$(PROGRAM_NAME).main.o $(LIBS) -o $(MAIN_PATH)/$(PROGRAM_NAME)
+	@echo === Compile: $(PROGRAM_NAME).main.asm
+	ld $(LIB_PATH)/$(PROGRAM_NAME).main.o $(LIBS) -o $(MAIN_PATH)/$(PROGRAM_NAME)
 
 # Compile an c program
 compile_$(PROGRAM_NAME).main.c: init lib
-	@echo Compile: $(PROGRAM_NAME).main.c
-	@gcc -no-pie $(PROGRAM_SOURCE) $(LIBS) $(INCLUDE_OPTION) -o $(MAIN_PATH)/$(PROGRAM_NAME)
+	@echo === Compile: $(PROGRAM_NAME).main.c
+	gcc -no-pie $(PROGRAM_SOURCE) $(LIBS) $(INCLUDE_OPTION) -o $(MAIN_PATH)/$(PROGRAM_NAME)
 
 # Compile asm files
 $(LIB_PATH)/%.o: %.asm
-	@echo Compile: $^
-	@nasm $^ -o $@ -felf64
+	@echo === Compile: $^
+	nasm $^ -o $@ -felf64
 
 build: compile_$(PROGRAM_SOURCE)
 
@@ -68,44 +68,44 @@ $(MAIN_PATH)/$(PROGRAM_NAME): build
 
 # Run main program
 run: $(MAIN_PATH)/$(PROGRAM_NAME)
-	@echo Execute: $(PROGRAM_NAME)
-	@$(MAIN_PATH)/$(PROGRAM_NAME)
+	@echo === Execute: $(PROGRAM_NAME)
+	$(MAIN_PATH)/$(PROGRAM_NAME)
 
 test: init lib
-	@echo Generate test launcher
-	@bash $(TEST_PATH)/build_test_file.sh $(TEST_SOURCE) $(TEST_WORK_PATH)/$(TEST_SOURCE)
-	@echo Compile test file: $(TEST_SOURCE)
-	@gcc -no-pie $(TEST_WORK_PATH)/$(TEST_SOURCE) $(LIBS) -I$(TEST_PATH) -I$(WORK_PATH)/examples/print $(INCLUDE_OPTION) -o $(MAIN_PATH)/$(PROGRAM_TEST)
-	@echo Execute tests
-	@$(MAIN_PATH)/$(PROGRAM_TEST)
+	@echo === Generate test launcher
+	bash $(TEST_PATH)/build_test_file.sh $(TEST_SOURCE) $(TEST_WORK_PATH)/$(TEST_SOURCE)
+	@echo === Compile test file: $(TEST_SOURCE)
+	gcc -no-pie $(TEST_WORK_PATH)/$(TEST_SOURCE) $(LIBS) -I$(TEST_PATH) -I$(WORK_PATH)/examples/print $(INCLUDE_OPTION) -o $(MAIN_PATH)/$(PROGRAM_TEST)
+	@echo === Execute tests
+	$(MAIN_PATH)/$(PROGRAM_TEST)
 
 generate_debug_%.o: %.asm
-	@echo Generate debug file: $<
+	@echo === Generate debug file: $<
 	
-	@$(PYTHON) $(ROOT_PATH)/scripts/generate_debug.py . $(<:%.asm=%) $(DEBUG_PATH)
+	$(PYTHON) $(ROOT_PATH)/scripts/generate_debug.py . $(<:%.asm=%) $(DEBUG_PATH)
 
-	@echo Compile: $^
-	@nasm $(DEBUG_PATH)/$(<:%.asm=%.debug.asm) -o $(LIB_PATH)/$(<:%.asm=%.o) -felf64
+	@echo === Compile: $^
+	nasm $(DEBUG_PATH)/$(<:%.asm=%.debug.asm) -o $(LIB_PATH)/$(<:%.asm=%.o) -felf64
 
 
 compile_debug_%.main: %.main.c
-	@echo Generate debug file: $<
-	@$(PYTHON) $(ROOT_PATH)/scripts/generate_debug_c_file.py . $(<:%.c=%) $(DEBUG_PATH)
-	@echo Compile: $(PROGRAM_NAME).main.c
-	@gcc -no-pie $(DEBUG_PATH)/$(PROGRAM_NAME).main.debug.c $(LIB_PATH)/print.o $(LIB_PATH)/debug.o $(foreach obj_file, $(LIB_OBJECTS), $(addprefix $(LIB_PATH)/, $(obj_file))) -o $(MAIN_PATH)/$(PROGRAM_NAME).debug
+	@echo === Generate debug file: $<
+	$(PYTHON) $(ROOT_PATH)/scripts/generate_debug_c_file.py . $(<:%.c=%) $(DEBUG_PATH)
+	@echo === Compile: $(PROGRAM_NAME).main.c
+	gcc -no-pie $(DEBUG_PATH)/$(PROGRAM_NAME).main.debug.c $(LIB_PATH)/print.o $(LIB_PATH)/debug.o $(foreach obj_file, $(LIB_OBJECTS), $(addprefix $(LIB_PATH)/, $(obj_file))) -o $(MAIN_PATH)/$(PROGRAM_NAME).debug
 	                                                        
 lib_for_debug:
-	@nasm $(ROOT_PATH)/examples/print/print.asm -o $(LIB_PATH)/print.o -felf64
-	@nasm $(ROOT_PATH)/examples/debug/debug.asm -o $(LIB_PATH)/debug.o -felf64
+	nasm $(ROOT_PATH)/examples/print/print.asm -o $(LIB_PATH)/print.o -felf64
+	nasm $(ROOT_PATH)/examples/debug/debug.asm -o $(LIB_PATH)/debug.o -felf64
 
 $(MAIN_PATH)/$(PROGRAM_NAME).debug: compile_debug_$(PROGRAM_NAME).main
 
 debug: init $(DEBUGS) lib_for_debug $(MAIN_PATH)/$(PROGRAM_NAME).debug
 	$(MAIN_PATH)/$(PROGRAM_NAME).debug $(DEBUG_PATH)/debug.data
-	@$(PYTHON) $(ROOT_PATH)/scripts/format_debug.py $(DEBUG_PATH)/debug.data $(DEBUG_PATH)
+	$(PYTHON) $(ROOT_PATH)/scripts/format_debug.py $(DEBUG_PATH)/debug.data $(DEBUG_PATH)
 
 init:
-	@echo Create working dirs
+	@echo === Create working dirs
 	@mkdir -p $(WORK_PATH)
 	@mkdir -p $(LIB_PATH)
 	@mkdir -p $(MAIN_PATH)
@@ -113,21 +113,21 @@ init:
 	@mkdir -p $(TEST_WORK_PATH)
 	
 clean:
-	@echo "Clean $(WORK_PATH)"
+	@echo === "Clean $(WORK_PATH)"
 	@rm -rf $(WORK_PATH)
 
 info:
-	@echo "SOURCES_ASM:$(SOURCES_ASM)"
-	@echo "LIBS_ASM:$(LIBS_ASM)"
-	@echo "INCLUDE_OPTION:$(INCLUDE_OPTION)"
-	@echo "LIB_OBJECTS:$(LIB_OBJECTS)"	
-	@echo "LIBS:$(LIBS)"
-	@echo "CURRENT_PATH:$(CURRENT_PATH)"
-	@echo "PROGRAM_NAME:$(PROGRAM_NAME)"
-	@echo "TEST_PATH:$(TEST_PATH)"
-	@echo "TEST_SOURCE:$(TEST_SOURCE)"
-	@echo "TEST_WORK_PATH:$(TEST_WORK_PATH)"
-	@echo "DEBUGS:$(DEBUGS)"
+	@echo === "SOURCES_ASM:$(SOURCES_ASM)"
+	@echo === "LIBS_ASM:$(LIBS_ASM)"
+	@echo === "INCLUDE_OPTION:$(INCLUDE_OPTION)"
+	@echo === "LIB_OBJECTS:$(LIB_OBJECTS)"	
+	@echo === "LIBS:$(LIBS)"
+	@echo === "CURRENT_PATH:$(CURRENT_PATH)"
+	@echo === "PROGRAM_NAME:$(PROGRAM_NAME)"
+	@echo === "TEST_PATH:$(TEST_PATH)"
+	@echo === "TEST_SOURCE:$(TEST_SOURCE)"
+	@echo === "TEST_WORK_PATH:$(TEST_WORK_PATH)"
+	@echo === "DEBUGS:$(DEBUGS)"
 	
 
 #    $@ : produit (ou but) de la règle 
