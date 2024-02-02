@@ -7,8 +7,10 @@
         ; Define methods exported
         global  next_generation     ;
         global  board               ;
+        global  set_alive           ;
 
         section .text
+
 ; 1-RDI: neighbor
 ; 2-RSI: state
 next_generation:
@@ -34,7 +36,12 @@ board:
         mov rax, buffer
         ret
 
-        section   .data
+set_alive:
+        mov byte [buffer + 5], '*'
+        ret
+
+;;; DATA
+section   .data
 
 buffer:  db   '   ',10,'   ',10,'   ', 0;
 

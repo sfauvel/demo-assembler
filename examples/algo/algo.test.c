@@ -16,6 +16,7 @@
 
 int next_generation(int /* neighbor */, int /* state*/);
 char* board();
+void set_alive(int, int);
 
 #define DEAD 0
 #define ALIVE 1
@@ -48,6 +49,11 @@ TEST void test_alive_cell_with_2_neighbor_is_alive() {
 
 TEST void test_display_board() {
     _assertStringEq("   \n   \n   ", board());
+}
+
+TEST void test_set_cell_alive() {
+    set_alive(1, 1);
+    _assertStringEq("   \n * \n   ", board());
 }
 
 
