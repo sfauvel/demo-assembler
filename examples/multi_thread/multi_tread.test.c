@@ -77,5 +77,3 @@ TEST void test_create_fork() {
     _assert(next != NULL);  // Parent after child
 
 }
-
-RUN_TESTS()

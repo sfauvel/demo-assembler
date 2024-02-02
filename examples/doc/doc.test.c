@@ -243,5 +243,3 @@ TEST void test_document_if_equals() {
     }
     fclose(fptr);
 }
-
-RUN_TESTS()

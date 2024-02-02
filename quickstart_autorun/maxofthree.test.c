@@ -21,5 +21,3 @@ TEST void should_found_max_of_threehen_third_number() {
     _assertInt64Eq((int64_t)7, maxofthree(1, 5, 7));
 }
 
-
-RUN_TESTS()

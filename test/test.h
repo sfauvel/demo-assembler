@@ -75,10 +75,10 @@ int isFailed=0;
         SHELL_NO_COLOR \
     } while(0)
 
+// Prefix test function by TEST to add the test to the runner
 #define TEST
+#define SKIP
 
-/*void all_tests() {} int main(int argc, char **argv) { all_tests(); return runTests(); }*/
-#define RUN_TESTS()
 
 int reportTests() {
     if (tests_failed == 0)

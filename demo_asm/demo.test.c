@@ -97,5 +97,3 @@ TEST void should_keep_value() {
     _assertIntEq(32, add_to_stack(32));    
     _assertIntEq(57, add_to_stack(25));    
 }
-
-RUN_TESTS()

@@ -144,5 +144,3 @@ TEST void test_print_long_number_with_zero() {
 
     _assertStringEq("100000000000000002", restore_stdout(stdout_switch));
 }
-
-RUN_TESTS()

@@ -21,7 +21,3 @@ int add_5(int);
 TEST void test_print_registry_stdout() {
     _assertIntEq(25, add_5(20));
 }
-
-
-
-RUN_TESTS()

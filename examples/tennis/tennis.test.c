@@ -43,4 +43,3 @@ TEST void should_found_45_0_when_AAA() {
     a_score();
     _assertStringEq("45-0", tennis_score());
 }
-RUN_TESTS()

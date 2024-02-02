@@ -22,6 +22,3 @@ TEST void test_from_other() {
     _assertIntEq(25, add_5(20));
 }
 
-
-
-RUN_TESTS()

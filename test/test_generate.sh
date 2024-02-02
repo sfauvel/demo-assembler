@@ -6,7 +6,7 @@
 
 function write() {
     TEXT=$1
-    sed -i "s/RUN_TESTS()/${TEXT}RUN_TESTS()/g" $TEST_FILE
+    echo -en "${TEXT}" >> $TEST_FILE
 }
 
 function writeln() {
@@ -32,6 +32,7 @@ function build_test_file() {
     cp $1 $TEST_FILE
     tests=$(grep "^TEST " $TEST_FILE)s
 
+    writeln ""
     writeln "int main(int argc, char **argv) { "
     writeln "    const char* testName = argv[1];"
     write_tests

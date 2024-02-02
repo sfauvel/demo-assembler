@@ -104,5 +104,3 @@ TEST void test_display_reinit_current_stack_head() {
     _assertStringEq("102,101,", restore_stdout(stdout_switch));
 }
 
-
-RUN_TESTS()

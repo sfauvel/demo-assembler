@@ -313,5 +313,3 @@ TEST void test_perf_short_method_and_display_average_time() {
 //    restore_stdout(stdout_switch);
 //    
 //}
-
-RUN_TESTS()
