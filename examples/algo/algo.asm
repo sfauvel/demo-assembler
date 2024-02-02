@@ -9,8 +9,14 @@
 
         section .text
 next_generation:
-        mov rax, 0
+        cmp rdi, 4
+        jge .die
+        mov rax, 1
         ret
+
+        .die: 
+                mov rax, 0
+                ret
 
 
         section   .data
