@@ -6,6 +6,7 @@
 
         ; Define methods exported
         global  next_generation     ;
+        global  board               ;
 
         section .text
 ; 1-RDI: neighbor
@@ -29,7 +30,13 @@ next_generation:
                 ret
 
 
+board:
+        mov rax, buffer
+        ret
+
         section   .data
 
+buffer:  db   '   ',10,'   ',10,'   ', 0;
 
-        section   .bss      
+        section   .bss
+;buffer:  resb   100;

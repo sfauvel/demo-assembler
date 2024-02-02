@@ -15,6 +15,7 @@
 #include <unistd.h>
 
 int next_generation(int /* neighbor */, int /* state*/);
+char* board();
 
 #define DEAD 0
 #define ALIVE 1
@@ -43,6 +44,10 @@ TEST void test_dead_cell_with_2_neighbor_is_dead() {
 
 TEST void test_alive_cell_with_2_neighbor_is_alive() {
     _assertIntEq(ALIVE, next_generation(2, ALIVE));
+}
+
+TEST void test_display_board() {
+    _assertStringEq("   \n   \n   ", board());
 }
 
 
