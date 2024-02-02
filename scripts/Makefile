@@ -60,7 +60,7 @@ compile_$(PROGRAM_NAME).main.c: init lib
 # Compile asm files
 $(LIB_PATH)/%.o: %.asm
 	@echo === Compile: $^
-	nasm $^ -o $@ -felf64
+	nasm $^ -o $@ -felf64 -l $(MAIN_PATH)/$^.lst
 
 build: compile_$(PROGRAM_SOURCE)
 
