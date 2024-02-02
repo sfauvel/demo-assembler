@@ -15,11 +15,13 @@
 #include <unistd.h>
 
 
-int add_5(int);
+int next_generation(int);
 
+#define DEAD 0
+#define ALIVE 1
 
-TEST void test_print_registry_stdout() {
-    _assertIntEq(25, add_5(20));
+TEST void test_living_cell_with_more_then_3_neighbor_die() {
+    _assertIntEq(DEAD, next_generation(4));
 }
 
 

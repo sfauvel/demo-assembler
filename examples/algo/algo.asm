@@ -5,19 +5,15 @@
 ; -----------------------------------------------------------------------------
 
         ; Define methods exported
-        global  add_5     ;
+        global  next_generation     ;
 
         section .text
-add_5:
-        mov rax, rdi
-        call something
-        add rax, 5
+next_generation:
+        mov rax, 0
         ret
 
-something:
-        push rax
-        mov rax, 999
-        pop rax
-        ret
 
         section   .data
+
+
+        section   .bss      
