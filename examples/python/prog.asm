@@ -16,7 +16,7 @@ say_hello:
         mov rdi, 1      ; stdout fd
         ;mov rsi, hello
         lea rsi, [rel hello]
-        mov rdx, 9      ; 8 chars + newline
+        mov rdx, 6      ; 5 chars + newline
         mov rax, 1      ; write syscall
         syscall
         
@@ -35,4 +35,4 @@ add:
         ret
 
         section   .data   
-hello:          db 'Hello'
+hello:          db 'Hello', 10
