@@ -5,6 +5,8 @@
 ;
 ; -----------------------------------------------------------------------------
         
+default rel   ; Use relative address when using variable label
+
         global  start_game      ; Start a new game. Must be call before starting to reinit variables.
         global  tennis_score    ; Return score as a string like: 30-15.
         global  a_score         ; Player A win a point.
@@ -29,8 +31,8 @@ b_score:
         mov [score_b], rax
         ret
 
-tennis_score:   
-        mov rsi, score_tmp
+tennis_score:
+        lea rsi, [score_tmp]
 
         ; Add player A score
         mov rdi, [score_a]
@@ -52,7 +54,7 @@ tennis_score:
         mov [rsi], rax
 
         ; return score
-        mov rax, score_tmp
+        lea rax, [score_tmp]
         ret                             
 
 find_score_text:
