@@ -1,7 +1,13 @@
+#IDE
 **/.vscode/
+
+# Cache and temporary files
+**/__pycache__/
+**/.pytest_cache/
+
+# Working directories and artifacts
 **/lib/
 **/target/
 **/work/
 **/spike/
 in_progress/
-*.o
