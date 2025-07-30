@@ -20,6 +20,11 @@ class TestProg:
         text = f"{captured.out}" 
         assert text == "Hello\n"
 
+    def test_get_hello(self, prog_lib):
+        prog_lib.get_hello.argtypes = ()
+        prog_lib.get_hello.restype = ctypes.c_char_p
+        assert prog_lib.get_hello().decode('utf-8') == "Hello\n"
+
     def test_get_value(self, prog_lib):
         assert prog_lib.get_value() == 42
         
@@ -28,3 +33,5 @@ class TestProg:
 
     def test_add(self, prog_lib):
         assert prog_lib.add(7, 11) == 18
+
+    

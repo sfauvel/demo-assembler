@@ -6,6 +6,7 @@
 
         ; Define methods exported
         global  say_hello     ;
+        global  get_hello     ;
         global  get_value     ;
         global  add_5         ;
         global  add           ;
@@ -19,7 +20,11 @@ say_hello:
         mov rdx, 6      ; 5 chars + newline
         mov rax, 1      ; write syscall
         syscall
-        
+
+get_hello:
+        mov rax, hello
+        ret
+
 get_value:
         mov rax, 42
         ret
