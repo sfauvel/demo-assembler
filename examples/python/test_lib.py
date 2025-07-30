@@ -3,15 +3,15 @@ from pathlib import Path
 import pytest
 
 LIB_PATH="target"
+LIB_NAME="lib"
 
-def load_shared_library(lib_name: str) -> ctypes.CDLL:
-    lib_path = Path(f"{LIB_PATH}/{lib_name}.so").absolute()
-    return ctypes.CDLL(lib_path)
+def load_shared_library(lib_path: Path) -> ctypes.CDLL:    
+    return ctypes.CDLL(lib_path.absolute())
 
 class TestProg:
     @pytest.fixture(scope="module")
     def prog_lib(self):
-        yield load_shared_library("prog")
+        yield load_shared_library(Path(f"{LIB_PATH}/{LIB_NAME}.so"))
         
     def test_say_hello(self, prog_lib, capfd):
         prog_lib.say_hello()
@@ -23,7 +23,6 @@ class TestProg:
     def test_get_value(self, prog_lib):
         assert prog_lib.get_value() == 42
         
-
     def test_add_5(self, prog_lib):
         assert prog_lib.add_5(7) == 12
 

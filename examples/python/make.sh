@@ -1,12 +1,12 @@
 #!/bin/bash
 # This script compile the assembly code, create a shared library,
 # run the main C program that uses it and run the Python tests.
-#
+# ./make.sh; while true; do inotifywait -q -r -e create,modify,delete .; ./make.sh; date; done;
 # Readings:
 # https://docs.python.org/3/library/ctypes.html
 # https://realpython.com/python-bindings-overview/
 
-LIB_NAME=prog
+LIB_NAME=lib
 PROG_NAME=${LIB_NAME}.main
 SOURCE_DIR=..
 BUILD_DIR=target

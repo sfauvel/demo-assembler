@@ -3,7 +3,8 @@
   "packages": [
     "nasm@2.16.03",
     "python@3.13",
-    "python313Packages.pip@latest"
+    "python313Packages.pip@latest",
+    "inotify-tools@4.23.9.0"
   ],
   "shell": {
     "init_hook": [
