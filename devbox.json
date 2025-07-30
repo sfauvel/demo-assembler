@@ -2,10 +2,14 @@
   "$schema":  "https://raw.githubusercontent.com/jetify-com/devbox/0.15.0/.schema/devbox.schema.json",
   "packages": [
     "nasm@2.16.03",
-    "python@3.13"
+    "python@3.13",
+    "python313Packages.pip@latest"
   ],
   "shell": {
     "init_hook": [
+      ". $VENV_DIR/bin/activate",
+      "pip install -r requirements.txt",
+      "PYTHONPATH=$PYTHONPATH:$(realpath libs)",
       "echo 'Welcome to devbox!' > /dev/null"
     ],
     "scripts": {}
