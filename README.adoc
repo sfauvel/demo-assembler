@@ -167,6 +167,7 @@ while true; do inotifywait -q -r -e create,modify,delete .; . run.sh; date; done
 * link:http://www.lacl.fr/tan/asm[]
 * link:https://benoit-m.developpez.com/assembleur/tutoriel/[]
 * link:https://fasterthanli.me/series/making-our-own-executable-packer/part-1[]
+* link:https://filippo.io/linux-syscall-table/[Linux Syscall Table for x86 64]
 
 In french:
 
