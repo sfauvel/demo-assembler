@@ -7,7 +7,7 @@
 # https://realpython.com/python-bindings-overview/
 
 LIB_NAME=lib
-PROG_NAME=${LIB_NAME}.main
+PROG_NAME=prog.main
 SOURCE_DIR=..
 BUILD_DIR=target
 
@@ -30,7 +30,7 @@ gcc -z noexecstack ${SOURCE_DIR}/${PROG_NAME}.c ${LIB_NAME}.o -o ${PROG_NAME}
 popd
 
 echo "Execute the main program..."
-${BUILD_DIR}/${LIB_NAME}.main
+${BUILD_DIR}/${PROG_NAME}
 
 echo "Run tests..."
 pytest -vv

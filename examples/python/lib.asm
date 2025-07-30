@@ -4,6 +4,8 @@
 ; Return value is in rax
 ; -----------------------------------------------------------------------------
 
+default rel
+
         ; Define methods exported
         global  say_hello     ;
         global  get_hello     ;
@@ -15,14 +17,27 @@
 
 say_hello:
         mov rdi, 1      ; stdout fd
-        ;mov rsi, hello
-        lea rsi, [rel hello]
-        mov rdx, 6      ; 5 chars + newline
+        lea rsi, [hello]
+        mov rdx, 12      ; 11 chars + newline
         mov rax, 1      ; write syscall
         syscall
 
-get_hello:
-        mov rax, hello
+get_hello:        
+        lea rdi, [hello]
+        lea rsi, [output]
+        
+        .continue_copy:
+                mov al, [rdi]
+                mov [rsi], al
+                test al,al
+                jz .found_zero_bit
+                
+                inc rdi
+                inc rsi
+        jmp .continue_copy
+        
+        .found_zero_bit:
+        lea rax, [output]
         ret
 
 get_value:
@@ -40,4 +55,7 @@ add:
         ret
 
         section   .data   
-hello:          db 'Hello', 10
+hello:          db 'Hello world', 10, 0
+
+        section   .bss        
+output: resb         8*6                     ; Store output to return
