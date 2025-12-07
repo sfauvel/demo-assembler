@@ -27,10 +27,10 @@ echo "Compiling the main C program..."
 # -z noexecstack to avoid a warning
 gcc -z noexecstack ${SOURCE_DIR}/${PROG_NAME}.c ${LIB_NAME}.o -o ${PROG_NAME}
 
-popd
-
 echo "Execute the main program..."
-${BUILD_DIR}/${PROG_NAME}
+./${PROG_NAME}
+
+popd
 
 echo "Run tests..."
 pytest -vv

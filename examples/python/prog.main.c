@@ -11,6 +11,6 @@ char* get_hello();
 
 
 int main(int argc, char **argv) {
-    printf("Result from C:%d\n", get_value());
-    printf("Result from C:%s\n", get_hello());
+    printf("Result from C: %d\n", get_value());
+    printf("Result from C: %s\n", get_hello());
 }
