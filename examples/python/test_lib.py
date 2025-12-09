@@ -11,18 +11,26 @@ def load_shared_library(lib_path: Path) -> ctypes.CDLL:
 class TestProg:
     @pytest.fixture(scope="module")
     def prog_lib(self):
-        yield load_shared_library(Path(f"{LIB_PATH}/{LIB_NAME}.so"))
+        # Load the shared library
+        prog_lib = load_shared_library(Path(f"{LIB_PATH}/{LIB_NAME}.so"))
         
+        # Define function signatures
+        prog_lib.get_hello.argtypes = ()
+        prog_lib.get_hello.restype = ctypes.c_char_p
+
+        # Return library object
+        yield prog_lib
+        
+    def capture_stdout(self, capfd):
+        captured = capfd.readouterr()
+        return f"{captured.out}" 
+
     def test_say_hello(self, prog_lib, capfd):
         prog_lib.say_hello()
 
-        captured = capfd.readouterr()
-        text = f"{captured.out}" 
-        assert text == "Hello world\n"
+        assert self.capture_stdout(capfd) == "Hello world\n"
 
     def test_get_hello(self, prog_lib):
-        prog_lib.get_hello.argtypes = ()
-        prog_lib.get_hello.restype = ctypes.c_char_p
         assert prog_lib.get_hello().decode('utf-8') == "Hello world\n"
 
     def test_get_value(self, prog_lib):

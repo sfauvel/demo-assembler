@@ -8,9 +8,10 @@
 
 int get_value();
 char* get_hello();
-
+void say_hello();
 
 int main(int argc, char **argv) {
     printf("Result from C: %d\n", get_value());
     printf("Result from C: %s\n", get_hello());
+    say_hello();
 }
