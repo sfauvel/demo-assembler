@@ -37,6 +37,14 @@ function create_and_run_main() {
     popd
 }
 
+function check() {
+    echo "Run MyPy (only on *_typed_* files)..."
+    mypy *_typed_* --strict
+    if [ $? -ne 0 ]; then
+        echo "MyPy checks failed!"
+        exit 1
+    fi
+}
 
 function run_tests() {
     echo "Run tests..."
@@ -44,6 +52,7 @@ function run_tests() {
 }
 
 build
+check
 create_and_run_main
 run_tests
 

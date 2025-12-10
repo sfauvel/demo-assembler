@@ -22,8 +22,8 @@ class TestProg:
         yield prog_lib
         
     def capture_stdout(self, capfd):
-        captured = capfd.readouterr()
-        return f"{captured.out}" 
+        out, _ = capfd.readouterr()
+        return str(out) 
 
     def test_say_hello(self, prog_lib, capfd):
         prog_lib.say_hello()
