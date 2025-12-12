@@ -1,4 +1,4 @@
-; -----------------------------------------------------------------------------
+ ; -----------------------------------------------------------------------------
 ; Show how to retrieve parameters.
 ; Parameters can be found in rdi, rsi, and rdx
 ; Return value is in rax
@@ -16,12 +16,12 @@ default rel
         section .text
 
 say_hello:
-        mov rdi, 1      ; stdout fd
+        mov rdi, 1      ; stdout fd (BF 01)
         lea rsi, [hello]
-        mov rdx, 12      ; 11 chars + newline
-        mov rax, 1      ; write syscall
-        syscall
-
+        mov rdx, 12      ; 11 chars + newline (BA 12)
+        mov rax, 1      ; write syscall (B8 01)
+        syscall         ; (0F 05)
+        
 get_hello:        
         lea rdi, [hello]
         lea rsi, [output]

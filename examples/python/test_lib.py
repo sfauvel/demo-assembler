@@ -1,3 +1,6 @@
+# Simple library without type so we ignore type checking on the file
+# type: ignore
+
 import ctypes
 from pathlib import Path
 import pytest
@@ -5,14 +8,11 @@ import pytest
 LIB_PATH="target"
 LIB_NAME="lib"
 
-def load_shared_library(lib_path: Path) -> ctypes.CDLL:    
-    return ctypes.CDLL(lib_path.absolute())
-
 class TestProg:
     @pytest.fixture(scope="module")
     def prog_lib(self):
         # Load the shared library
-        prog_lib = load_shared_library(Path(f"{LIB_PATH}/{LIB_NAME}.so"))
+        prog_lib = ctypes.CDLL(Path(f"{LIB_PATH}/{LIB_NAME}.so"))
         
         # Define function signatures
         prog_lib.get_hello.argtypes = ()

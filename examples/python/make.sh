@@ -26,24 +26,18 @@ function build() {
     popd
 }
 
-function create_and_run_main() {
-    pushd ${BUILD_DIR}
-    echo "Compiling the main C program..."
-    # -z noexecstack to avoid a warning
-    gcc -z noexecstack ${SOURCE_DIR}/${PROG_NAME}.c ${LIB_NAME}.o -o ${PROG_NAME}
-
-    echo "Execute the main program..."
-    ./${PROG_NAME}
-    popd
-}
-
 function check() {
-    echo "Run MyPy (only on *_typed_* files)..."
-    mypy *_typed_* --strict
+    echo "Run MyPy..."
+    mypy . --strict
     if [ $? -ne 0 ]; then
         echo "MyPy checks failed!"
         exit 1
     fi
+}
+
+function run_prog() {
+    echo "Run program..."
+    python prog.py
 }
 
 function run_tests() {
@@ -53,6 +47,6 @@ function run_tests() {
 
 build
 check
-create_and_run_main
+run_prog
 run_tests
 
