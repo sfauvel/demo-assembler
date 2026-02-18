@@ -3,7 +3,7 @@
 *
 * test.h contains some utilities to write tests.
 * TEST is only a marker to identify test functions.
-* a main function that that run all tests is generated and added at the end of the file. 
+* A `main` function calling all test methods is added to the end of the generated file.  
 */
 #include <test.h>
 
