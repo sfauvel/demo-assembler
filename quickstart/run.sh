@@ -20,7 +20,7 @@ function compileAndRunTest() {
 
     execute "Compile asm" nasm -felf64 ${asm_path}/${test_name}.asm -o target/${test_name}.asm.o
   
-    local include_path=./test
+    local include_path=../test
     execute "Compile test" gcc ${test_path}/${test_name}.test.c -I${include_path} target/${test_name}.asm.o -o target/${test_name}.test.o
 
     execute "Launch ${test_name}.test" ./target/${test_name}.test.o
@@ -32,8 +32,8 @@ function clean() {
 }
 
 test=maxofthree
-asm_path=quickstart
-test_path=quickstart
+asm_path=.
+test_path=.
 
 clean
 compileAndRunTest $test $asm_path $test_path

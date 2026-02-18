@@ -15,7 +15,7 @@ Program found max value between three numbers.
 To compile assembler code and run tests, execute this command:
 
 ----
-. run_quick_start.sh
+pushd quickstart; ./run.sh; popd
 ----
 
 Result should look like this:
