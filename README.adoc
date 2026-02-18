@@ -1,6 +1,7 @@
 = NASM 
 :toc: left
 :source-highlighter: rouge
+Resources around assembler 
 
 
 * link:https://www.nasm.us/[Nasm]
@@ -168,12 +169,14 @@ while true; do inotifywait -q -r -e create,modify,delete .; . run.sh; date; done
 * link:https://benoit-m.developpez.com/assembleur/tutoriel/[]
 * link:https://fasterthanli.me/series/making-our-own-executable-packer/part-1[]
 * link:https://filippo.io/linux-syscall-table/[Linux Syscall Table for x86 64]
+* link:https://github.com/las-nish/NASM-Assembly-Collection/blob/main/README.md
 
 In french:
 
 * link:https://openclassrooms.com/fr/courses/2288321-apprenez-a-programmer-en-assembleur-x86/2288944-votre-premier-programme[]
 * link:https://leria-info.univ-angers.fr/~jeanmichel.richer/assembly/Programmation_Assembleur_x86_32_et_64_bits_sous_Linux_Ubuntu.pdf[]
 * link:https://www.unilim.fr/pages_perso/tristan.vaccon/cours_nasm.pdf[Programmation Assembleur NASM - Résumé]
+* link:https://ruuand.github.io/Assembleur/
 
 === Disasemble
 
