@@ -51,7 +51,7 @@ Everything is in the file.
 
 It's just to show how it could work but it's too simple for a real usage. 
 
-To launch it, execute: `. run_minimal.sh`
+To launch it, execute: `./run.sh how_to/c_build_and_run_minimal_test.sh`
 
 It just compile test file using `gcc` and run it.
 
@@ -65,7 +65,7 @@ Create a `.c` file like `simple.test.c`:
 include::howto/simple.test.c[]
 ----
 
-Script `run_simple.sh` compile and run tests.
+Script `./run.sh howto/c_build_and_run_simple_test.sh` compile and run tests.
 Folder `test` is included as library.
 It contains file defining functions to make tests.
 

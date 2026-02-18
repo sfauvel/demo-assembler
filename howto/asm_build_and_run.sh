@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Build an .asm fiel and run it
+# Build an .asm file and run it
 
 asm_path=.
 target=../work/target
