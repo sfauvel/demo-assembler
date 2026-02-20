@@ -160,6 +160,18 @@ To execute tests only when a file is modify, we can use `inotifywait`
 while true; do inotifywait -q -r -e create,modify,delete .; . run.sh; date; done;
 ----
 
+
+=== Solve common issues
+
+.Error when compiling with `gcc`
+----
+warning: target/maxofthree.asm.o: missing .note.GNU-stack section implies executable stack
+NOTE: This behaviour is deprecated and will be removed in a future version of the linker
+----
+
+To avoid this error, add this option to the `gcc` command:
+`-z noexecstack`
+
 === Nasm
 
 * link:https://www.nasm.us/[]
