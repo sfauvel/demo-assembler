@@ -190,8 +190,8 @@ write_given_file_with_alphabet:
         ret
 
         section   .data
-file_to_read:    db "../work/target/demo_read_data.txt", 0
-file_to_write:   db "../work/target/demo_write_data.txt", 0
+file_to_read:    db "./work/target/demo_read_data.txt", 0
+file_to_write:   db "./work/target/demo_write_data.txt", 0
 alphabet:        db "ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0
 current_length:  dq 0
 buffer_head:     dq 0
