@@ -103,7 +103,7 @@ TEST void test_macro() {
 // Demo file
 TEST void test_read_file() {
     FILE* file = fopen("./work/target/demo_read_data.txt", "w");
-    if (file == 0) {
+    if (!file) {
         _assertStringEq("File open", "File not found");
     }
     fprintf(file, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
@@ -114,7 +114,7 @@ TEST void test_read_file() {
 
 TEST void test_read_file_char_by_char() {
     FILE* file = fopen("./work/target/demo_read_data.txt", "w");
-    if (file == 0) {
+    if (!file) {
         _assertStringEq("File open", "File not found");
     }
     fprintf(file, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
@@ -126,7 +126,7 @@ TEST void test_read_file_char_by_char() {
 
 TEST void test_read_file_by_blocks() {
     FILE* file = fopen("./work/target/demo_read_data.txt", "w");
-    if (file == 0) {
+    if (!file) {
         _assertStringEq("File open", "File not found");
     }
     fprintf(file, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
@@ -142,7 +142,7 @@ TEST void test_write_file() {
 
     char buffer[TAILLE_MAX] = "";
     FILE* file = fopen("./work/target/demo_write_data.txt", "r");
-    if (file == 0) {
+    if (!file) {
         _assertStringEq("File open", "File not found");
     }
     char* result = fgets(buffer, TAILLE_MAX, file);
@@ -158,7 +158,7 @@ TEST void test_write_file_with_param() {
 
     char buffer[TAILLE_MAX] = "";
     FILE* file = fopen("./work/target/demo_write_data_param.txt", "r");
-    if (file == 0) {
+    if (!file) {
         _assertStringEq("File open", "File not found");
     }
     char* result = fgets(buffer, TAILLE_MAX, file);
