@@ -5,6 +5,7 @@ SCRIPT_PATH="${BASH_SOURCE%/*}"
 CURRENT_SCRIPT_NAME=$(basename "$BASH_SOURCE")
 ORIGIN_SCRIPT_NAME=$(basename "$0")
 
+source "$SCRIPT_PATH/log.sh"
 
 # By default the file name used is the name of th directory
 ORIGIN_PATH=$(pwd)
@@ -27,12 +28,6 @@ PROJECT_PATH=${ROOT_PATH}/${ASM_PATH}
 
 PYTHON=python3
 
-
-function log_debug() {
-    # Return 0 to log info and 1 otherwise
-    return 0
-}
-
 function extract_filename() {
     local file=$(basename $1)
     local extension=$2
@@ -54,7 +49,7 @@ function cmd_test() {
 
 # It's possible to pass the test name to launch only this one.
 function run_test() {
-  
+
     local param_include_paths="$include_paths"
     local param_object_files="$object_files"
     local test_filter="*"
@@ -70,12 +65,14 @@ function run_test() {
         MAIN_FILENAME=${test_name}.test
         include_paths+="${ROOT_PATH}/test ${ROOT_PATH}/examples/print "
         
-        object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${ASM_PATH}) 
+        compile_asm $LIB_PATH ${ROOT_PATH}/${ASM_PATH}
+        object_files+="$(extract_output $LIB_PATH)"
 
         include_paths+="${PROJECT_PATH} "
         local output_program=${BIN_PATH}/${MAIN_FILENAME}.o
         compile ${BIN_PATH}/${MAIN_FILENAME}.c ${output_program}
 
+        execute "Execute test" \
         ${output_program} $@
     done
 }
@@ -100,14 +97,17 @@ function compile_and_run_asm() {
     local asm_path="$2"
     local output_program="$3"
 
-    local object_files=$(compile_asm ${output_path} ${asm_path})
-    
+    compile_asm ${output_path} ${asm_path}
+    local object_files="$(extract_output ${output_path})"
+    execute "Link" \
     ld $object_files -o ${output_program}
+
     ${output_program}
 }
 
 function run_run() {
-    object_files+=$(compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}) 
+    compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}
+    object_files+="$(extract_output $LIB_PATH)"
 
     include_paths+="${PROJECT_PATH} "
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
@@ -126,8 +126,9 @@ function cmd_debug() {
 
 function compile_debug_libs() {
     # print.o and debug.o need to be compiled
-    object_files+=$(compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/print)
-    object_files+=$(compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/debug)
+    compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/print
+    compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/debug
+    object_files+="$(extract_output $LIB_PATH)"
 }
 
 function cmd_compile_run_debug() {
@@ -147,7 +148,8 @@ function compile_and_run_debug() {
     local debug_data_file="$DEBUG_PATH/debug.data"
     MAIN_FILENAME=$MAIN_FILENAME.debug
 
-    object_files+=$(compile_asm $LIB_PATH $DEBUG_PATH)
+    compile_asm $LIB_PATH $DEBUG_PATH
+    object_files+="$(extract_output $LIB_PATH)"
 
     include_paths+="${PROJECT_PATH} "
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
@@ -155,9 +157,22 @@ function compile_and_run_debug() {
 
     ${output_program} $debug_data_file
 
+    execute "Run debug" \
     $PYTHON format_debug.py $debug_data_file $DEBUG_PATH
 }
 
+
+# Extract all files in [asm_path] to the output [output_path] folder.
+# $1: Output path where .o has been generated.
+function extract_output() {
+    local obj_path=$1
+    local obj_files=""
+    for obj_file in $obj_path/*.o
+    do
+        obj_files+=" ${obj_file} "
+    done
+    echo "$obj_files"
+}
 
 # Compile all files in [asm_path] to the output [output_path] folder.
 # $1: Output path where .o will be generated.
@@ -166,18 +181,19 @@ function compile_asm() {
     local output_path=$1
     local asm_path=$2
     mkdir -p ${output_path}
-    
     local output_files=""
     for asm_file in $asm_path/*.asm
     do
         [ -f "$asm_file" ] || continue
         local filename=$(extract_filename $asm_file asm)
         local output_file=${output_path}/${filename}.o
+        
+        execute "Compile asm file: ${asm_file##*/}" \
         nasm $asm_file -o ${output_file} -i ${asm_path} -felf64
 
         output_files+=" ${output_file} "
     done
-    echo "$output_files"
+
 }
 
 # Compile a .c file
@@ -199,19 +215,23 @@ function compile() {
     do 
         includes+="-I${include_file} "
     done
-    gcc -no-pie ${c_file} ${object_files} ${includes} -o ${output_program}    
+
+    execute "Compile" \
+    gcc -no-pie -z noexecstack ${c_file} ${object_files} ${includes} -o ${output_program}    
 }
 
 function generate_debug_asm_files() {
     for asm_file in $PROJECT_PATH/*.asm
     do
         filename=$(extract_filename $asm_file asm)
+        execute "Generate debug asm" \
         $PYTHON generate_debug.py $PROJECT_PATH $filename $DEBUG_PATH
     done
 }
 
 
 function generate_debug_c_file() {
+    execute "Generate debug c" \
     $PYTHON generate_debug_c_file.py $PROJECT_PATH $MAIN_FILENAME $DEBUG_PATH
 }
 
@@ -227,7 +247,8 @@ help() {
 
 ####################################################################
 
-pushd $CURRENT_DIR > /dev/null
+
+execute "Move to $CURRENT_DIR" pushd $CURRENT_DIR
 . ${ROOT_PATH}/test/test_generate.sh
 
 # You can redefine one of the command in your own file:
@@ -240,8 +261,10 @@ if [[ -z $1 || -z $(command -v $USE_CASE) ]]; then
     help
 else
     if [[ -z $(command -v $CUSTOM_USE_CASE) ]]; then
+        execute "Execute command" \
         $USE_CASE "${@:2}"
     else
+        execute "Execute custom command" \
         $CUSTOM_USE_CASE "${@:2}"
     fi
 fi
