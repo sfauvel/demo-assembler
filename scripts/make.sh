@@ -189,7 +189,7 @@ function compile_asm() {
         local output_file=${output_path}/${filename}.o
         
         execute "Compile asm file: ${asm_file##*/}" \
-        nasm $asm_file -o ${output_file} -i ${asm_path} -felf64
+        nasm $asm_file -o ${output_file} -i ${asm_path} -i .. -felf64
 
         output_files+=" ${output_file} "
     done

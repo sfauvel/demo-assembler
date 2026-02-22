@@ -83,7 +83,6 @@ read_file_by_blocks:
                 ret
 
 read_file_to_buffer:
-        
         call open_file
 
         .read_from_file:
@@ -159,7 +158,7 @@ read_file_char_by_char:
 
 open_file:
         mov rax, SYS_OPEN        ;sys_open file with fd in ebx
-        mov rbx, file_to_read    ;file to be read
+        mov rbx, rdi             ;file to be read
         mov rcx, 0               ;O_RDONLY
         int 80h
         ret
@@ -170,7 +169,6 @@ close_file:
         ret
 
 write_hard_coded_file_with_alphabet:
-        mov rdi, file_to_write
         call write_given_file_with_alphabet
         ret
 
@@ -190,8 +188,7 @@ write_given_file_with_alphabet:
         ret
 
         section   .data
-file_to_read:    db "./work/target/demo_read_data.txt", 0
-file_to_write:   db "./work/target/demo_write_data.txt", 0
+        
 alphabet:        db "ABCDEFGHIJKLMNOPQRSTUVWXYZ", 0
 current_length:  dq 0
 buffer_head:     dq 0

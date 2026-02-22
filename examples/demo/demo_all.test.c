@@ -102,46 +102,46 @@ TEST void test_macro() {
 ////////////
 // Demo file
 TEST void test_read_file() {
-    FILE* file = fopen("./work/target/demo_read_data.txt", "w");
+    FILE* file = fopen("../work/target/demo_read_data.txt", "w");
     if (!file) {
         _assertStringEq("File open", "File not found");
     }
     fprintf(file, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
     fclose(file);
 
-    _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", read_file_to_buffer());
+    _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", read_file_to_buffer("../work/target/demo_read_data.txt"));
 }
 
 TEST void test_read_file_char_by_char() {
-    FILE* file = fopen("./work/target/demo_read_data.txt", "w");
+    FILE* file = fopen("../work/target/demo_read_data.txt", "w");
     if (!file) {
         _assertStringEq("File open", "File not found");
     }
     fprintf(file, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
     fclose(file);
 
-    _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", read_file_char_by_char());
+    _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", read_file_char_by_char("../work/target/demo_read_data.txt"));
 }
 
 
 TEST void test_read_file_by_blocks() {
-    FILE* file = fopen("./work/target/demo_read_data.txt", "w");
+    FILE* file = fopen("../work/target/demo_read_data.txt", "w");
     if (!file) {
         _assertStringEq("File open", "File not found");
     }
     fprintf(file, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
     fclose(file);
 
-    _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", read_file_by_blocks());
+    _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", read_file_by_blocks("../work/target/demo_read_data.txt"));
 }
 
 #define TAILLE_MAX 1024
 TEST void test_write_file() {
     
-    write_hard_coded_file_with_alphabet();
+    write_hard_coded_file_with_alphabet("../work/target/demo_write_data.txt");
 
     char buffer[TAILLE_MAX] = "";
-    FILE* file = fopen("./work/target/demo_write_data.txt", "r");
+    FILE* file = fopen("../work/target/demo_write_data.txt", "r");
     if (!file) {
         _assertStringEq("File open", "File not found");
     }
@@ -154,10 +154,10 @@ TEST void test_write_file() {
 
 TEST void test_write_file_with_param() {
     
-    write_given_file_with_alphabet("./work/target/demo_write_data_param.txt");
+    write_given_file_with_alphabet("../work/target/demo_write_data_param.txt");
 
     char buffer[TAILLE_MAX] = "";
-    FILE* file = fopen("./work/target/demo_write_data_param.txt", "r");
+    FILE* file = fopen("../work/target/demo_write_data_param.txt", "r");
     if (!file) {
         _assertStringEq("File open", "File not found");
     }
@@ -172,32 +172,28 @@ TEST void test_write_file_with_param() {
 ////////////
 // Demo perf
 
-// TEST void test_perf_for_a_short_method() {
-//     int result = short_method();
-//   
-//     unsigned long duration = 0;
-//     
-//     // Something in mesure_perf_short_method has a side effect on `result` value and change it. 
-//     int result_with_measure = measure_perf_short_method(&duration);
-//     
-//     _assertIntEq(result, result_with_measure);
-//     //printf("Duration: %ul\n", duration);
-//     _assert(duration > 0);
-//     _assert(duration < 100);
-// }
-// 
-// TEST void test_perf_for_a_long_method() {
-//     int result = long_method();
-//     unsigned long duration = 0;
-// 
-//     // Something in mesure_perf_long_method has a side effect on `result` value and change it. 
-//     int result_with_measure = measure_perf_long_method(&duration);
-// 
-//     _assertIntEq(result, result_with_measure);
-//     //printf("Duration: %ul\n", duration);
-//     _assert(duration > 500);
-//     _assert(duration < 5000);
-// }
+TEST void test_perf_for_a_short_method() {
+    
+    unsigned long duration = 0;
+    int result_with_measure = measure_perf_short_method(&duration);
+    
+    int result = short_method();
+    _assertIntEq(result, result_with_measure);
+    //printf("Duration: %ul\n", duration);
+    _assert(duration > 0);
+    _assert(duration < 100);
+}
+
+TEST void test_perf_for_a_long_method() {
+    unsigned long duration = 0;
+    int result_with_measure = measure_perf_long_method(&duration);
+    
+    int result = long_method();
+    _assertIntEq(result, result_with_measure);
+    //printf("Duration: %ul\n", duration);
+    _assert(duration > 500);
+    _assert(duration < 5000);
+}
 
 #define CYCLES_PER_SEC(ghz)     ((ghz) * 1e9)
 #define CYCLES_PER_MSEC(ghz)    ((ghz) * 1e6)
