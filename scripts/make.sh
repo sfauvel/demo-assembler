@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# This script is executing from the scripts foldeR.
 
 SCRIPT_PATH="${BASH_SOURCE%/*}"
 CURRENT_SCRIPT_NAME=$(basename "$BASH_SOURCE")
@@ -7,7 +8,7 @@ ORIGIN_SCRIPT_NAME=$(basename "$0")
 
 source "$SCRIPT_PATH/log.sh"
 
-# By default the file name used is the name of th directory
+# By default the file name used is the name of the directory
 ORIGIN_PATH=$(pwd)
 FILE=${FILE:=$(basename $(pwd))}
 ASM_PATH=${ASM_PATH:=examples/$FILE}
@@ -27,6 +28,28 @@ MAIN_FILENAME=${FILE}.main
 PROJECT_PATH=${ROOT_PATH}/${ASM_PATH}
 
 PYTHON=python3
+
+#####
+
+echo CURRENT_PATH=$(pwd)
+echo SCRIPT_PATH=$SCRIPT_PATH
+echo CURRENT_SCRIPT_NAME=$CURRENT_SCRIPT_NAME
+echo ORIGIN_SCRIPT_NAME=$ORIGIN_SCRIPT_NAME
+echo ORIGIN_PATH=$ORIGIN_PATH
+echo FILE=$FILE
+echo ASM_PATH=$ASM_PATH
+echo TEST_PATH=$TEST_PATH
+echo CURRENT_DIR=$CURRENT_DIR
+echo ROOT_PATH=$ROOT_PATH
+echo BIN_PATH=$BIN_PATH
+echo LIB_PATH=$LIB_PATH
+echo DEBUG_PATH=$DEBUG_PATH
+echo MAIN_FILENAME=$MAIN_FILENAME
+echo PROJECT_PATH=$PROJECT_PATH
+echo PYTHON=$PYTHON
+
+#####
+
 
 function extract_filename() {
     local file=$(basename $1)
