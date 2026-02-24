@@ -102,46 +102,46 @@ TEST void test_macro() {
 ////////////
 // Demo file
 TEST void test_read_file() {
-    FILE* file = fopen("../work/target/demo_read_data.txt", "w");
+    FILE* file = fopen("./demo_read_data.txt", "w");
     if (!file) {
         _assertStringEq("File open", "File not found");
     }
     fprintf(file, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
     fclose(file);
 
-    _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", read_file_to_buffer("../work/target/demo_read_data.txt"));
+    _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", read_file_to_buffer("./demo_read_data.txt"));
 }
 
 TEST void test_read_file_char_by_char() {
-    FILE* file = fopen("../work/target/demo_read_data.txt", "w");
+    FILE* file = fopen("./demo_read_data.txt", "w");
     if (!file) {
         _assertStringEq("File open", "File not found");
     }
     fprintf(file, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
     fclose(file);
 
-    _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", read_file_char_by_char("../work/target/demo_read_data.txt"));
+    _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", read_file_char_by_char("./demo_read_data.txt"));
 }
 
 
 TEST void test_read_file_by_blocks() {
-    FILE* file = fopen("../work/target/demo_read_data.txt", "w");
+    FILE* file = fopen("./demo_read_data.txt", "w");
     if (!file) {
         _assertStringEq("File open", "File not found");
     }
     fprintf(file, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
     fclose(file);
 
-    _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", read_file_by_blocks("../work/target/demo_read_data.txt"));
+    _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", read_file_by_blocks("./demo_read_data.txt"));
 }
 
 #define TAILLE_MAX 1024
 TEST void test_write_file() {
     
-    write_hard_coded_file_with_alphabet("../work/target/demo_write_data.txt");
+    write_hard_coded_file_with_alphabet("../../work/demo_write_data.txt");
 
     char buffer[TAILLE_MAX] = "";
-    FILE* file = fopen("../work/target/demo_write_data.txt", "r");
+    FILE* file = fopen("../../work/demo_write_data.txt", "r");
     if (!file) {
         _assertStringEq("File open", "File not found");
     }
@@ -154,10 +154,10 @@ TEST void test_write_file() {
 
 TEST void test_write_file_with_param() {
     
-    write_given_file_with_alphabet("../work/target/demo_write_data_param.txt");
+    write_given_file_with_alphabet("../../work/demo_write_data_param.txt");
 
     char buffer[TAILLE_MAX] = "";
-    FILE* file = fopen("../work/target/demo_write_data_param.txt", "r");
+    FILE* file = fopen("../../work/demo_write_data_param.txt", "r");
     if (!file) {
         _assertStringEq("File open", "File not found");
     }
