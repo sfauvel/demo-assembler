@@ -5,10 +5,15 @@ GREEN="\033[0;32m"
 WHITE="\033[0;37m"
 NO_COLOR="\033[0m"
 
-# You can redefine thos function in your script to set log.
+
+# You can redefine this variable in your script to set log level.
+LOG_DEBUG=${LOG_DEBUG:=0}
+
 function log_debug() {
     # Return 0 to log info and 1 otherwise
-    return 0
+    if [ "$LOG_DEBUG" -eq "1" ]; then
+        echo "$1"
+    fi
 }
 
 # This function log the command before executing it

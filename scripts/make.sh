@@ -14,7 +14,9 @@
 #     echo "My custom test"
 # }
 # export -f custom_cmd_test
-
+#
+# You can activate debug log setting LOG_DEBUG variable(0 = off, 1 = on)
+# export LOG_DEBUG=0
 
 # Paths fix in in the global project
 SCRIPT_PATH="${BASH_SOURCE%/*}"
@@ -47,22 +49,23 @@ PYTHON=python3
 #####
 
 function show_variables() {
-    echo ABSOLUTE_PROJECT_PATH=$ABSOLUTE_PROJECT_PATH
-    echo SCRIPT_PATH=$SCRIPT_PATH
-    echo CURRENT_SCRIPT_NAME=$CURRENT_SCRIPT_NAME
-    echo ORIGIN_SCRIPT_NAME=$ORIGIN_SCRIPT_NAME
-    echo FILE=$FILE
-    echo ASM_PATH=$ASM_PATH
-    echo TEST_PATH=$TEST_PATH
-    echo ROOT_PATH=$ROOT_PATH
-    echo BIN_PATH=$BIN_PATH
-    echo LIB_PATH=$LIB_PATH
-    echo DEBUG_PATH=$DEBUG_PATH
-    echo MAIN_FILENAME=$MAIN_FILENAME
-    echo PROJECT_PATH=$PROJECT_PATH
-    echo SCRIPT_PATH=$SCRIPT_PATH
-    echo TEST_TOOLS_PATH=$TEST_TOOLS_PATH
-    echo PYTHON=$PYTHON
+    log_debug "===  Variables  ==="
+    log_debug "   ABSOLUTE_PROJECT_PATH=$ABSOLUTE_PROJECT_PATH"
+    log_debug "   SCRIPT_PATH=$SCRIPT_PATH"
+    log_debug "   CURRENT_SCRIPT_NAME=$CURRENT_SCRIPT_NAME"
+    log_debug "   ORIGIN_SCRIPT_NAME=$ORIGIN_SCRIPT_NAME"
+    log_debug "   FILE=$FILE"
+    log_debug "   ASM_PATH=$ASM_PATH"
+    log_debug "   TEST_PATH=$TEST_PATH"
+    log_debug "   ROOT_PATH=$ROOT_PATH"
+    log_debug "   BIN_PATH=$BIN_PATH"
+    log_debug "   LIB_PATH=$LIB_PATH"
+    log_debug "   DEBUG_PATH=$DEBUG_PATH"
+    log_debug "   MAIN_FILENAME=$MAIN_FILENAME"
+    log_debug "   PROJECT_PATH=$PROJECT_PATH"
+    log_debug "   SCRIPT_PATH=$SCRIPT_PATH"
+    log_debug "   TEST_TOOLS_PATH=$TEST_TOOLS_PATH"
+    log_debug "   PYTHON=$PYTHON"
 }
 
 ### Commands
@@ -249,16 +252,19 @@ function compile() {
     
     local c_file="$1"
     local output_program="$2"
-    log_debug && echo c_file: $c_file
-    log_debug && echo object_files: $object_files
-    log_debug && echo include_paths: $include_paths
-    log_debug && echo output_program: $output_program
 
     includes=""
     for include_file in ${include_paths}
     do 
         includes+="-I${include_file} "
     done
+
+    log_debug "===  Compile Debug  ==="
+    log_debug "   c_file: $c_file"
+    log_debug "   object_files: $object_files"
+    log_debug "   include_paths: $include_paths"
+    log_debug "   includes: $includes"
+    log_debug "   output_program: $output_program"
 
     execute "Compile" \
     gcc -no-pie -z noexecstack ${c_file} ${object_files} ${includes} -o ${output_program}    
@@ -291,10 +297,10 @@ help() {
 
 ####################################################################
 
-show_variables
 
 source "$SCRIPT_PATH/log.sh"
 source ${TEST_TOOLS_PATH}/test_generate.sh
+show_variables
 
 # You can redefine one of the command in your own file:
 # function custom_cmd_test() { ... }
