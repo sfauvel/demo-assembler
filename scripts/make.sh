@@ -1,55 +1,101 @@
 #!/usr/bin/env bash
 
-# This script is executing from the scripts foldeR.
+# This script is executing from the sub-project folder.
+# 
+# We can define some variables to customize compilation
+# include_paths: Folder add as included paths
+# ASM_PATH: PAth where are .asm files
+# TEST_PATH: Path where are test.c files
 
+# Paths fix in in the global project
 SCRIPT_PATH="${BASH_SOURCE%/*}"
 CURRENT_SCRIPT_NAME=$(basename "$BASH_SOURCE")
 ORIGIN_SCRIPT_NAME=$(basename "$0")
 
-source "$SCRIPT_PATH/log.sh"
+ROOT_PATH=$(realpath --relative-to=. "${SCRIPT_PATH}/..")
+TEST_TOOLS_PATH="${ROOT_PATH}/test"
 
-# By default the file name used is the name of the directory
-ORIGIN_PATH=$(pwd)
-FILE=${FILE:=$(basename $(pwd))}
-ASM_PATH=${ASM_PATH:=examples/$FILE}
-TEST_PATH=${TEST_PATH:=examples/$FILE}
-
-CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
-
-
-ROOT_PATH=..
 BIN_PATH=${ROOT_PATH}/work/target
 LIB_PATH=${ROOT_PATH}/work/lib
 DEBUG_PATH=${ROOT_PATH}/work/debug
 
 
+# Paths relative to the project
+# By default the file name used is the name of the directory
+ABSOLUTE_PROJECT_PATH=$(pwd)
+FILE=${FILE:=$(basename $(pwd))}
+ASM_PATH=${ASM_PATH:=.}
+TEST_PATH=${TEST_PATH:=.}
 MAIN_FILENAME=${FILE}.main
+PROJECT_PATH=.
 
-PROJECT_PATH=${ROOT_PATH}/${ASM_PATH}
-
+# Constants
 PYTHON=python3
 
 #####
 
-echo CURRENT_PATH=$(pwd)
-echo SCRIPT_PATH=$SCRIPT_PATH
-echo CURRENT_SCRIPT_NAME=$CURRENT_SCRIPT_NAME
-echo ORIGIN_SCRIPT_NAME=$ORIGIN_SCRIPT_NAME
-echo ORIGIN_PATH=$ORIGIN_PATH
-echo FILE=$FILE
-echo ASM_PATH=$ASM_PATH
-echo TEST_PATH=$TEST_PATH
-echo CURRENT_DIR=$CURRENT_DIR
-echo ROOT_PATH=$ROOT_PATH
-echo BIN_PATH=$BIN_PATH
-echo LIB_PATH=$LIB_PATH
-echo DEBUG_PATH=$DEBUG_PATH
-echo MAIN_FILENAME=$MAIN_FILENAME
-echo PROJECT_PATH=$PROJECT_PATH
-echo PYTHON=$PYTHON
+function show_variables() {
+    echo ABSOLUTE_PROJECT_PATH=$ABSOLUTE_PROJECT_PATH
+    echo SCRIPT_PATH=$SCRIPT_PATH
+    echo CURRENT_SCRIPT_NAME=$CURRENT_SCRIPT_NAME
+    echo ORIGIN_SCRIPT_NAME=$ORIGIN_SCRIPT_NAME
+    echo FILE=$FILE
+    echo ASM_PATH=$ASM_PATH
+    echo TEST_PATH=$TEST_PATH
+    echo ROOT_PATH=$ROOT_PATH
+    echo BIN_PATH=$BIN_PATH
+    echo LIB_PATH=$LIB_PATH
+    echo DEBUG_PATH=$DEBUG_PATH
+    echo MAIN_FILENAME=$MAIN_FILENAME
+    echo PROJECT_PATH=$PROJECT_PATH
+    echo SCRIPT_PATH=$SCRIPT_PATH
+    echo TEST_TOOLS_PATH=$TEST_TOOLS_PATH
+    echo PYTHON=$PYTHON
+}
 
-#####
+### Commands
 
+function cmd_test() {
+    clean
+    run_test $@
+}
+
+
+function cmd_run() {
+    clean
+    run_run
+}
+
+function cmd_debug() {
+    clean
+    generate_debug_asm_files
+    generate_debug_c_file
+
+    cmd_compile_run_debug
+}
+
+function cmd_run_asm() {
+    clean
+    
+    local asm_path="${ROOT_PATH}/${TEST_PATH}"
+    local output_path="${LIB_PATH}"
+    local output_program=${BIN_PATH}/${FILE} 
+
+    compile_and_run_asm $output_path $asm_path $output_program
+}
+
+# Use this command to just load all functions
+function cmd_no_run() {
+    return
+}
+
+function cmd_compile_run_debug() {
+    compile_debug_libs
+    compile_and_run_debug
+}
+
+
+### Tooling
 
 function extract_filename() {
     local file=$(basename $1)
@@ -65,54 +111,35 @@ function clean() {
     mkdir -p ${BIN_PATH}
 }
 
-function cmd_test() {
-    clean
-    run_test $@
-}
-
 # It's possible to pass the test name to launch only this one.
 function run_test() {
 
     local param_include_paths="$include_paths"
     local param_object_files="$object_files"
     local test_filter="*"
-    for f in ${ROOT_PATH}/${TEST_PATH}/${test_filter}.test.c
+    for f in ${TEST_PATH}/${test_filter}.test.c
     do
         include_paths="$param_include_paths"
         object_files="$param_object_files"
         filename="$(basename -- $f)"
         test_name="${filename%.test.c}"
         # Generate test files
-        build_test_file ${ROOT_PATH}/${TEST_PATH}/${test_name}.test.c ${BIN_PATH}/${test_name}.test.c
+        execute "Generate test file" \
+        build_test_file ${TEST_PATH}/${test_name}.test.c ${BIN_PATH}/${test_name}.test.c
         
         MAIN_FILENAME=${test_name}.test
-        include_paths+="${ROOT_PATH}/test ${ROOT_PATH}/examples/print "
+        include_paths+="${TEST_TOOLS_PATH} "
+        #include_paths+="${ROOT_PATH}/examples/print "
         
-        compile_asm $LIB_PATH ${ROOT_PATH}/${ASM_PATH}
+        compile_asm $LIB_PATH ${ASM_PATH}
         object_files+="$(extract_output $LIB_PATH)"
 
-        include_paths+="${PROJECT_PATH} "
         local output_program=${BIN_PATH}/${MAIN_FILENAME}.o
         compile ${BIN_PATH}/${MAIN_FILENAME}.c ${output_program}
 
         execute "Execute test" \
         ${output_program} $@
     done
-}
-
-function cmd_run() {
-    clean
-    run_run
-}
-
-function cmd_run_asm() {
-    clean
-    
-    local asm_path="${ROOT_PATH}/${TEST_PATH}"
-    local output_path="${LIB_PATH}"
-    local output_program=${BIN_PATH}/${FILE} 
-
-    compile_and_run_asm $output_path $asm_path $output_program
 }
 
 function compile_and_run_asm() {
@@ -129,22 +156,14 @@ function compile_and_run_asm() {
 }
 
 function run_run() {
-    compile_asm $LIB_PATH ${ROOT_PATH}/${TEST_PATH}
+    compile_asm $LIB_PATH ${TEST_PATH}
     object_files+="$(extract_output $LIB_PATH)"
 
     include_paths+="${PROJECT_PATH} "
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
-    compile ${ROOT_PATH}/${TEST_PATH}/$MAIN_FILENAME.c ${output_program}
+    compile ${TEST_PATH}/$MAIN_FILENAME.c ${output_program}
 
     ${output_program}
-}
-
-function cmd_debug() {
-    clean
-    generate_debug_asm_files
-    generate_debug_c_file
-
-    cmd_compile_run_debug
 }
 
 function compile_debug_libs() {
@@ -152,16 +171,6 @@ function compile_debug_libs() {
     compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/print
     compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/debug
     object_files+="$(extract_output $LIB_PATH)"
-}
-
-function cmd_compile_run_debug() {
-    compile_debug_libs
-    compile_and_run_debug
-}
-
-# Use this command to just load all functions
-function cmd_no_run() {
-    return
 }
 
 function compile_and_run_debug() {
@@ -212,7 +221,7 @@ function compile_asm() {
         local output_file=${output_path}/${filename}.o
         
         execute "Compile asm file: ${asm_file##*/}" \
-        nasm $asm_file -o ${output_file} -i ${asm_path} -i .. -felf64
+        nasm $asm_file -o ${output_file} -i ${asm_path} -felf64
 
         output_files+=" ${output_file} "
     done
@@ -262,7 +271,7 @@ function generate_debug_c_file() {
 help() {
     echo Select one of this method as parameter
 
-    for script_file in $CURRENT_SCRIPT_NAME $ORIGIN_PATH/$ORIGIN_SCRIPT_NAME 
+    for script_file in "$SCRIPT_PATH/$CURRENT_SCRIPT_NAME" "$ABSOLUTE_PROJECT_PATH/$ORIGIN_SCRIPT_NAME" 
     do
         grep "[f]unction cmd_.*() {" "$script_file" | sed 's/function cmd_\(.*\)(.*/  - \1/g' 
     done
@@ -270,9 +279,10 @@ help() {
 
 ####################################################################
 
+show_variables
 
-execute "Move to $CURRENT_DIR" pushd $CURRENT_DIR
-. ${ROOT_PATH}/test/test_generate.sh
+source "$SCRIPT_PATH/log.sh"
+source ${TEST_TOOLS_PATH}/test_generate.sh
 
 # You can redefine one of the command in your own file:
 # function custom_cmd_test() { ... }
@@ -291,5 +301,3 @@ else
         $CUSTOM_USE_CASE "${@:2}"
     fi
 fi
-
-popd  > /dev/null

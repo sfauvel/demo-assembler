@@ -11,8 +11,8 @@
     global  nested_third_calls
     global  measure_perf_and_return_short_method_duration
 
-    ; Because it's compile a the root of the project
-    %include "./examples/perf/perf.mac"
+    ; Relative to the project path
+    %include "../../examples/perf/perf.mac"
 
     section   .data
 
