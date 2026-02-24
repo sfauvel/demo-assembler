@@ -6,6 +6,15 @@
 # include_paths: Folder add as included paths
 # ASM_PATH: PAth where are .asm files
 # TEST_PATH: Path where are test.c files
+# MAIN_FILENAME: Name of the file containg `main` without extension. Default value is `[FOLDER NAME].main`
+#
+# It's possible to redefine a command with the prefix `custom` and call `export``:
+#
+# function custom_cmd_test() {
+#     echo "My custom test"
+# }
+# export -f custom_cmd_test
+
 
 # Paths fix in in the global project
 SCRIPT_PATH="${BASH_SOURCE%/*}"
@@ -26,7 +35,10 @@ ABSOLUTE_PROJECT_PATH=$(pwd)
 FILE=${FILE:=$(basename $(pwd))}
 ASM_PATH=${ASM_PATH:=.}
 TEST_PATH=${TEST_PATH:=.}
-MAIN_FILENAME=${FILE}.main
+
+if [[ -z "$MAIN_FILENAME" ]]; then
+    MAIN_FILENAME=${FILE}.main
+fi
 PROJECT_PATH=.
 
 # Constants
