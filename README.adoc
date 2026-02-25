@@ -15,7 +15,7 @@ Program found max value between three numbers.
 To compile assembler code and run tests, execute this command:
 
 ----
-pushd quickstart; ./run.sh; popd
+ ./quickstart/make.sh test
 ----
 
 Result should look like this:
@@ -51,7 +51,7 @@ Everything is in the file.
 
 It's just to show how it could work but it's too simple for a real usage. 
 
-To launch it, execute: `./run.sh how_to/c_build_and_run_minimal_test.sh`
+To launch it, execute: `./howto/minimal_test/make.sh make.sh tests`
 
 It just compile test file using `gcc` and run it.
 
@@ -150,14 +150,14 @@ nasm -felf64 hello.asm && gcc callhello.c hello.o && ./a.out
 
 Go to your project folder and run following command to execute tests every 5 seconds.
 ----
-while true; do . run.sh; date; sleep 5;  done
+while true; do ./[PATH TO THE PROJECT]/make.sh test; date; sleep 5;  done
 ----
 
 We display date only to view something changing in console.
 
 To execute tests only when a file is modify, we can use `inotifywait`
 ----
-while true; do inotifywait -q -r -e create,modify,delete .; . run.sh; date; done;
+while true; do inotifywait -q -r -e create,modify,delete .; ./[PATH TO THE PROJECT]/make.sh test; date; done;
 ----
 
 

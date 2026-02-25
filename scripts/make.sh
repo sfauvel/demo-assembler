@@ -29,7 +29,8 @@ TEST_TOOLS_PATH="${ROOT_PATH}/test"
 BIN_PATH=${ROOT_PATH}/work/target
 LIB_PATH=${ROOT_PATH}/work/lib
 DEBUG_PATH=${ROOT_PATH}/work/debug
-
+SCRIPT_RECORD=${ROOT_PATH}/work/tmp.sh
+chmod u+x "$SCRIPT_RECORD"
 
 # Paths relative to the project
 # By default the file name used is the name of the directory
@@ -92,7 +93,7 @@ function cmd_debug() {
 function cmd_run_asm() {
     clean
     
-    local asm_path="${ROOT_PATH}/${TEST_PATH}"
+    local asm_path="${TEST_PATH}"
     local output_path="${LIB_PATH}"
     local output_program=${BIN_PATH}/${FILE} 
 
@@ -132,6 +133,10 @@ function run_test() {
     local param_include_paths="$include_paths"
     local param_object_files="$object_files"
     local test_filter="*"
+
+    execute "Load test tools" \
+    source ${TEST_TOOLS_PATH}/test_generate.sh
+
     for f in ${TEST_PATH}/${test_filter}.test.c
     do
         include_paths="$param_include_paths"
@@ -178,6 +183,7 @@ function run_run() {
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
     compile ${TEST_PATH}/$MAIN_FILENAME.c ${output_program}
 
+    execute "Execute" \
     ${output_program}
 }
 
@@ -229,6 +235,7 @@ function compile_asm() {
     local asm_path=$2
     mkdir -p ${output_path}
     local output_files=""
+    log_debug "Compile asm files: $(ls $asm_path/*.asm)"
     for asm_file in $asm_path/*.asm
     do
         [ -f "$asm_file" ] || continue
@@ -299,7 +306,6 @@ help() {
 
 
 source "$SCRIPT_PATH/log.sh"
-source ${TEST_TOOLS_PATH}/test_generate.sh
 show_variables
 
 # You can redefine one of the command in your own file:
@@ -311,11 +317,15 @@ COMMIT_COUNTER=0
 if [[ -z $1 || -z $(command -v $USE_CASE) ]]; then
     help
 else
+
+    echo "# Replay script" > "$SCRIPT_RECORD"
+    echo "pushd $(realpath --relative-to="${ROOT_PATH}/work" "${ABSOLUTE_PROJECT_PATH}") > /dev/null" >> "$SCRIPT_RECORD"
     if [[ -z $(command -v $CUSTOM_USE_CASE) ]]; then
-        execute "Execute command" \
+        echo "Execute command $USE_CASE"
         $USE_CASE "${@:2}"
     else
-        execute "Execute custom command" \
+        echo "Execute custom command: $CUSTOM_USE_CASE"
         $CUSTOM_USE_CASE "${@:2}"
     fi
+    echo "popd > /dev/null" >> "$SCRIPT_RECORD"
 fi
