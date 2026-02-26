@@ -2,5 +2,5 @@
 
 CURRENT_FILE_FOLDER="${0%/*}"
 pushd "$CURRENT_FILE_FOLDER"
-../scripts/make.sh $*
+../../scripts/make.sh $*
 popd

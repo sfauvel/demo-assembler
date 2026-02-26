@@ -10,17 +10,17 @@ Resources around assembler
 == Quick start
 
 Folder `quickstart` contains a simple example with an assembler program and some tests. 
-Program found max value between three numbers.
+The program found max value between three numbers.
 
 To compile assembler code and run tests, execute this command:
 
 ----
- ./quickstart/make.sh test
+ ./quickstart/basic/make.sh test
 ----
 
 Result should look like this:
 ----
-Build program for file quickstart/maxofthree.test.c
+Build program for file quickstart/basic/genermaxofthree.test.c
 ==================
 Run maxofthree.test
 ------------------
@@ -34,10 +34,10 @@ Tests run: 3
 Tests failed:0
 ----
 
-
 Program is define in file `maxofthree.asm`. +
 Tests are written in file `maxofthree.test.c`
 
+Folder `basic` contains pure c test while `generated_runner` use the text `TEST` to identify test functions and generate a runner that execute all tests. 
 
 You can find some projects in `examples` folder.
 
