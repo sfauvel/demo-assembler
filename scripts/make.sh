@@ -220,10 +220,12 @@ function compile_and_run_debug() {
 function extract_output() {
     local obj_path=$1
     local obj_files=""
+    shopt -s nullglob
     for obj_file in $obj_path/*.o
     do
         obj_files+=" ${obj_file} "
     done
+    shopt -u nullglob
     echo "$obj_files"
 }
 

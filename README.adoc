@@ -43,6 +43,16 @@ You can find some projects in `examples` folder.
 
 == How to
 
+=== make.sh
+
+All sub projects in this folder use the script "script/make.sh" to compile and execute code. 
+
+It's call by the `make.sh` that is within the sub project folder.
+
+This script discover files to build and execute generated command lines.
+Those command lines are recorded in `work/tmp.sh` to see what is needed to compile.
+This script can be use to replay the building process.
+
 === A minimal test file in C
 
 File `minimal.test.c` is a trivial example of tests.
