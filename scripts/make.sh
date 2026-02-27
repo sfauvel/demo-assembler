@@ -152,7 +152,7 @@ function run_test() {
         #include_paths+="${ROOT_PATH}/examples/print "
         
         compile_asm $LIB_PATH ${ASM_PATH}
-        object_files+="$(extract_output $LIB_PATH)"
+        object_files+="$(file_list ${LIB_PATH}/*.o)"
 
         local output_program=${BIN_PATH}/${MAIN_FILENAME}.o
         compile ${BIN_PATH}/${MAIN_FILENAME}.c ${output_program}
@@ -168,7 +168,7 @@ function compile_and_run_asm() {
     local output_program="$3"
 
     compile_asm ${output_path} ${asm_path}
-    local object_files="$(extract_output ${output_path})"
+    local object_files="$(file_list ${output_path}/*.o)"
     execute "Link" \
     ld $object_files -o ${output_program}
 
@@ -177,7 +177,7 @@ function compile_and_run_asm() {
 
 function run_run() {
     compile_asm $LIB_PATH ${TEST_PATH}
-    object_files+="$(extract_output $LIB_PATH)"
+    object_files+="$(file_list ${LIB_PATH}/*.o)"
 
     include_paths+="${PROJECT_PATH} "
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
@@ -191,7 +191,7 @@ function compile_debug_libs() {
     # print.o and debug.o need to be compiled
     compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/print
     compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/debug
-    object_files+="$(extract_output $LIB_PATH)"
+    object_files+="$(file_list ${LIB_PATH}/*.o)"
 }
 
 function compile_and_run_debug() {
@@ -202,7 +202,7 @@ function compile_and_run_debug() {
     MAIN_FILENAME=$MAIN_FILENAME.debug
 
     compile_asm $LIB_PATH $DEBUG_PATH
-    object_files+="$(extract_output $LIB_PATH)"
+    object_files+="$(file_list ${LIB_PATH}/*.o)"
 
     include_paths+="${PROJECT_PATH} "
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
@@ -215,18 +215,18 @@ function compile_and_run_debug() {
 }
 
 
-# Extract all files in [asm_path] to the output [output_path] folder.
-# $1: Output path where .o has been generated.
-function extract_output() {
-    local obj_path=$1
-    local obj_files=""
+# Extract all files matching the path pattern given as first parameter.
+# $1: path pattern (example: lib/*.o).
+function file_list() {
+    local path_pattern=$1
+    local files=""
     shopt -s nullglob
-    for obj_file in $obj_path/*.o
+    for file in $path_pattern
     do
-        obj_files+=" ${obj_file} "
+        files+=" ${file} "
     done
     shopt -u nullglob
-    echo "$obj_files"
+    echo "$files"
 }
 
 # Compile all files in [asm_path] to the output [output_path] folder.
