@@ -76,6 +76,10 @@ function cmd_test() {
     run_test $@
 }
 
+function cmd_pytest() {
+    clean
+    run_pytest $@
+}
 
 function cmd_run() {
     clean
@@ -137,7 +141,7 @@ function run_test() {
     execute "Load test tools" \
     source ${TEST_TOOLS_PATH}/test_generate.sh
 
-    for f in ${TEST_PATH}/${test_filter}.test.c
+    for f in $(file_list "${TEST_PATH}/${test_filter}.test.c")
     do
         include_paths="$param_include_paths"
         object_files="$param_object_files"
@@ -154,12 +158,26 @@ function run_test() {
         compile_asm $LIB_PATH ${ASM_PATH}
         object_files+="$(file_list ${LIB_PATH}/*.o)"
 
-        local output_program=${BIN_PATH}/${MAIN_FILENAME}.o
-        compile ${BIN_PATH}/${MAIN_FILENAME}.c ${output_program}
-
-        execute "Execute test" \
-        ${output_program} $@
     done
+    local output_program=${BIN_PATH}/${MAIN_FILENAME}.o
+    compile ${BIN_PATH}/${MAIN_FILENAME}.c ${output_program}
+
+    execute "Execute test" \
+    ${output_program} $@
+}
+
+# We can pass pytest parameters. Thay will be added to the pytest command.
+function run_pytest() {
+    compile_asm ${LIB_PATH} ${ASM_PATH}
+
+    for file in $(file_list ${LIB_PATH}/*.o)
+    do
+        execute "Create shared library " \
+        ld -shared $file -o ${file/.o/.so}
+    done
+
+    execute "Execute pytest" \
+    LD_LIBRARY_PATH=${LIB_PATH} pytest $@
 }
 
 function compile_and_run_asm() {

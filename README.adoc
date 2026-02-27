@@ -72,10 +72,10 @@ Create a `.c` file like `simple.test.c`:
 
 [source, c]
 ----
-include::howto/simple.test.c[]
+include::howto/real_test/simple.test.c[]
 ----
 
-Script `./run.sh howto/c_build_and_run_simple_test.sh` compile and run tests.
+Script `./howto/real_test/make.sh test` compile and run tests.
 Folder `test` is included as library.
 It contains file defining functions to make tests.
 
