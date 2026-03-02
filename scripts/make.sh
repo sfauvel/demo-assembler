@@ -147,14 +147,14 @@ function run_test() {
         object_files="$param_object_files"
         filename="$(basename -- $f)"
         test_name="${filename%.test.c}"
-        # Generate test files
+        
         execute "Generate test file" \
         build_test_file ${TEST_PATH}/${test_name}.test.c ${BIN_PATH}/${test_name}.test.c
         
         MAIN_FILENAME=${test_name}.test
         include_paths+="${TEST_TOOLS_PATH} "
         #include_paths+="${ROOT_PATH}/examples/print "
-        
+    
         compile_asm $LIB_PATH ${ASM_PATH}
         object_files+="$(file_list ${LIB_PATH}/*.o)"
 
@@ -255,8 +255,8 @@ function compile_asm() {
     local asm_path=$2
     mkdir -p ${output_path}
     local output_files=""
-    log_debug "Compile asm files: $(ls $asm_path/*.asm)"
-    for asm_file in $asm_path/*.asm
+    log_debug "Compile asm files: $(file_list $asm_path/*.asm)"
+    for asm_file in $(file_list $asm_path/*.asm)
     do
         [ -f "$asm_file" ] || continue
         local filename=$(extract_filename $asm_file asm)

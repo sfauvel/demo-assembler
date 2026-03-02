@@ -52,6 +52,11 @@ It's call by the `make.sh` that is within the sub project folder.
 This script discover files to build and execute generated command lines.
 Those command lines are recorded in `work/tmp.sh` to see what is needed to compile.
 This script can be use to replay the building process.
+d
+.To rerun the script
+----
+pushd work; ./tmp.sh; popd
+----
 
 === A minimal test file in C
 
