@@ -136,12 +136,11 @@ function run_test() {
 
     local param_include_paths="$include_paths"
     local param_object_files="$object_files"
-    local test_filter="*"
 
     execute "Load test tools" \
     source ${TEST_TOOLS_PATH}/test_generate.sh
 
-    for f in $(file_list "${TEST_PATH}/${test_filter}.test.c")
+    for f in $(file_list ${TEST_PATH}/'*.test.c')
     do
         include_paths="$param_include_paths"
         object_files="$param_object_files"
@@ -156,21 +155,21 @@ function run_test() {
         #include_paths+="${ROOT_PATH}/examples/print "
     
         compile_asm $LIB_PATH ${ASM_PATH}
-        object_files+="$(file_list ${LIB_PATH}/*.o)"
+        object_files+="$(file_list ${LIB_PATH}/'*.o')"
 
+        local output_program=${BIN_PATH}/${MAIN_FILENAME}.o
+        compile ${BIN_PATH}/${MAIN_FILENAME}.c ${output_program}
+
+        execute "Execute test" \
+        ${output_program} $@
     done
-    local output_program=${BIN_PATH}/${MAIN_FILENAME}.o
-    compile ${BIN_PATH}/${MAIN_FILENAME}.c ${output_program}
-
-    execute "Execute test" \
-    ${output_program} $@
 }
 
 # We can pass pytest parameters. Thay will be added to the pytest command.
 function run_pytest() {
     compile_asm ${LIB_PATH} ${ASM_PATH}
 
-    for file in $(file_list ${LIB_PATH}/*.o)
+    for file in $(file_list ${LIB_PATH}/'*.o')
     do
         execute "Create shared library " \
         ld -shared $file -o ${file/.o/.so}
@@ -186,7 +185,7 @@ function compile_and_run_asm() {
     local output_program="$3"
 
     compile_asm ${output_path} ${asm_path}
-    local object_files="$(file_list ${output_path}/*.o)"
+    local object_files="$(file_list ${output_path}/'*.o')"
     execute "Link" \
     ld $object_files -o ${output_program}
 
@@ -195,7 +194,7 @@ function compile_and_run_asm() {
 
 function run_run() {
     compile_asm $LIB_PATH ${TEST_PATH}
-    object_files+="$(file_list ${LIB_PATH}/*.o)"
+    object_files+="$(file_list ${LIB_PATH}/'*.o')"
 
     include_paths+="${PROJECT_PATH} "
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
@@ -209,7 +208,7 @@ function compile_debug_libs() {
     # print.o and debug.o need to be compiled
     compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/print
     compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/debug
-    object_files+="$(file_list ${LIB_PATH}/*.o)"
+    object_files+="$(file_list ${LIB_PATH}/'*.o')"
 }
 
 function compile_and_run_debug() {
@@ -220,7 +219,7 @@ function compile_and_run_debug() {
     MAIN_FILENAME=$MAIN_FILENAME.debug
 
     compile_asm $LIB_PATH $DEBUG_PATH
-    object_files+="$(file_list ${LIB_PATH}/*.o)"
+    object_files+="$(file_list ${LIB_PATH}/'*.o')"
 
     include_paths+="${PROJECT_PATH} "
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
@@ -255,8 +254,8 @@ function compile_asm() {
     local asm_path=$2
     mkdir -p ${output_path}
     local output_files=""
-    log_debug "Compile asm files: $(file_list $asm_path/*.asm)"
-    for asm_file in $(file_list $asm_path/*.asm)
+    log_debug "Compile asm files: $(file_list $asm_path/'*.asm')"
+    for asm_file in $(file_list $asm_path/'*.asm')
     do
         [ -f "$asm_file" ] || continue
         local filename=$(extract_filename $asm_file asm)
