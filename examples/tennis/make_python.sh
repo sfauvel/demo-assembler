@@ -6,6 +6,8 @@
 # https://docs.python.org/3/library/ctypes.html
 # https://realpython.com/python-bindings-overview/
 
+CURRENT_FILE_FOLDER="${0%/*}"
+pushd "$CURRENT_FILE_FOLDER" > /dev/null
 
 source ../../scripts/log.sh
 
@@ -41,3 +43,4 @@ ${BUILD_DIR}/${LIB_NAME}.main
 execute "Run tests" \
 pytest -vv -s
 
+popd

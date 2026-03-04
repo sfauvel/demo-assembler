@@ -47,7 +47,7 @@ _child:
 
     mov rcx, 50  ; Make a loop long enough to let another thread doing something
     mov rdi, msg_child
-    .next   
+    .next:   
         call print_text
     loop .next
 
@@ -69,7 +69,7 @@ test_asm_fork:
    
     mov rcx, 50
     mov rdi, msg_parent
-    .next   
+    .next:   
         call print_text
     loop .next
 

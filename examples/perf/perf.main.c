@@ -160,12 +160,16 @@ void run_read_file_char_by_char() {
 
 
 int main(int argc, char **argv) {
-   system( "cp ../examples/perf/perf_file.asm ../work/target/demo_read_data.txt");
+   int result = system( "cp ./perf_file.asm ../../work/demo_read_data.txt") ;
+   if (result != 0) {
+      printf("Error copying files");
+      exit(1);
+   }
    
    //run_with_duration_return_from_the_method();
-   //run_with_duration_passing_as_parameter_to_the_method();
+   run_with_duration_passing_as_parameter_to_the_method();
    //iterate_to_compute_average_time();
-   iterate_to_compute_average_time_from_c();
+   //iterate_to_compute_average_time_from_c();
 
    //run_read_all_file_with_one_call();
    //run_read_file_char_by_char();

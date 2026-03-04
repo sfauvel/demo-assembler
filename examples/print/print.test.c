@@ -46,7 +46,7 @@ StdOutSwitch change_stdout(char* buffer) {
 char* restore_stdout(StdOutSwitch stdout_switch) {
     fflush(stdout); //clean everything first
 
-    read(stdout_switch.out_pipe[0], stdout_switch.buffer, stdout_switch.max_size); /* read from pipe into buffer */
+    int result = read(stdout_switch.out_pipe[0], stdout_switch.buffer, stdout_switch.max_size); /* read from pipe into buffer */
 
     dup2(stdout_switch.saved_stdout, STDOUT_FILENO);  /* reconnect stdout for testing */
     

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export include_paths=". "
+
 function custom_cmd_test() {
     clean
     # We generate debug info to get execution information to display in documentation.
@@ -13,4 +15,7 @@ function custom_cmd_test() {
     mv ${ROOT_PATH}/work/target/*.adoc ${ROOT_PATH}/examples/doc/docs
 }
 
-. ../../scripts/make.sh $*
+CURRENT_FILE_FOLDER="${0%/*}"
+pushd "$CURRENT_FILE_FOLDER"
+../../scripts/make.sh $*
+popd

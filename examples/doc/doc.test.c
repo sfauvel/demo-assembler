@@ -78,7 +78,7 @@ void restore_stdout(StdOutSwitch stdout_switch) {
 }
 
 void read_buffer(StdOutSwitch stdout_switch, char* buffer, size_t count) {
-    read(stdout_switch.out_pipe[0], buffer, count); 
+    int result = read(stdout_switch.out_pipe[0], buffer, count); 
 }
 
 StdOutSwitch change_stdout_to_buffer() {
@@ -162,7 +162,7 @@ int print_execution(FILE* fptr, char* buffer) {
 
 TEST void test_pass_param_redirect_to_file() {
 
-    stdout_switch = change_stdout_to_file("../work/target/doc.txt");
+    stdout_switch = change_stdout_to_file("../../work/target/doc.txt");
 
     printf("if_equals_10(9): %d\n", if_equals_10(9));
     _assertIntEq(0, if_equals_10(9));
@@ -224,7 +224,7 @@ TEST void test_document_if_equals() {
     read_buffer(stdout_switch, buffer, SIZE); 
    
     // Format document
-    char* filename = "../work/target/if_equals.adoc";
+    char* filename = "../../work/target/if_equals.adoc";
     printf("Change stdout to file %s\n", filename);
     FILE* fptr = fopen(filename, "w");
     {
