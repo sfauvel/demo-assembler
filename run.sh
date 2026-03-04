@@ -1,10 +1,4 @@
 #!/usr/bin/env bash
-# Move to the folder and execute the script inside.
+# Execute `make.sh run` in the folder which is the first parameter
 
-
-FOLDER="${1%/*}/"
-SCRIPT="$(basename $1)"
-
-pushd "${FOLDER}" > /dev/null
-./${SCRIPT} "${@:2}"
-popd > /dev/null
+$1/make.sh run "${@:2}"
