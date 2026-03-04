@@ -178,10 +178,16 @@ while true; do inotifywait -q -r -e create,modify,delete .; ./[PATH TO THE PROJE
 
 === Check all
 
-.To execute all examples:
+.To check that all subproject work:
 ----
-for file in $(find . -name "make.sh"); do  echo $file test; done
+for file in $(find . -name "make.sh"); do  echo $file && $file test > /dev/null || echo -e "\033[0;31mERROR: $file\n============\033[0m"; done
 ----
+
+.Execute with trace
+----
+for file in $(find . -name "make.sh"); do  echo $file && $file test || echo -e "\033[0;31mERROR: $file\n============\033[0m"; done
+----
+
 
 === Solve common issues
 

@@ -22,9 +22,13 @@ ENV NASM_VERSION 2.14.02-r0
 
 RUN apk add --no-cache \
     bash \
+    coreutils \
     gcc \
     musl-dev \
     nasm=${NASM_VERSION} \
   && rm -rf /var/cache/apk/*
+
+RUN apk add --no-cache python3 py3-pip
+RUN pip3 install pytest  
 
 ENTRYPOINT ["/bin/bash"]
