@@ -10,6 +10,7 @@ int add_5(int);
 
 
 int main(int argc, char **argv) {
-    int result = add_5(7);
-    printf("Result:%d\n", result);
+    int value = 7;
+    int result = add_5(value);
+    printf("Result of add_5(%d):%d\n", value, result);
 }

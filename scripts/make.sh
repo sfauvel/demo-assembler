@@ -29,7 +29,7 @@ TEST_TOOLS_PATH="${ROOT_PATH}/test"
 BIN_PATH=${ROOT_PATH}/work/target
 LIB_PATH=${ROOT_PATH}/work/lib
 DEBUG_PATH=${ROOT_PATH}/work/debug
-SCRIPT_RECORD=${ROOT_PATH}/work/tmp.sh
+SCRIPT_RECORD=${ROOT_PATH}/work/rerun.sh
 chmod u+x "$SCRIPT_RECORD"
 
 # Paths relative to the project
@@ -50,7 +50,7 @@ PYTHON=python3
 #####
 
 function show_variables() {
-    log_debug "===  Variables  ==="
+    log_debug "${GREEN}===  Variables  ===${NO_COLOR}"
     log_debug "   ABSOLUTE_PROJECT_PATH=$ABSOLUTE_PROJECT_PATH"
     log_debug "   SCRIPT_PATH=$SCRIPT_PATH"
     log_debug "   CURRENT_SCRIPT_NAME=$CURRENT_SCRIPT_NAME"
@@ -67,6 +67,8 @@ function show_variables() {
     log_debug "   SCRIPT_PATH=$SCRIPT_PATH"
     log_debug "   TEST_TOOLS_PATH=$TEST_TOOLS_PATH"
     log_debug "   PYTHON=$PYTHON"
+    log_debug "-------------------"
+    log_debug ""
 }
 
 ### Commands
@@ -86,14 +88,6 @@ function cmd_run() {
     run_run
 }
 
-function cmd_debug() {
-    clean
-    generate_debug_asm_files
-    generate_debug_c_file
-
-    cmd_compile_run_debug
-}
-
 function cmd_run_asm() {
     clean
     
@@ -104,18 +98,71 @@ function cmd_run_asm() {
     compile_and_run_asm $output_path $asm_path $output_program
 }
 
+function cmd_debug_asm() {
+    clean
+
+    local output_program=${BIN_PATH}/${FILE}
+    OPTION_DEBUG=-g
+
+    compile_asm ${LIB_PATH} ${ASM_PATH}
+    link_asm_prog ${LIB_PATH} ${output_program}
+   
+    generate_gdb_file $BIN_PATH/test.gdb "_start"
+
+    local debug_log_file=$BIN_PATH/output.log
+    run_debug_prog $BIN_PATH/${output_program} $BIN_PATH/test.gdb > $debug_log_file
+    
+    python $SCRIPT_PATH/debug_doc.py "$debug_log_file"
+}
+
+function cmd_debug() {
+    clean
+
+    local output_program=$MAIN_FILENAME.o
+    OPTION_DEBUG=-g
+    
+    compile_asm ${LIB_PATH} ${ASM_PATH}
+
+    compile ${TEST_PATH}/$MAIN_FILENAME.c ${BIN_PATH}/${output_program}
+
+    generate_gdb_file $BIN_PATH/test.gdb "add_5"
+
+    local debug_log_file=$BIN_PATH/output.log
+    run_debug_prog ${BIN_PATH}/${output_program} $BIN_PATH/test.gdb > $debug_log_file
+    
+    python $SCRIPT_PATH/debug_doc.py "$debug_log_file"
+}
+
 # Use this command to just load all functions
 function cmd_no_run() {
     return
 }
 
-function cmd_compile_run_debug() {
-    compile_debug_libs
-    compile_and_run_debug
+### Tooling
+
+function run_debug_prog() {
+    prog_file=$1
+    debug_command_file=$2
+    execute "Run program with gdb..." \
+    gdb ${prog_file} --batch --command=$debug_command_file
 }
 
 
-### Tooling
+# Generate a debug script to begin from a label and log regsiter step by step
+function generate_gdb_file() {
+    GDB_FILE="$1"
+    START_LABEL=$2
+    echo "" > $GDB_FILE
+    echo "b $START_LABEL" >> $GDB_FILE
+    echo "run" >> $GDB_FILE
+    for i in $(echo {1..100});
+    do
+        echo "printf \"========\n\"" >> $GDB_FILE
+        echo "info registers" >> $GDB_FILE
+        echo "printf \"-----------------------------------------------------\n\"" >> $GDB_FILE
+        echo "nexti" >> "$GDB_FILE"
+    done
+}
 
 function extract_filename() {
     local file=$(basename $1)
@@ -155,7 +202,6 @@ function run_test() {
         #include_paths+="${ROOT_PATH}/examples/print "
     
         compile_asm $LIB_PATH ${ASM_PATH}
-        object_files+="$(file_list ${LIB_PATH}/'*.o')"
 
         local output_program=${BIN_PATH}/${MAIN_FILENAME}.o
         compile ${BIN_PATH}/${MAIN_FILENAME}.c ${output_program}
@@ -185,50 +231,80 @@ function compile_and_run_asm() {
     local output_program="$3"
 
     compile_asm ${output_path} ${asm_path}
+    link_asm_prog ${output_path} ${output_program}
+
+    execute "Execute" \
+    ${output_program}
+}
+
+function link_asm_prog() {
+    local output_path="$1"
+    local output_program="$2"
+
     local object_files="$(file_list ${output_path}/'*.o')"
     execute "Link" \
-    ld $object_files -o ${output_program}
-
-    ${output_program}
+    ld ${OPTION_DEBUG} $object_files -o ${output_program}
 }
 
 function run_run() {
     compile_asm $LIB_PATH ${TEST_PATH}
-    object_files+="$(file_list ${LIB_PATH}/'*.o')"
 
-    include_paths+="${PROJECT_PATH} "
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
+    include_paths+="${PROJECT_PATH} "
     compile ${TEST_PATH}/$MAIN_FILENAME.c ${output_program}
 
     execute "Execute" \
     ${output_program}
 }
 
-function compile_debug_libs() {
-    # print.o and debug.o need to be compiled
-    compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/print
-    compile_asm ${LIB_PATH} ${ROOT_PATH}/examples/debug
-    object_files+="$(file_list ${LIB_PATH}/'*.o')"
+# Compile all files in [asm_path] to the output [output_path] folder.
+# $1: Output path where .o will be generated.
+# $2: Source path where .asm are.
+function compile_asm() {
+    local output_path=$1
+    local asm_path=$2
+    mkdir -p ${output_path}
+    log_debug "Compile asm files: $(file_list $asm_path/'*.asm')"
+    for asm_file in $(file_list $asm_path/'*.asm')
+    do
+        [ -f "$asm_file" ] || continue
+        local filename=$(extract_filename $asm_file asm)
+        local output_file=${output_path}/${filename}.o
+        
+        execute "Compile asm file: ${asm_file##*/}" \
+        nasm $asm_file ${OPTION_DEBUG} -o ${output_file} -i ${asm_path} -felf64
+    done
+
 }
 
-function compile_and_run_debug() {
-
-    echo "output_program  => $output_program"
+# Compile a '.c' file
+# $1: the c file
+# $2: output file
+# object_files: additional '.o' files (all '.o' in LIB_PATH are already added)
+# includes: paths to include
+function compile() {
     
-    local debug_data_file="$DEBUG_PATH/debug.data"
-    MAIN_FILENAME=$MAIN_FILENAME.debug
+    local c_file="$1"
+    local output_program="$2"
 
-    compile_asm $LIB_PATH $DEBUG_PATH
-    object_files+="$(file_list ${LIB_PATH}/'*.o')"
+    local objects="${object_files}"
+    objects+="$(file_list ${LIB_PATH}/'*.o')"
 
-    include_paths+="${PROJECT_PATH} "
-    local output_program=${BIN_PATH}/$MAIN_FILENAME.o
-    compile ${DEBUG_PATH}/$MAIN_FILENAME.c ${output_program}
+    local includes=""
+    for include_file in ${include_paths}
+    do 
+        includes+="-I${include_file} "
+    done
 
-    ${output_program} $debug_data_file
+    log_debug "${GREEN}===  Compile Debug  ===${NO_COLOR}"
+    log_debug "   c_file: $c_file"
+    log_debug "   objects: $objects"
+    log_debug "   include_paths: $include_paths"
+    log_debug "   includes: $includes"
+    log_debug "   output_program: $output_program"
 
-    execute "Run debug" \
-    $PYTHON format_debug.py $debug_data_file $DEBUG_PATH
+    execute "Compile" \
+    gcc -no-pie ${OPTION_DEBUG} -z noexecstack ${c_file} ${objects} ${includes} -o ${output_program}    
 }
 
 
@@ -245,72 +321,6 @@ function file_list() {
     shopt -u nullglob
     echo "$files"
 }
-
-# Compile all files in [asm_path] to the output [output_path] folder.
-# $1: Output path where .o will be generated.
-# $2: Source path where .asm are.
-function compile_asm() {
-    local output_path=$1
-    local asm_path=$2
-    mkdir -p ${output_path}
-    local output_files=""
-    log_debug "Compile asm files: $(file_list $asm_path/'*.asm')"
-    for asm_file in $(file_list $asm_path/'*.asm')
-    do
-        [ -f "$asm_file" ] || continue
-        local filename=$(extract_filename $asm_file asm)
-        local output_file=${output_path}/${filename}.o
-        
-        execute "Compile asm file: ${asm_file##*/}" \
-        nasm $asm_file -o ${output_file} -i ${asm_path} -felf64
-
-        output_files+=" ${output_file} "
-    done
-
-}
-
-# Compile a .c file
-# $1: the c file
-# $2: output file
-# object_files: .o files
-# includes: paths to include
-function compile() {
-    
-    local c_file="$1"
-    local output_program="$2"
-
-    includes=""
-    for include_file in ${include_paths}
-    do 
-        includes+="-I${include_file} "
-    done
-
-    log_debug "===  Compile Debug  ==="
-    log_debug "   c_file: $c_file"
-    log_debug "   object_files: $object_files"
-    log_debug "   include_paths: $include_paths"
-    log_debug "   includes: $includes"
-    log_debug "   output_program: $output_program"
-
-    execute "Compile" \
-    gcc -no-pie -z noexecstack ${c_file} ${object_files} ${includes} -o ${output_program}    
-}
-
-function generate_debug_asm_files() {
-    for asm_file in $PROJECT_PATH/*.asm
-    do
-        filename=$(extract_filename $asm_file asm)
-        execute "Generate debug asm" \
-        $PYTHON generate_debug.py $PROJECT_PATH $filename $DEBUG_PATH
-    done
-}
-
-
-function generate_debug_c_file() {
-    execute "Generate debug c" \
-    $PYTHON generate_debug_c_file.py $PROJECT_PATH $MAIN_FILENAME $DEBUG_PATH
-}
-
 
 help() {
     echo Select one of this method as parameter
