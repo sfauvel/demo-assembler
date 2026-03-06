@@ -42,6 +42,16 @@ TEST_PATH=${TEST_PATH:=.}
 if [[ -z "$MAIN_FILENAME" ]]; then
     MAIN_FILENAME=${FILE}.main
 fi
+
+# LANGUAGE of the main file
+if [[ -f "$MAIN_FILENAME.asm" ]]; then
+    LANGUAGE=ASM
+elif [[ -f "$MAIN_FILENAME.c" ]]; then
+    LANGUAGE=C
+else
+    LANGUAGE=UNKNOWN
+fi
+
 PROJECT_PATH=.
 
 # Constants
@@ -67,6 +77,7 @@ function show_variables() {
     log_debug "   SCRIPT_PATH=$SCRIPT_PATH"
     log_debug "   TEST_TOOLS_PATH=$TEST_TOOLS_PATH"
     log_debug "   PYTHON=$PYTHON"
+    log_debug "   LANGUAGE=$LANGUAGE"
     log_debug "-------------------"
     log_debug ""
 }
@@ -85,47 +96,32 @@ function cmd_pytest() {
 
 function cmd_run() {
     clean
-    run_run
-}
 
-function cmd_run_asm() {
-    clean
-    
     local asm_path="${TEST_PATH}"
     local output_path="${LIB_PATH}"
-    local output_program=${BIN_PATH}/${FILE} 
-
-    compile_and_run_asm $output_path $asm_path $output_program
-}
-
-function cmd_debug_asm() {
-    clean
-
-    local output_program=${BIN_PATH}/${FILE}
-    OPTION_DEBUG=-g
-
-    compile_asm ${LIB_PATH} ${ASM_PATH}
-    link_asm_prog ${LIB_PATH} ${output_program}
-   
-    generate_gdb_file $BIN_PATH/test.gdb "_start"
-
-    local debug_log_file=$BIN_PATH/output.log
-    run_debug_prog $BIN_PATH/${output_program} $BIN_PATH/test.gdb > $debug_log_file
+    local output_program=${BIN_PATH}/$MAIN_FILENAME.o
     
-    python $SCRIPT_PATH/debug_doc.py "$debug_log_file"
+    run_run $output_path $asm_path $output_program
 }
 
 function cmd_debug() {
     clean
 
-    local output_program=$MAIN_FILENAME.o
     OPTION_DEBUG=-g
+    local output_program=$MAIsN_FILENAME.o
     
     compile_asm ${LIB_PATH} ${ASM_PATH}
 
-    compile ${TEST_PATH}/$MAIN_FILENAME.c ${BIN_PATH}/${output_program}
 
-    generate_gdb_file $BIN_PATH/test.gdb "add_5"
+    if [[ "$LANGUAGE" == "ASM" ]] then
+        start_label="_start"
+        link_asm_prog ${LIB_PATH} ${BIN_PATH}/${output_program}
+    else 
+        start_label="main"
+        compile ${TEST_PATH}/$MAIN_FILENAME.c ${BIN_PATH}/${output_program}
+    fi
+
+    generate_gdb_file $BIN_PATH/test.gdb $start_label
 
     local debug_log_file=$BIN_PATH/output.log
     run_debug_prog ${BIN_PATH}/${output_program} $BIN_PATH/test.gdb > $debug_log_file
@@ -225,18 +221,6 @@ function run_pytest() {
     LD_LIBRARY_PATH=${LIB_PATH} pytest $@
 }
 
-function compile_and_run_asm() {
-    local output_path="$1"
-    local asm_path="$2"
-    local output_program="$3"
-
-    compile_asm ${output_path} ${asm_path}
-    link_asm_prog ${output_path} ${output_program}
-
-    execute "Execute" \
-    ${output_program}
-}
-
 function link_asm_prog() {
     local output_path="$1"
     local output_program="$2"
@@ -247,12 +231,19 @@ function link_asm_prog() {
 }
 
 function run_run() {
-    compile_asm $LIB_PATH ${TEST_PATH}
+    local output_path="$1"
+    local asm_path="$2"
+    local output_program="$3"
 
-    local output_program=${BIN_PATH}/$MAIN_FILENAME.o
-    include_paths+="${PROJECT_PATH} "
-    compile ${TEST_PATH}/$MAIN_FILENAME.c ${output_program}
+    compile_asm ${output_path} ${asm_path}
 
+    if [[ "$LANGUAGE" == "ASM" ]] then
+        link_asm_prog ${output_path} ${output_program}
+    else 
+        include_paths+="${PROJECT_PATH} "
+        compile ${TEST_PATH}/$MAIN_FILENAME.c ${output_program}
+    fi
+    
     execute "Execute" \
     ${output_program}
 }

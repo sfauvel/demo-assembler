@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
+export MAIN_FILENAME=main
+
 function custom_cmd_test() {
-    cmd_run_asm
+    cmd_run
 }
 export -f custom_cmd_test
 

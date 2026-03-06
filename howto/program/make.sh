@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# Use make.sh run_asm
+# Use make.sh run
 
-export MAIN_FILENAME=minimal.test
+export MAIN_FILENAME=hello
 
 CURRENT_FILE_FOLDER="${0%/*}"
 pushd "$CURRENT_FILE_FOLDER" > /dev/null

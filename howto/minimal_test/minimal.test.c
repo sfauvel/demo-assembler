@@ -1,5 +1,5 @@
 /*
-* This is a trivial test to show how we can write tests.
+* This is a trivial test to show how we can write tests in c without framework.
 *
 */
 
