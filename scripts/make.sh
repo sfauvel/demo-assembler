@@ -26,18 +26,19 @@ ORIGIN_SCRIPT_NAME=$(basename "$0")
 ROOT_PATH=$(realpath --relative-to=. "${SCRIPT_PATH}/..")
 TEST_TOOLS_PATH="${ROOT_PATH}/test"
 
-BIN_PATH=${ROOT_PATH}/work/target
-LIB_PATH=${ROOT_PATH}/work/lib
-DEBUG_PATH=${ROOT_PATH}/work/debug
-SCRIPT_RECORD=${ROOT_PATH}/work/rerun.sh
+WORK_PATH=${ROOT_PATH}/work
+BIN_PATH=${WORK_PATH}/target
+LIB_PATH=${WORK_PATH}/lib
+DEBUG_PATH=${WORK_PATH}/debug
+SCRIPT_RECORD=${WORK_PATH}/rerun.sh
 chmod u+x "$SCRIPT_RECORD"
 
 # Paths relative to the project
 # By default the file name used is the name of the directory
 ABSOLUTE_PROJECT_PATH=$(pwd)
 FILE=${FILE:=$(basename $(pwd))}
-ASM_PATH=${ASM_PATH:=.}
-TEST_PATH=${TEST_PATH:=.}
+ASM_PATH=${ASM_PATH:=.}    # Assembler files
+TEST_PATH=${TEST_PATH:=.}  # Test files in c
 
 if [[ -z "$MAIN_FILENAME" ]]; then
     MAIN_FILENAME=${FILE}.main
@@ -97,36 +98,42 @@ function cmd_pytest() {
 function cmd_run() {
     clean
 
-    local asm_path="${TEST_PATH}"
-    local output_path="${LIB_PATH}"
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
     
-    run_run $output_path $asm_path $output_program
+    run_run $output_program
 }
 
 function cmd_debug() {
     clean
 
     OPTION_DEBUG=-g
-    local output_program=$MAIsN_FILENAME.o
+    local output_program=${BIN_PATH}/${MAIN_FILENAME}.o
     
-    compile_asm ${LIB_PATH} ${ASM_PATH}
-
+    compile_asm
+    compile_program ${output_program}
 
     if [[ "$LANGUAGE" == "ASM" ]] then
         start_label="_start"
-        link_asm_prog ${LIB_PATH} ${BIN_PATH}/${output_program}
     else 
         start_label="main"
-        compile ${TEST_PATH}/$MAIN_FILENAME.c ${BIN_PATH}/${output_program}
     fi
-
     generate_gdb_file $BIN_PATH/test.gdb $start_label
 
     local debug_log_file=$BIN_PATH/output.log
-    run_debug_prog ${BIN_PATH}/${output_program} $BIN_PATH/test.gdb > $debug_log_file
+    run_debug_prog ${output_program} $BIN_PATH/test.gdb > $debug_log_file
     
     python $SCRIPT_PATH/debug_doc.py "$debug_log_file"
+}
+
+function compile_program() {
+    local output_program=$1
+
+    if [[ "$LANGUAGE" == "ASM" ]] then
+        link_asm_prog ${LIB_PATH} ${output_program}
+    else 
+        include_paths+="${PROJECT_PATH} "
+        compile ${TEST_PATH}/$MAIN_FILENAME.c ${output_program}
+    fi
 }
 
 # Use this command to just load all functions
@@ -137,8 +144,8 @@ function cmd_no_run() {
 ### Tooling
 
 function run_debug_prog() {
-    prog_file=$1
-    debug_command_file=$2
+    local prog_file=$1
+    local debug_command_file=$2
     execute "Run program with gdb..." \
     gdb ${prog_file} --batch --command=$debug_command_file
 }
@@ -146,8 +153,8 @@ function run_debug_prog() {
 
 # Generate a debug script to begin from a label and log regsiter step by step
 function generate_gdb_file() {
-    GDB_FILE="$1"
-    START_LABEL=$2
+    local GDB_FILE="$1"
+    local START_LABEL=$2
     echo "" > $GDB_FILE
     echo "b $START_LABEL" >> $GDB_FILE
     echo "run" >> $GDB_FILE
@@ -158,12 +165,6 @@ function generate_gdb_file() {
         echo "printf \"-----------------------------------------------------\n\"" >> $GDB_FILE
         echo "nexti" >> "$GDB_FILE"
     done
-}
-
-function extract_filename() {
-    local file=$(basename $1)
-    local extension=$2
-    echo ${file%.${extension:=*}}
 }
 
 function clean() {
@@ -197,7 +198,7 @@ function run_test() {
         include_paths+="${TEST_TOOLS_PATH} "
         #include_paths+="${ROOT_PATH}/examples/print "
     
-        compile_asm $LIB_PATH ${ASM_PATH}
+        compile_asm
 
         local output_program=${BIN_PATH}/${MAIN_FILENAME}.o
         compile ${BIN_PATH}/${MAIN_FILENAME}.c ${output_program}
@@ -207,9 +208,9 @@ function run_test() {
     done
 }
 
-# We can pass pytest parameters. Thay will be added to the pytest command.
+# We can pass pytest parameters. They will be added to the pytest command.
 function run_pytest() {
-    compile_asm ${LIB_PATH} ${ASM_PATH}
+    compile_asm
 
     for file in $(file_list ${LIB_PATH}/'*.o')
     do
@@ -221,28 +222,12 @@ function run_pytest() {
     LD_LIBRARY_PATH=${LIB_PATH} pytest $@
 }
 
-function link_asm_prog() {
-    local output_path="$1"
-    local output_program="$2"
-
-    local object_files="$(file_list ${output_path}/'*.o')"
-    execute "Link" \
-    ld ${OPTION_DEBUG} $object_files -o ${output_program}
-}
 
 function run_run() {
-    local output_path="$1"
-    local asm_path="$2"
-    local output_program="$3"
+    local output_program="$1"
 
-    compile_asm ${output_path} ${asm_path}
-
-    if [[ "$LANGUAGE" == "ASM" ]] then
-        link_asm_prog ${output_path} ${output_program}
-    else 
-        include_paths+="${PROJECT_PATH} "
-        compile ${TEST_PATH}/$MAIN_FILENAME.c ${output_program}
-    fi
+    compile_asm
+    compile_program "${output_program}"
     
     execute "Execute" \
     ${output_program}
@@ -252,8 +237,9 @@ function run_run() {
 # $1: Output path where .o will be generated.
 # $2: Source path where .asm are.
 function compile_asm() {
-    local output_path=$1
-    local asm_path=$2
+    local output_path="${LIB_PATH}"
+    local asm_path="${ASM_PATH}"
+
     mkdir -p ${output_path}
     log_debug "Compile asm files: $(file_list $asm_path/'*.asm')"
     for asm_file in $(file_list $asm_path/'*.asm')
@@ -266,6 +252,17 @@ function compile_asm() {
         nasm $asm_file ${OPTION_DEBUG} -o ${output_file} -i ${asm_path} -felf64
     done
 
+}
+
+# Link all '.o' files to make a program
+# It should be have a '_start' in one file.
+function link_asm_prog() {
+    local output_path="$1"
+    local output_program="$2"
+
+    local object_files="$(file_list ${output_path}/'*.o')"
+    execute "Link" \
+    ld ${OPTION_DEBUG} $object_files -o ${output_program}
 }
 
 # Compile a '.c' file
@@ -298,6 +295,11 @@ function compile() {
     gcc -no-pie ${OPTION_DEBUG} -z noexecstack ${c_file} ${objects} ${includes} -o ${output_program}    
 }
 
+function extract_filename() {
+    local file=$(basename $1)
+    local extension=$2
+    echo ${file%.${extension:=*}}
+}
 
 # Extract all files matching the path pattern given as first parameter.
 # $1: path pattern (example: lib/*.o).
@@ -339,7 +341,7 @@ if [[ -z $1 || -z $(command -v $USE_CASE) ]]; then
 else
 
     echo "# Replay script" > "$SCRIPT_RECORD"
-    echo "pushd $(realpath --relative-to="${ROOT_PATH}/work" "${ABSOLUTE_PROJECT_PATH}") > /dev/null" >> "$SCRIPT_RECORD"
+    echo "pushd $(realpath --relative-to="${WORK_PATH}" "${ABSOLUTE_PROJECT_PATH}") > /dev/null" >> "$SCRIPT_RECORD"
     if [[ -z $(command -v $CUSTOM_USE_CASE) ]]; then
         echo "Execute command $USE_CASE"
         $USE_CASE "${@:2}"
