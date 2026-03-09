@@ -1,0 +1,7 @@
+= Test assembler from C
+
+The test file `maxofthree.test.c` is a program (with a `main`) that call all test functions.
+The test functions call function written in assembler to test them.
+
+Because the test file contain a `main`, we have to execute it with a `run` command. 
+This is why we redirect, in `make.sh`, the `test` command to the the `run` one.  

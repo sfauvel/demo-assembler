@@ -1,0 +1,8 @@
+= Test assembler with pytest and typed function
+
+Test are defined in a python file that using `pytest`.
+
+A class is declared with all function exported from the assembler code.
+The implementation is a fake one(`raise NotImplementedError`) because it's never used.
+
+When we load the DLL library, we cast the return object to the class that define available functions.

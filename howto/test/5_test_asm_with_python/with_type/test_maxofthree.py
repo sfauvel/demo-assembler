@@ -3,9 +3,6 @@
 
 from lib_type import lib
 
-
-LIB_NAME="maxofthree"
-
 class TestMaxOfThree:
     def test_when_max_is_the_first_number(self):
         assert 11 == lib.maxofthree(11, 5, 7)

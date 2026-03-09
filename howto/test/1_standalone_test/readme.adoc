@@ -1,0 +1,7 @@
+= Test in C
+
+This `minimal.test.c` shows how to make test in `c` without framework.
+There is just a macro for assertions, a function to execute a test and a `main` function to run all tests.
+
+There is no assembler here.
+

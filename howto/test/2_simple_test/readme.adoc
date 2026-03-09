@@ -1,0 +1,5 @@
+= Test using a mini framework
+
+We use a minimal test framework which is defined in the file `test.h`.
+
+The `make.sh` do the rest by adding a `main` function which run all tests.

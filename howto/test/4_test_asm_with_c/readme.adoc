@@ -1,0 +1,5 @@
+= Test assembler from C
+
+The test file `maxofthree.test.c` define only test function taht call assembler.
+
+Executing the `test` command in `make.sh`, we generate a `main` function which run all tests. 
