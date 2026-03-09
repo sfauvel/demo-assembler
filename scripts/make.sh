@@ -6,7 +6,7 @@
 # include_paths: Folder add as included paths
 # ASM_PATH: PAth where are .asm files
 # TEST_PATH: Path where are test.c files
-# MAIN_FILENAME: Name of the file containg `main` without extension. Default value is `[FOLDER NAME].main`
+# MAIN_FILENAME: Name of the file containg `main` without extension. Default value is `main`
 #
 # It's possible to redefine a command with the prefix `custom` and call `export``:
 #
@@ -41,14 +41,15 @@ ASM_PATH=${ASM_PATH:=.}    # Assembler files
 TEST_PATH=${TEST_PATH:=.}  # Test files in c
 
 if [[ -z "$MAIN_FILENAME" ]]; then
-    MAIN_FILENAME=${FILE}.main
+    MAIN_FILENAME=main
 fi
 
 # LANGUAGE of the main file
-if [[ -f "$MAIN_FILENAME.asm" ]]; then
-    LANGUAGE=ASM
-elif [[ -f "$MAIN_FILENAME.c" ]]; then
+# The `c` file is prioritized as `main` file because, if there is one it's probably the launcher to execute the `asm` code. 
+if [[ -f "$MAIN_FILENAME.c" ]]; then
     LANGUAGE=C
+elif [[ -f "$MAIN_FILENAME.asm" ]]; then
+    LANGUAGE=ASM
 else
     LANGUAGE=UNKNOWN
 fi

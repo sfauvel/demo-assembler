@@ -1,0 +1,3 @@
+= Create a program only with assembler
+
+To create a program only using assembler, we add a `_start` label in code and make it `global`.

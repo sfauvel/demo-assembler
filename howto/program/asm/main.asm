@@ -2,10 +2,11 @@
 ; A 64-bit functions
 ; -----------------------------------------------------------------------------
 
-        global  _start
+        global  _start  ; Export start label
 
         section .text
-_start:
+_start:                 ; Label where the program start
+say_hello:
         mov ecx, hello  ; Character to print
         mov edx, 6      ; How many character to print
 

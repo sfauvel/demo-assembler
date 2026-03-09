@@ -2,7 +2,7 @@
 ; A 64-bit functions
 ; -----------------------------------------------------------------------------
 
-        global  say_hello
+        global  say_hello ; export label that can be called from the outside
 
         section .text
 say_hello:

@@ -1,0 +1,2 @@
+= Create a c program that call assembler function
+
