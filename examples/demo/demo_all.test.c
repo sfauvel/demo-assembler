@@ -33,6 +33,7 @@ TEST void test_pass_param() {
 }
 
 
+/////////////
 // Demo method
 TEST void test_return_2() {
     _assertIntEq(2, method_return_2());
@@ -42,6 +43,7 @@ TEST void test_return_3() {
     _assertIntEq(3, method_return_3());
 }
 
+/////////////
 // Demo if
 TEST void test_if_greater_than() {
     _assertIntEq(0, if_greater_than_10(9));
@@ -74,6 +76,8 @@ TEST void test_if_equals() {
     _assertIntEq(0, if_equals_10(11));
 }
 
+/////////////
+// Demo stack manipulation calling function
 TEST void test_using_inner_function() {
     _assertIntEq(543, inner_function_return_543());
 }
@@ -86,6 +90,8 @@ TEST void test_function_using_stack() {
     _assertIntEq(764, inner_function_using_stack_return_764());
 }
 
+/////////////
+// Demo string
 TEST void test_pass_string_param() {
     _assertStringEq("hello", string_get_param("hello"));
 }
@@ -94,6 +100,8 @@ TEST void test_substring_from() {
     _assertStringEq("lo", string_substring_from("hello", 3));
 }
 
+/////////////
+// Demo variable in asm
 TEST void test_variable() {
     _assertIntEq(42, variable_return(42));
 }

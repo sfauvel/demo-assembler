@@ -1,7 +1,5 @@
 ; -----------------------------------------------------------------------------
-; Show how to retrieve parameters.
-; Parameters can be found in rdi, rsi, and rdx
-; Return value is in rax
+; Show how to store variable and how to retrieve value
 ; -----------------------------------------------------------------------------
 
         ; Define methods exported

@@ -13,7 +13,7 @@ inner_function_return_543:
         mov rdi, 3          ; first parameter to function
         mov rsi, 40         ; second parameter to function
         call my_function    ; call function
-        add rax, 500        ; add 500 to returned value that is in in rax
+        add rax, 500        ; add 500 to the value returned in the rax register
         ret
 
 my_function:
@@ -37,7 +37,7 @@ my_function_with_stack_saving_ebp:
         ; rsp + 8 contains rbp pushed above
         ; rsp contains address of the instruction after the call
         mov rax, [rsp+16+8*0]   ; get first parameter 
-        add rax, [rsp+16+8*0]   
+        add rax, [rsp+16+8*0]   ; reuse first parameter
         add rax, [rsp+16+8*1]   ; get second parameter 
         add rax, [rsp+16+8*2]   ; get third parameter 
         leave         ; restore rbp
