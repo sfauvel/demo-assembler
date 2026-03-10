@@ -1,6 +1,7 @@
 #!/bin/bash
 
 REY="\033[0;30m"
+RED="\033[0;31m"
 GREEN="\033[0;32m"
 WHITE="\033[0;37m"
 NO_COLOR="\033[0m"
@@ -29,5 +30,9 @@ function execute() {
     local cmd="${@:2}"
     log_debug "${GREEN}===  ${label}  ===${NO_COLOR}\n   ${WHITE}${cmd}${NO_COLOR}\n"
     echo $cmd >> "$SCRIPT_RECORD"
-    eval $cmd
+    
+    if ! eval $cmd; then
+        echo -e "${RED}ERROR${NO_COLOR}"
+        exit 1
+    fi 
 }

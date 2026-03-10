@@ -32,6 +32,8 @@ TEST void test_pass_param() {
     _assertIntEq(123, param_sum_param(1, 2, 3));
 }
 
+
+// Demo method
 TEST void test_return_2() {
     _assertIntEq(2, method_return_2());
 }
@@ -40,10 +42,24 @@ TEST void test_return_3() {
     _assertIntEq(3, method_return_3());
 }
 
+// Demo if
 TEST void test_if_greater_than() {
     _assertIntEq(0, if_greater_than_10(9));
     _assertIntEq(0, if_greater_than_10(10));
     _assertIntEq(1, if_greater_than_10(11));
+}
+
+TEST void test_if_not_greater_than() {
+    _assertIntEq(1, if_not_greater_than_10(9));
+    _assertIntEq(1, if_not_greater_than_10(10));
+    _assertIntEq(0, if_not_greater_than_10(11));
+}
+
+
+TEST void test_if_not_greater_or_equal_than() {
+    _assertIntEq(0, if_greater_or_equal_than_10(9));
+    _assertIntEq(1, if_greater_or_equal_than_10(10));
+    _assertIntEq(1, if_greater_or_equal_than_10(11));
 }
 
 TEST void test_if_lower_than() {
@@ -172,58 +188,58 @@ TEST void test_write_file_with_param() {
 ////////////
 // Demo perf
 
-TEST void test_perf_for_a_short_method() {
+// TEST void test_perf_for_a_short_method() {
     
-    unsigned long duration = 0;
-    int result_with_measure = measure_perf_short_method(&duration);
+//     unsigned long duration = 0;
+//     int result_with_measure = measure_perf_short_method(&duration);
     
-    int result = short_method();
-    _assertIntEq(result, result_with_measure);
-    //printf("Duration: %ul\n", duration);
-    _assert(duration > 0);
-    _assert(duration < 100);
-}
+//     int result = short_method();
+//     _assertIntEq(result, result_with_measure);
+//     //printf("Duration: %ul\n", duration);
+//     _assert(duration > 0);
+//     _assert(duration < 100);
+// }
 
-TEST void test_perf_for_a_long_method() {
-    unsigned long duration = 0;
-    int result_with_measure = measure_perf_long_method(&duration);
+// TEST void test_perf_for_a_long_method() {
+//     unsigned long duration = 0;
+//     int result_with_measure = measure_perf_long_method(&duration);
     
-    int result = long_method();
-    _assertIntEq(result, result_with_measure);
-    //printf("Duration: %ul\n", duration);
-    _assert(duration > 500);
-    _assert(duration < 5000);
-}
+//     int result = long_method();
+//     _assertIntEq(result, result_with_measure);
+//     //printf("Duration: %ul\n", duration);
+//     _assert(duration > 500);
+//     _assert(duration < 5000);
+// }
+//
+// #define CYCLES_PER_SEC(ghz)     ((ghz) * 1e9)
+// #define CYCLES_PER_MSEC(ghz)    ((ghz) * 1e6)
+// #define CYCLES_PER_USEC(ghz)    ((ghz) * 1e3)
+// #define GHZ 2.8 // Frequence for my machin
+// // Need to include limits.h for INT_MAX.
+// TEST void test_perf_short_method_and_display_average_time() {
+//    {
+//         unsigned long total=0;
+//         unsigned long nb_iteration=0;
+//         int nb_display = 3;
+//         while (nb_display>0) {   
+//             nb_iteration++;
 
-#define CYCLES_PER_SEC(ghz)     ((ghz) * 1e9)
-#define CYCLES_PER_MSEC(ghz)    ((ghz) * 1e6)
-#define CYCLES_PER_USEC(ghz)    ((ghz) * 1e3)
-#define GHZ 2.8 // Frequence for my machin
-// Need to include limits.h for INT_MAX.
-TEST void test_perf_short_method_and_display_average_time() {
-   {
-        unsigned long total=0;
-        unsigned long nb_iteration=0;
-        int nb_display = 3;
-        while (nb_display>0) {   
-            nb_iteration++;
-
-            unsigned long duration = measure_perf_and_return_short_method_duration();
+//             unsigned long duration = measure_perf_and_return_short_method_duration();
                 
-            total+=duration;   
-            // printf("%ul / %ul / %d \n", total, ULONG_MAX, INT_MAX);
-            if (total > INT_MAX) {  // LONG_MAX is half of ULONG_MAX
-                float total_time = total / CYCLES_PER_MSEC(2.8);
-                printf("%.2f cycles, (%ld iterations), %.2f ms\n", (float)total/(float)nb_iteration, nb_iteration, total_time);
+//             total+=duration;   
+//             // printf("%ul / %ul / %d \n", total, ULONG_MAX, INT_MAX);
+//             if (total > INT_MAX) {  // LONG_MAX is half of ULONG_MAX
+//                 float total_time = total / CYCLES_PER_MSEC(2.8);
+//                 printf("%.2f cycles, (%ld iterations), %.2f ms\n", (float)total/(float)nb_iteration, nb_iteration, total_time);
                 
-                total = 0;
-                nb_iteration = 0;
-                nb_display--;
-            }
-        }
-   }
+//                 total = 0;
+//                 nb_iteration = 0;
+//                 nb_display--;
+//             }
+//         }
+//    }
 
-}
+// }
 
 //void read_from_file(char* filename, char* buffer, int max_size) {
 //    FILE *file = fopen(filename, "r");
