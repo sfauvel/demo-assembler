@@ -2,6 +2,7 @@
 
 Test are defined in a python file that using `pytest`.
 
+Assembler files must linked as a shared library.
 A class is declared with all function exported from the assembler code.
 The implementation is a fake one(`raise NotImplementedError`) because it's never used.
 

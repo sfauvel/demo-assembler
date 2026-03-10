@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+export MAIN_FILENAME=perf.main
 export include_paths="../print "
 
 function custom_cmd_test() {

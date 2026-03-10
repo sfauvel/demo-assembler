@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+
+export MAIN_FILENAME=debug.main
 export include_paths="../print "
 
 

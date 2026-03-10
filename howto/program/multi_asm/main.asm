@@ -1,20 +1,15 @@
 ; -----------------------------------------------------------------------------
-; A function that can be called from the outside
+; A 64-bit functions
 ; -----------------------------------------------------------------------------
 
-        global  say_hello ; export label that can be called from the outside
+        global  _start  ; Export start label
+        extern  say_hello: function
 
         section .text
-say_hello:
-        mov rsi, hello  ; String to print
-        mov rdx, 6      ; How many character to print
+_start:                 ; Label where the program start
+        call say_hello
 
-print:
-        mov rax, 1      ; sys_write
-        mov rdi, 1      ; stdout 
-        syscall
-
-exit:   
+exit:
         mov rax, 60     ; Exit sys call
         mov rdi, 0      ; Exit status code
         syscall

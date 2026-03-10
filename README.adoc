@@ -298,6 +298,16 @@ link:https://makina-corpus.com/blog/metier/2013/utiliser-inotify-pour-tester-en-
 
 === Syscall
 
+[NOTE]
+..
+We found a lot of examples that use `0x80` instead of `syscall`. 
+It's a legacy way to invoke system call but the only one available for 32-bit. 
+In 64-bit, `syscall` is always available.
+see: https://stackoverflow.com/questions/15168822/intel-x86-vs-x64-system-call
+..
+
+
+you can find `syscall` codes and parameters in this page: 
 link:https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/[Linux System Call Table for x86 64]
 
 === CPU Architecture 

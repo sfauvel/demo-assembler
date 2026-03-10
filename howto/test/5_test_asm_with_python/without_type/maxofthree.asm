@@ -4,8 +4,8 @@
 ;
 ;   int64_t maxofthree(int64_t x, int64_t y, int64_t z)
 ;
-; Note that the parameters have already been passed in rdi, rsi, and rdx.  We
-; just have to return the value in rax.
+; Note that the parameters have already been passed in rdi, rsi, and rdx.
+; We just have to return the value in rax.
 ; -----------------------------------------------------------------------------
 
         global  maxofthree

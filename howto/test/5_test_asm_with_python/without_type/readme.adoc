@@ -2,6 +2,7 @@
 
 Test are defined in a python file and can be run with `pytest`.
 
+Assembler files must linked as a shared library.
 We load the DLL library, and define signature of function.
 It's really needed only for "complex" types like `string`. 
 
