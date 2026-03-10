@@ -162,7 +162,7 @@ TEST void test_read_file_by_blocks() {
 #define TAILLE_MAX 1024
 TEST void test_write_file() {
     
-    write_hard_coded_file_with_alphabet("../../work/demo_write_data.txt");
+    write_given_file_with_alphabet("../../work/demo_write_data.txt");
 
     char buffer[TAILLE_MAX] = "";
     FILE* file = fopen("../../work/demo_write_data.txt", "r");

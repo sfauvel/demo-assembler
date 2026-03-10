@@ -2,16 +2,18 @@
 ; 
 ; -----------------------------------------------------------------------------
 
-        ; Define methods exported
-        global  macro_return_42          ;
-        global  macro_set_variable_to_42          ;
+; Define methods exported
+global  macro_return_42            ;
+global  macro_set_variable_to_42   ;
 
-        %define RETURN_42    42
+; Define a constant
+%define RETURN_42    42
 
-        %macro SET_VARIABLE 2
-                mov rax, %2
-                mov %1, rax
-        %endmacro
+; Define a variable with 2 parameters
+%macro SET_VARIABLE 2
+        mov rax, %2
+        mov %1, rax
+%endmacro
 
         section .text
 macro_return_42:

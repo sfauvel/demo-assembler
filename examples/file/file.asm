@@ -6,10 +6,10 @@
 SYS_EXIT  equ 1
 STDIN     equ 0
 STDOUT    equ 1
-SYS_READ  equ 3
-SYS_WRITE equ 4
-SYS_OPEN  equ 5
-SYS_CLOSE equ 6
+LEGACY_READ  equ 3
+LEGACY_WRITE equ 4
+LEGACY_OPEN  equ 5
+LEGACY_CLOSE equ 6
 
         extern printf
 
@@ -102,7 +102,7 @@ read_file_to_buffer:
         open_file:
                 push rdi ;length of data to be read
 
-                mov rax, SYS_OPEN		;sys_open file with fd in ebx
+                mov rax, LEGACY_OPEN		;sys_open file with fd in ebx
                 mov rbx, file_to_read	;file to be read
                 mov rcx, 0		;O_RDONLY
                 int 80h
@@ -112,7 +112,7 @@ read_file_to_buffer:
         
                 ; read from file into buffer
 
-                mov rax, SYS_READ		;sys_read
+                mov rax, LEGACY_READ		;sys_read
                 mov rcx, buffer		;pointer to destination buffer
                 pop rdx                 ;length of data to be read
                 int 80h
@@ -123,7 +123,7 @@ read_file_to_buffer:
                 mov word [rax], 0
 
         close_file:
-                mov rax, SYS_CLOSE	;sys_close file
+                mov rax, LEGACY_CLOSE	;sys_close file
                 int 80h
 
         mov rax, buffer

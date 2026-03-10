@@ -4,18 +4,26 @@
 ; -----------------------------------------------------------------------------
 
 
-SYS_EXIT  equ 1
+SYS_READ equ 0
+SYS_WRITE equ 1
+SYS_OPEN equ 2
+SYS_CLOSE equ 3
+
+; O_RDONLY        0x0
+; O_WRONLY        0x1
+; O_RDWR          0x2
+; O_APPEND        0x8
+; O_CREAT       0x200
+; O_TRUNC       0x400
+; O_EXCL        0x800
+
+
 STDIN     equ 0
 STDOUT    equ 1
-SYS_READ  equ 3
-SYS_WRITE equ 4
-SYS_OPEN  equ 5
-SYS_CLOSE equ 6
 
 BLOCK_SIZE equ 1000
 
         global read_file_to_buffer;
-        global write_hard_coded_file_with_alphabet;
         global write_given_file_with_alphabet;
         global read_file_char_by_char;
         global read_file_by_blocks;
@@ -27,14 +35,14 @@ read_file_by_blocks:
         mov dword [buffer_head], buffer
         
         call open_file
-         mov [file_descriptor], rax  ;store new (!) fd of the same file
+        mov [file_descriptor], rax  ;store new (!) fd of the same file
 
         .read_from_file:
-                mov rax, SYS_READ       ;sys_read
-                mov rbx, [file_descriptor]
-                mov rcx, short_buffer         ;pointer to destination buffer
-                mov rdx, BLOCK_SIZE         ;length of data to be read
-                int 80h
+                mov rax, SYS_READ
+                mov rdi, [file_descriptor]
+                mov rsi, short_buffer
+                mov rdx, BLOCK_SIZE           ;length of data to be read
+                syscall
 
                 ; At this point rax contains number of characters read
                 cmp rax, 0
@@ -65,6 +73,8 @@ read_file_by_blocks:
                 mov rax, [buffer_head] 
                 mov word [rax], 0
 
+
+        mov rdi, [file_descriptor] 
         call close_file
 
         mov rax, buffer
@@ -84,23 +94,22 @@ read_file_by_blocks:
 
 read_file_to_buffer:
         call open_file
+        mov [file_descriptor], rax 
 
         .read_from_file:
-                mov rbx, rax        ;store new (!) fd of the same file
-    
-
                 ; read from file into buffer
-
+                mov rdi, rax        ;store new (!) fd of the same file
                 mov rax, SYS_READ       ;sys_read
-                mov rcx, buffer         ;pointer to destination buffer
+                mov rsi, buffer         ;pointer to destination buffer
                 mov rdx, buflen         ;length of data to be read
-                int 80h
+                syscall
 
                 ; At this point rax contains number of characters read
 
                 add rax, buffer  ; Buffer + string length => after the last character
                 mov word [rax], 0
 
+        mov rdi, [file_descriptor] 
         call close_file
 
         mov rax, buffer
@@ -115,11 +124,11 @@ read_file_char_by_char:
 
 
         .read_next_char:
-                mov rax, SYS_READ       ;sys_read
-                mov rbx, [file_descriptor]
-                mov rcx, current_char   ;pointer to destination buffer
-                mov rdx, 1              ;read one character
-                int 80h
+                mov rax, SYS_READ
+                mov rdi, [file_descriptor]
+                mov rsi, current_char
+                mov rdx, 1                ;length of data to be read
+                syscall
 
                 ; At this point rax contains number of characters read
                 cmp rax, 0
@@ -134,7 +143,9 @@ read_file_char_by_char:
                 jmp .read_next_char
 
         .eof:
-                mov rbx, [file_descriptor]
+                ;mov rbx, [file_descriptor]
+
+                mov rdi, [file_descriptor] 
                 call close_file
 
         .finish:
@@ -157,33 +168,34 @@ read_file_char_by_char:
                 ret
 
 open_file:
-        mov rax, SYS_OPEN        ;sys_open file with fd in ebx
-        mov rbx, rdi             ;file to be read
-        mov rcx, 0               ;O_RDONLY
-        int 80h
+        mov rax, SYS_OPEN            ;sys_open file with fd in ebx
+        mov rdi, rdi          ;file to be read
+        ; mov rsi,  ??         ; flag
+        mov rdx, SYS_READ            ;Mode SYS_READ 0, SYS_WRITE 1
+        syscall
         ret
 
 close_file:
         mov rax, SYS_CLOSE    ;sys_close file
-        int 80h
-        ret
-
-write_hard_coded_file_with_alphabet:
-        call write_given_file_with_alphabet
+        syscall
         ret
 
 write_given_file_with_alphabet:
-        mov rsi, 0102o     ;O_CREAT, man open
-        mov rdx, 0666o     ;umode_t
-        mov rax, 2
+        mov rdi, rdi
+        mov rsi, 0102o     ;O_CREAT, man open flag
+        mov rdx, 0666o     ;umode_t mode
+        mov rax, SYS_OPEN
         syscall
+        mov [file_descriptor], rax 
 
-        mov rdx, 26         ;message length do not include the last 0
-        mov rsi, alphabet   ;message to write
         mov rdi, rax        ;file descriptor
-        mov rax, 1          ;system call number (sys_write)
+        mov rsi, alphabet   ;message to write
+        mov rdx, 26         ;message length do not include the last 0
+        mov rax, SYS_WRITE  ;system call number (sys_write)
         syscall             ;call kernel
 
+
+        mov rdi, [file_descriptor] 
         call close_file
         ret
 

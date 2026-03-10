@@ -7,10 +7,10 @@
 SYS_EXIT  equ 1
 STDIN     equ 0
 STDOUT    equ 1
-SYS_READ  equ 3
-SYS_WRITE equ 4
-SYS_OPEN  equ 5
-SYS_CLOSE equ 6
+LEGACY_READ  equ 3
+LEGACY_WRITE equ 4
+LEGACY_OPEN  equ 5
+LEGACY_CLOSE equ 6
 
 BLOCK_SIZE equ 1000
 
@@ -31,7 +31,7 @@ read_file_by_blocks:
          mov [file_descriptor], rax  ;store new (!) fd of the same file
 
         .read_from_file:
-                mov rax, SYS_READ       ;sys_read
+                mov rax, LEGACY_READ       ;sys_read
                 mov rbx, [file_descriptor]
                 mov rcx, short_buffer         ;pointer to destination buffer
                 mov rdx, BLOCK_SIZE         ;length of data to be read
@@ -93,7 +93,7 @@ read_file_to_buffer:
 
                 ; read from file into buffer
 
-                mov rax, SYS_READ       ;sys_read
+                mov rax, LEGACY_READ       ;sys_read
                 mov rcx, buffer         ;pointer to destination buffer
                 mov rdx, buflen         ;length of data to be read
                 int 80h
@@ -117,7 +117,7 @@ read_file_char_by_char:
 
 
         .read_next_char:
-                mov rax, SYS_READ       ;sys_read
+                mov rax, LEGACY_READ       ;sys_read
                 mov rbx, [file_descriptor]
                 mov rcx, current_char   ;pointer to destination buffer
                 mov rdx, 1              ;read one character
@@ -159,14 +159,14 @@ read_file_char_by_char:
                 ret
 
 open_file:
-        mov rax, SYS_OPEN        ;sys_open file with fd in ebx
+        mov rax, LEGACY_OPEN        ;sys_open file with fd in ebx
         mov rbx, file_to_read    ;file to be read
         mov rcx, 0               ;O_RDONLY
         int 80h
         ret
 
 close_file:
-        mov rax, SYS_CLOSE    ;sys_close file
+        mov rax, LEGACY_CLOSE    ;sys_close file
         int 80h
         ret
 
