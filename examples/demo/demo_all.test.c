@@ -43,6 +43,10 @@ TEST void test_return_3() {
     _assertIntEq(3, method_return_3());
 }
 
+TEST void test_() {
+    _assertIntEq(5, method_local_label());
+}
+
 /////////////
 // Demo if
 TEST void test_if_greater_than() {
