@@ -91,9 +91,10 @@ function cmd_test() {
     run_test $@
 }
 
+# We can pass pytest parameters. They will be added to the pytest command.
 function cmd_pytest() {
     clean
-    run_pytest $@
+    run_python pytest $@
 }
 
 function cmd_run() {
@@ -102,6 +103,11 @@ function cmd_run() {
     local output_program=${BIN_PATH}/$MAIN_FILENAME.o
     
     run_run $output_program
+}
+
+function cmd_python() {
+    clean
+    run_python python $@
 }
 
 function cmd_debug() {
@@ -209,8 +215,9 @@ function run_test() {
     done
 }
 
-# We can pass pytest parameters. They will be added to the pytest command.
-function run_pytest() {
+# Run a python program adding library path to LD_LIBRARY_PATH
+# The python command (python, pytest, ...) must be the first parameter of the caller
+function run_python() {
     compile_asm
 
     for file in $(file_list ${LIB_PATH}/'*.o')
@@ -219,8 +226,8 @@ function run_pytest() {
         ld -shared $file -o ${file/.o/.so}
     done
 
-    execute "Execute pytest" \
-    LD_LIBRARY_PATH=${LIB_PATH} pytest $@
+    execute "Execute python" \
+    LD_LIBRARY_PATH=${LIB_PATH} $@
 }
 
 
