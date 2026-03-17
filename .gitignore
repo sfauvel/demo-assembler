@@ -9,5 +9,6 @@
 **/lib/
 **/target/
 **/work/
+**/tmp/
 **/spike/
 in_progress/

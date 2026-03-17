@@ -15,15 +15,34 @@
 #include <unistd.h>
 
 
-int read_file(int);
-char* read_file_to_buffer(int);
+char* read_file_to_buffer(char*);
+void write_file(char*, char*);
 
 
 TEST void test_read_file() {
-    //_assertIntEq(88, read_file(20));
-    char* buffer = read_file_to_buffer(6);
-   // printf("Result: %s", buffer);
+    FILE* file = fopen("./tmp/demo_read_data.txt", "w");
+    if (!file) {
+        _assertStringEq("File open", "File not found");
+    }
 
-    _assertStringEq("42", read_file_to_buffer(6));
+    fprintf(file, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    fclose(file);
+
+    _assertStringEq("ABCDEFGHIJKLMNOPQRSTUVWXYZ", read_file_to_buffer("tmp/demo_read_data.txt"));
 }
 
+#define TAILLE_MAX 1024
+TEST void test_write_file() {
+    write_file("tmp/demo_write_data.txt", "abcde");
+   
+    char buffer[TAILLE_MAX] = "";
+    FILE* file = fopen("./tmp/demo_write_data.txt", "r");
+    if (!file) {
+        _assertStringEq("File open", "File not found");
+    }
+    char* result = fgets(buffer, TAILLE_MAX, file);
+    fclose(file);
+    
+    _assert(result);
+    _assertStringEq("abcde", buffer);
+}
