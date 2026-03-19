@@ -7,6 +7,7 @@
 # ASM_PATH: PAth where are .asm files
 # TEST_PATH: Path where are test.c files
 # MAIN_FILENAME: Name of the file containg `main` without extension. Default value is `main`
+# START_LABEL: Label from which start debug
 #
 # It's possible to redefine a command with the prefix `custom` and call `export``:
 #
@@ -120,15 +121,16 @@ function cmd_debug() {
     compile_program ${output_program}
 
     if [[ "$LANGUAGE" == "ASM" ]] then
-        start_label="_start"
+        start_label=${START_LABEL:="_start"}
     else 
-        start_label="main"
+        start_label=${START_LABEL:="main"}
     fi
     generate_gdb_file $BIN_PATH/test.gdb $start_label
 
     local debug_log_file=$BIN_PATH/output.log
-    run_debug_prog ${output_program} $BIN_PATH/test.gdb > $debug_log_file
+    run_debug_prog ${output_program} $BIN_PATH/test.gdb
     
+    execute "Format debug" \
     python $SCRIPT_PATH/debug_doc.py "$debug_log_file"
 }
 
@@ -153,8 +155,11 @@ function cmd_no_run() {
 function run_debug_prog() {
     local prog_file=$1
     local debug_command_file=$2
-    execute "Run program with gdb..." \
-    gdb ${prog_file} --batch --command=$debug_command_file
+
+    local cmd="gdb ${prog_file} --batch --command=$debug_command_file"
+    log_debug "${GREEN}===  Run program with gdb...  ===${NO_COLOR}\n   ${WHITE}${cmd}${NO_COLOR}\n"
+    echo $cmd >> "$SCRIPT_RECORD"
+    eval $cmd > $debug_log_file
 }
 
 

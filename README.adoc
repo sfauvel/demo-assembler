@@ -280,6 +280,12 @@ Dump of assembler code for function main:
 ----
 ====
 
+gdb [program]: run gdb for th progam +
+_(gdb)_ n: **N**ext instruction +
+_(gdb)_ s: **S**tep into +
+_(gdb)_ i r: **I**nfo **R**egisters display all registers +
+_(gdb)_ i r rax: **I**nfo **R**egisters RAX
+
 
 .See registers
 ----
