@@ -92,30 +92,38 @@ read_file_to_buffer:
         ret
 
 
-write_file:
-        push rsi            ; String to write
-        push rdi            ; File to write  
+; RDI: String pointer
+; Return in RAX: Length of the string
+string_length:
+        mov rax, rdi
+        .not_the_end:
+                inc rax
+                cmp byte [rax], 0 ; Check if it's the end (O)
+        jnz .not_the_end
+        sub rax, rsi ; Size is the difference between address of the last character (0) and address of the buffer
+        ret
 
-        pop rdi             ; File to write        
-        call open_file_to_write 
-      
-        pop rsi
-        xor rdx, rdx
-        .next_char:
-        mov rax, rsi
-        jz .end_string
-        inc rsi
-        jmp .next_char
-        .end_string:
-        mov rax, 5
-        push rax            ; string size
+; RDI: File to write  
+; RSI: String to write
+write_file:
+        push rdi
         push rsi
+        call open_file_to_write 
+        pop rsi
+        pop rdi
+
+        push rdi
+        push rsi
+        mov rdi, rsi
+        call string_length
+        pop rsi
+        pop rdi
 
         .write_to_file:
+                ; RSI: string to write
                 mov rdi, [fd]       ; file descriptor
+                mov rdx, rax        ; message length
                 mov rax, SYS_WRITE  ; system call number (sys_write)
-                pop rsi             ; string to write
-                pop rdx             ; message length
                 syscall             ; call kernel
    
         call close_file

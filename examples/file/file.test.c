@@ -41,8 +41,11 @@ TEST void test_write_file() {
         _assertStringEq("File open", "File not found");
     }
     char* result = fgets(buffer, TAILLE_MAX, file);
+    int end_of_file = feof(file);
     fclose(file);
     
     _assert(result);
     _assertStringEq("abcde", buffer);
+    _assert(end_of_file);
+    
 }
